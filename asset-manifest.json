@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/sudden-music/static/css/main.8c8b27cf.chunk.css",
+    "main.js": "/sudden-music/static/js/main.ad97fd22.chunk.js",
+    "main.js.map": "/sudden-music/static/js/main.ad97fd22.chunk.js.map",
+    "runtime-main.js": "/sudden-music/static/js/runtime-main.179d5fa8.js",
+    "runtime-main.js.map": "/sudden-music/static/js/runtime-main.179d5fa8.js.map",
+    "static/js/2.1a0e8369.chunk.js": "/sudden-music/static/js/2.1a0e8369.chunk.js",
+    "static/js/2.1a0e8369.chunk.js.map": "/sudden-music/static/js/2.1a0e8369.chunk.js.map",
+    "static/js/3.a02894c9.chunk.js": "/sudden-music/static/js/3.a02894c9.chunk.js",
+    "static/js/3.a02894c9.chunk.js.map": "/sudden-music/static/js/3.a02894c9.chunk.js.map",
+    "index.html": "/sudden-music/index.html",
+    "static/css/main.8c8b27cf.chunk.css.map": "/sudden-music/static/css/main.8c8b27cf.chunk.css.map",
+    "static/js/2.1a0e8369.chunk.js.LICENSE.txt": "/sudden-music/static/js/2.1a0e8369.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/sudden-music/static/media/logo.6ce24c58.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.179d5fa8.js",
+    "static/js/2.1a0e8369.chunk.js",
+    "static/css/main.8c8b27cf.chunk.css",
+    "static/js/main.ad97fd22.chunk.js"
+  ]
+}
