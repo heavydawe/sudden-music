@@ -1,6 +1,7 @@
-import React from "react";
-import Cell from "./Cell";
-import Note from "./Note";
+import React, { useRef } from "react";
+import BodyCanvas from "./BodyCanvas";
+// import Cell from "./Cell";
+// import Note from "./Note";
 import "./PianoRollGrid.css";
 
 function initPianoTile(
@@ -26,29 +27,47 @@ function initPianoTile(
 }
 
 function PianoRollGrid() {
-  const gridLength = 4; // How many measure should appear in piano roll
-  const gridSnapSize = 4; // 1 / (gridSnapSize) => the shortest possible note
+  // const gridLength = 4; // How many measure should appear in piano roll
+  // const gridSnapSize = 4; // 1 / (gridSnapSize) => the shortest possible note
   const numberOfGridRows = 120;
 
-  function getGridId(i: number, j: number, k: number) {
-    return (
-      i * gridLength * gridLength -
-      gridLength * gridLength +
-      j * gridSnapSize +
-      k
-    );
-  }
+  // function getGridId(i: number, j: number, k: number) {
+  //   return (
+  //     i * gridLength * gridLength -
+  //     gridLength * gridLength +
+  //     j * gridSnapSize +
+  //     k
+  //   );
+  // }
 
-  function noteDown(cellKey: number) {
-    console.log("Got cell: " + cellKey.toString());
-  }
+  // function noteDown(cellKey: number) {
+  //   console.log("Got cell: " + cellKey.toString());
+  // }
 
   let pianoTiles: JSX.Element[] = [];
+  const scrollStartRef = useRef<HTMLDivElement>(null);
 
   for (let i = 0; i < numberOfGridRows; i++) {
     switch (i % 12) {
       case 0:
-        initPianoTile(pianoTiles, "C", (i / 12) >> 0, "w", i);
+        if ((i / 12) >> 0 === 5) {
+          pianoTiles.unshift(
+            <div
+              ref={scrollStartRef}
+              className="pianoTileWhite"
+              id={"piano" + i.toString()}
+              title="C5"
+              key={"piano" + i.toString()}
+              onClick={() => {
+                console.log("ID: " + i + "; NOTE: C5");
+              }}
+            >
+              {"C5"}
+            </div>
+          );
+        } else {
+          initPianoTile(pianoTiles, "C", (i / 12) >> 0, "w", i);
+        }
         break;
       case 1:
         initPianoTile(pianoTiles, "C#", (i / 12) >> 0, "b", i);
@@ -86,22 +105,25 @@ function PianoRollGrid() {
     }
   }
 
-  let pianoGrid: JSX.Element[] = [];
+  //TODO: check if thi works properly (I think it only works when react HAS to rebuild this component, and this might be just fine)
+  scrollStartRef.current?.scrollIntoView();
 
-  // Build the piano roll grid layout
-  for (let i = numberOfGridRows; i > 0; i--) {
-    for (let j = 0; j < gridLength; j++) {
-      if (j % 2) {
-        for (let k = 0; k < gridSnapSize; k++) {
-          pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="g" isHighlighted={false} noteDown={noteDown}/>);
-        }
-      } else {
-        for (let k = 0; k < gridSnapSize; k++) {
-          pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="w" isHighlighted={false} noteDown={noteDown}/>);
-        }
-      }
-    }
-  }
+  // let pianoGrid: JSX.Element[] = [];
+
+  // // Build the piano roll grid layout
+  // for (let i = numberOfGridRows; i > 0; i--) {
+  //   for (let j = 0; j < gridLength; j++) {
+  //     if (j % 2) {
+  //       for (let k = 0; k < gridSnapSize; k++) {
+  //         pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="g" isHighlighted={false} noteDown={noteDown}/>);
+  //       }
+  //     } else {
+  //       for (let k = 0; k < gridSnapSize; k++) {
+  //         pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="w" isHighlighted={false} noteDown={noteDown}/>);
+  //       }
+  //     }
+  //   }
+  // }
 
   return (
     <>
@@ -110,8 +132,9 @@ function PianoRollGrid() {
       <div className="pianoTiles" key="pianoTiles">
         {pianoTiles}
       </div>
-      <div className="gridBody" key="gridBody">
-        {pianoGrid}
+      <div id="gridBody" className="gridBody" key="gridBody">
+        {/* {pianoGrid} */}
+        <BodyCanvas />
       </div>
     </div>
     </>

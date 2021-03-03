@@ -1,11 +1,11 @@
 .gridContainer {
   display: grid;
   grid-template-columns: 50px auto;
-  background-color: black;
+  background-color: lightgray;
   padding: 0px;
   gap: 1px;
-  height: 40em;
-  width: 90vw;
+  height: 700px;
+  width: 100vw;
   overflow-y: scroll;
 }
 
@@ -21,9 +21,11 @@
   font-family:Arial, Helvetica, sans-serif;
   margin-top: 0.5px;
   margin-bottom: 0.5px;
-  min-height: 20px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  height: 25px;
+  /* min-height: 2vh;
+  height: 2.5vh; */
 }
 
 .pianoTileBlack {
@@ -33,15 +35,36 @@
   font-family:Arial, Helvetica, sans-serif;
   margin-top: 0.5px;
   margin-bottom: 0.5px;
-  min-height: 20px;
+  /* min-height: 2vh;
+  height: 2.5vh; */
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  height: 25px;
 }
 
-.gridBody {
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+/* .gridBody {
   display: grid;
   background-color: black;
   gap: 1px;
   grid-template-columns: repeat(16, auto);
   margin-top: 0.5px;
-}
+} */
