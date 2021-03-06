@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 import BodyCanvas from "./BodyCanvas";
 // import Cell from "./Cell";
 // import Note from "./Note";
@@ -45,29 +44,12 @@ function PianoRollGrid() {
   // }
 
   let pianoTiles: JSX.Element[] = [];
-  const scrollStartRef = useRef<HTMLDivElement>(null);
+  //const scrollStartRef = useRef<HTMLDivElement>(null);
 
   for (let i = 0; i < numberOfGridRows; i++) {
     switch (i % 12) {
       case 0:
-        if ((i / 12) >> 0 === 5) {
-          pianoTiles.unshift(
-            <div
-              ref={scrollStartRef}
-              className="pianoTileWhite"
-              id={"piano" + i.toString()}
-              title="C5"
-              key={"piano" + i.toString()}
-              onClick={() => {
-                console.log("ID: " + i + "; NOTE: C5");
-              }}
-            >
-              {"C5"}
-            </div>
-          );
-        } else {
-          initPianoTile(pianoTiles, "C", (i / 12) >> 0, "w", i);
-        }
+        initPianoTile(pianoTiles, "C", (i / 12) >> 0, "w", i);
         break;
       case 1:
         initPianoTile(pianoTiles, "C#", (i / 12) >> 0, "b", i);
@@ -106,37 +88,20 @@ function PianoRollGrid() {
   }
 
   //TODO: check if thi works properly (I think it only works when react HAS to rebuild this component, and this might be just fine)
-  scrollStartRef.current?.scrollIntoView();
-
-  // let pianoGrid: JSX.Element[] = [];
-
-  // // Build the piano roll grid layout
-  // for (let i = numberOfGridRows; i > 0; i--) {
-  //   for (let j = 0; j < gridLength; j++) {
-  //     if (j % 2) {
-  //       for (let k = 0; k < gridSnapSize; k++) {
-  //         pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="g" isHighlighted={false} noteDown={noteDown}/>);
-  //       }
-  //     } else {
-  //       for (let k = 0; k < gridSnapSize; k++) {
-  //         pianoGrid.push(<Cell key={getGridId(i,j,k)} cellKey={getGridId(i,j,k)} color="w" isHighlighted={false} noteDown={noteDown}/>);
-  //       }
-  //     }
-  //   }
-  // }
+  //scrollStartRef.current!.scrollIntoView();
 
   return (
     <>
-    {/* <Note /> */}
-    <div id="gridContainer" className="gridContainer" key="gridContainer">
-      <div className="pianoTiles" key="pianoTiles">
-        {pianoTiles}
+      {/* <Note /> */}
+      <div id="gridContainer" className="gridContainer" key="gridContainer">
+        <div className="pianoTiles" key="pianoTiles">
+          {pianoTiles}
+        </div>
+        <div id="gridBody" className="gridBody" key="gridBody">
+          {/* {pianoGrid} */}
+          <BodyCanvas />
+        </div>
       </div>
-      <div id="gridBody" className="gridBody" key="gridBody">
-        {/* {pianoGrid} */}
-        <BodyCanvas />
-      </div>
-    </div>
     </>
   );
 }
