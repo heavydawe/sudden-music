@@ -1,11 +1,13 @@
-import React from "react";
-import PianoRollGrid from "./PianoRollViewComponents/PianoRollGrid";
+import PianoTiles from "./PianoRollViewComponents/PianoTiles";
+import BodyCanvas from "./PianoRollViewComponents/BodyCanvas";
+import './PianoRollView.css';
 
 function PianoRollView() {
 
   return (
-    <div className="grid-container">
-      <PianoRollGrid />
+    <div key="gridContainer" className="gridContainer">
+      <PianoTiles />
+      <BodyCanvas />
     </div>
   );
 }

@@ -1,24 +1,24 @@
 import Konva from "konva";
-import { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
+import { useRef, useEffect } from "react";
 
-interface ShapeProps {
-  x: number;
-  y: number;
-  size: number;
+interface MidiNote {
+  startTime: string;
+  length: string;
+  note: string;
 }
 
-interface CanvasProps {
-  canvasWidth: number;
-  canvasHeight: number;
-  blockSnapSize: number;
-  tileHeight: number;
+interface ShapeProps {
+  posX: number;
+  posY: number;
+  size: number;
 }
 
 interface Props {
   dataKey: number;
+  midiClipName: string;
   shapeProps: ShapeProps;
-  canvasProps: CanvasProps;
+  midiNotes: MidiNote[];
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
@@ -67,19 +67,29 @@ function getPositionY(
   }
 }
 
-function Note(props: Props) {
-  const canvasWidth = props.canvasProps.canvasWidth;
-  const canvasHeight = props.canvasProps.canvasHeight;
-  const blockSnapSize = props.canvasProps.blockSnapSize;
-  const tileHeight = props.canvasProps.tileHeight;
+function MidiClip(props: Props) {
+  // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
+  const trackHeight = 100 + 2; // + 1 -> margins and gaps
+  const numOfTracks = 2;
+  const numOfMeasures = 4; // How many measures long the piano roll should be
+  const gridPadding = 16; // 1 / gridPadding -> density of the grids
 
-  const noteRef = useRef<Konva.Rect>(null);
-  const trRefNote = useRef<Konva.Transformer>(null);
+  // should be a hardcoded "4", so the first 4 measure will fit on the screen no porblem
+  const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
+  // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigate
+
+  const canvasHeight = trackHeight * numOfTracks + 1; //only show the neccessary ammount of rows
+
+  // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
+  const blockSnapSize = Math.round(canvasWidth / (numOfMeasures * gridPadding));
+
+  const midiClipRef = useRef<Konva.Rect>(null);
+  const trRefMidi = useRef<Konva.Transformer>(null);
 
   useEffect(() => {
     if (props.isSelected) {
-      trRefNote.current!.nodes([noteRef.current!]);
-      trRefNote.current!.getLayer()!.batchDraw();
+      trRefMidi.current!.nodes([midiClipRef.current!]);
+      trRefMidi.current!.getLayer()!.batchDraw();
     }
   }, [props.isSelected]);
 
@@ -87,52 +97,44 @@ function Note(props: Props) {
     <>
       <Rect
         dataKey={props.dataKey}
-        x={getPositionX(
-          props.shapeProps.x,
-          props.shapeProps.size * blockSnapSize,
-          canvasWidth,
-          blockSnapSize,
-          true
-        )}
-        y={getPositionY(props.shapeProps.y, canvasHeight, tileHeight, true)}
+        ref={midiClipRef}
+        x={props.shapeProps.posX}
+        y={props.shapeProps.posY}
+        midiClipName={props.midiClipName}
+        curTrackIndex={Math.round(props.shapeProps.posY / trackHeight)}
         width={props.shapeProps.size * blockSnapSize}
-        height={tileHeight}
-        fill="#6fff00"
-        strokeWidth={0}
-        stroke="gray"
+        height={trackHeight}
+        fill="blue"
         draggable={true}
-        ref={noteRef}
         onClick={(e) => {
           if (e.evt.button === 0) {
             props.handleSelect();
           }
         }}
-        // onTap={() => props.handleSelect()}
-        onMouseOver={(e) => {
-          e.target.setAttrs({ fill: "yellow" });
-          e.currentTarget.draw();
-        }}
-        onMouseLeave={(e) => {
-          e.target.setAttrs({
-            fill: "#6fff00",
-          });
-          e.currentTarget.draw();
-        }}
         onDragEnd={(e) => {
+          const newX = getPositionX(
+            e.target.x(),
+            e.target.width(),
+            canvasWidth,
+            blockSnapSize,
+            false
+          );
+          const newY = getPositionY(
+            e.target.y(),
+            canvasHeight,
+            trackHeight,
+            false
+          );
+
+          e.target.setAttr("curTrackIndex", Math.round(newY / trackHeight));
           e.target.position({
-            x: getPositionX(
-              e.target.x(),
-              e.target.width(),
-              canvasWidth,
-              blockSnapSize,
-              false
-            ),
-            y: getPositionY(e.target.y(), canvasHeight, tileHeight, false),
+            x: newX,
+            y: newY,
           });
         }}
         onTransformEnd={(e) => {
-          const scaleAmmount = noteRef.current!.scaleX();
-          noteRef.current!.scaleX(1);
+          const scaleAmmount = midiClipRef.current!.scaleX();
+          midiClipRef.current!.scaleX(1);
           const newSize = Math.round(props.shapeProps.size * scaleAmmount);
 
           if (newSize * blockSnapSize > canvasWidth - e.target.x()) {
@@ -142,18 +144,12 @@ function Note(props: Props) {
           } else {
             props.changeSize(newSize);
           }
-
-          // if (newSize < 1) {
-          //   props.changeSize(1);
-          // } else {
-          //   props.changeSize(newSize);
-          // }
         }}
       />
       {props.isSelected && (
         <Transformer
-          key="trNote"
-          ref={trRefNote}
+          key="trMidi"
+          ref={trRefMidi}
           enabledAnchors={["middle-right"]}
           rotateEnabled={false}
           borderStroke="orange"
@@ -163,7 +159,7 @@ function Note(props: Props) {
           resizeEnabled={true}
           boundBoxFunc={(oldBox, newBox) => {
             if (newBox.width < blockSnapSize / 2) {
-              trRefNote.current!.stopTransform();
+              trRefMidi.current!.stopTransform();
               return oldBox;
             }
             return newBox;
@@ -174,4 +170,4 @@ function Note(props: Props) {
   );
 }
 
-export default Note;
+export default MidiClip;

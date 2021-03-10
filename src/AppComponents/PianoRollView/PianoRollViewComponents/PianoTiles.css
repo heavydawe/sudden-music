@@ -1,14 +1,3 @@
-.gridContainer {
-  display: grid;
-  grid-template-columns: 50px auto;
-  background-color: lightgray;
-  padding: 0px;
-  gap: 1px;
-  height: 700px;
-  width: 100vw;
-  overflow-y: scroll;
-}
-
 .pianoTiles {
   display: grid;
   background-color: lightgray;
@@ -41,30 +30,3 @@
   border-bottom-right-radius: 5px;
   height: 25px;
 }
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
- 
-::-webkit-scrollbar-thumb {
-  background: #888; 
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555; 
-}
-
-/* .gridBody {
-  display: grid;
-  background-color: black;
-  gap: 1px;
-  grid-template-columns: repeat(16, auto);
-  margin-top: 0.5px;
-} */

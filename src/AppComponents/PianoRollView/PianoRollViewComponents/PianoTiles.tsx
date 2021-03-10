@@ -1,7 +1,4 @@
-import BodyCanvas from "./BodyCanvas";
-// import Cell from "./Cell";
-// import Note from "./Note";
-import "./PianoRollGrid.css";
+import "./PianoTiles.css";
 
 function initPianoTile(
   pianoTiles: JSX.Element[],
@@ -25,23 +22,8 @@ function initPianoTile(
   );
 }
 
-function PianoRollGrid() {
-  // const gridLength = 4; // How many measure should appear in piano roll
-  // const gridSnapSize = 4; // 1 / (gridSnapSize) => the shortest possible note
+function PianoTiles() {
   const numberOfGridRows = 120;
-
-  // function getGridId(i: number, j: number, k: number) {
-  //   return (
-  //     i * gridLength * gridLength -
-  //     gridLength * gridLength +
-  //     j * gridSnapSize +
-  //     k
-  //   );
-  // }
-
-  // function noteDown(cellKey: number) {
-  //   console.log("Got cell: " + cellKey.toString());
-  // }
 
   let pianoTiles: JSX.Element[] = [];
   //const scrollStartRef = useRef<HTMLDivElement>(null);
@@ -91,19 +73,10 @@ function PianoRollGrid() {
   //scrollStartRef.current!.scrollIntoView();
 
   return (
-    <>
-      {/* <Note /> */}
-      <div id="gridContainer" className="gridContainer" key="gridContainer">
-        <div className="pianoTiles" key="pianoTiles">
-          {pianoTiles}
-        </div>
-        <div id="gridBody" className="gridBody" key="gridBody">
-          {/* {pianoGrid} */}
-          <BodyCanvas />
-        </div>
-      </div>
-    </>
+    <div className="pianoTiles" key="pianoTiles">
+      {pianoTiles}
+    </div>
   );
 }
 
-export default PianoRollGrid;
+export default PianoTiles;

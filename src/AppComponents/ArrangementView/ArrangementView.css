@@ -1,0 +1,41 @@
+.arrangementViewContainer {
+  display: grid;
+  grid-template-columns: 150px auto;
+  background-color: lightgray;
+  padding: 0px;
+  height: 700px;
+  width: 100vw;
+  overflow-y: scroll;
+}
+
+.trackHeaderColumn {
+  /* border-right: 2px dashed black; */
+  background-color: darkgrey;
+}
+
+.trackHeader {
+  background-color: blue;
+  border: 1px solid black;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  height: 100px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
