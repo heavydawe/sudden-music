@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
+import { getPositionX, getPositionY } from '../../GetPositionFunctions';
 
 interface ShapeProps {
   x: number;
@@ -22,49 +23,7 @@ interface Props {
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
-}
-
-function getPositionX(
-  curX: number,
-  width: number,
-  canvasWidth: number,
-  blockSnapSize: number,
-  useFloor: boolean
-) {
-  if (curX < 0) {
-    return 0;
-  }
-
-  if (curX + width > canvasWidth) {
-    return canvasWidth - width;
-  }
-
-  if (useFloor) {
-    return Math.floor(curX / blockSnapSize) * blockSnapSize;
-  } else {
-    return Math.round(curX / blockSnapSize) * blockSnapSize;
-  }
-}
-
-function getPositionY(
-  curY: number,
-  canvasHeight: number,
-  tileHeight: number,
-  useFloor: boolean
-) {
-  if (curY < 0) {
-    return 0;
-  }
-
-  if (curY + tileHeight > canvasHeight) {
-    return canvasHeight - tileHeight;
-  }
-
-  if (useFloor) {
-    return Math.floor(curY / tileHeight) * tileHeight;
-  } else {
-    return Math.round(curY / tileHeight) * tileHeight;
-  }
+  getNoteInfo: (posX: number, posY: number, length: number) => void;
 }
 
 function Note(props: Props) {

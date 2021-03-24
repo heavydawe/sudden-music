@@ -1,0 +1,13 @@
+nav {
+  background: 
+    linear-gradient(180deg, black, rgb(169, 169, 169, 0)),
+    linear-gradient(90deg, rgb(12, 38, 167) 10%, rgb(180, 33, 62) 100%);
+}
+
+button {
+  background-color: rgb(80, 2, 2);
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 0;
+}

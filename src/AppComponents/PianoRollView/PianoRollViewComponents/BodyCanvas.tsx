@@ -17,6 +17,10 @@ function checkDeselect(
   }
 }
 
+function getNoteInfo(posX: number, posY: number, length: number) {
+  console.log(posX, posY, length);
+}
+
 function BodyCanvas() {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   const tileHeight = 25 + 1; // + 1 -> margins and gaps
@@ -158,6 +162,7 @@ function BodyCanvas() {
                   newCurNotes[i].startSize = newSize;
                   setCurNotes(newCurNotes);
                 }}
+                getNoteInfo={getNoteInfo}
               />
             );
           })}

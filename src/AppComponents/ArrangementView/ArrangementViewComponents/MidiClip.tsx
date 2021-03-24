@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { Rect, Transformer } from "react-konva";
 import { useRef, useEffect } from "react";
+import { getPositionX, getPositionY } from '../../GetPositionFunctions';
 
 interface MidiNote {
   startTime: string;
@@ -22,49 +23,6 @@ interface Props {
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
-}
-
-function getPositionX(
-  curX: number,
-  width: number,
-  canvasWidth: number,
-  blockSnapSize: number,
-  useFloor: boolean
-) {
-  if (curX < 0) {
-    return 0;
-  }
-
-  if (curX + width > canvasWidth) {
-    return canvasWidth - width;
-  }
-
-  if (useFloor) {
-    return Math.floor(curX / blockSnapSize) * blockSnapSize;
-  } else {
-    return Math.round(curX / blockSnapSize) * blockSnapSize;
-  }
-}
-
-function getPositionY(
-  curY: number,
-  canvasHeight: number,
-  tileHeight: number,
-  useFloor: boolean
-) {
-  if (curY < 0) {
-    return 0;
-  }
-
-  if (curY + tileHeight > canvasHeight) {
-    return canvasHeight - tileHeight;
-  }
-
-  if (useFloor) {
-    return Math.floor(curY / tileHeight) * tileHeight;
-  } else {
-    return Math.round(curY / tileHeight) * tileHeight;
-  }
 }
 
 function MidiClip(props: Props) {
@@ -104,7 +62,7 @@ function MidiClip(props: Props) {
         curTrackIndex={Math.round(props.shapeProps.posY / trackHeight)}
         width={props.shapeProps.size * blockSnapSize}
         height={trackHeight}
-        fill="blue"
+        fill="grey"
         draggable={true}
         onClick={(e) => {
           if (e.evt.button === 0) {
@@ -144,6 +102,11 @@ function MidiClip(props: Props) {
           } else {
             props.changeSize(newSize);
           }
+        }}
+        onDblClick={(e) => {
+
+          // Open piano roll for this MIDI clip
+          // openPianoRoll(e.target.getAttr("dataKey"), props.midiNotes);
         }}
       />
       {props.isSelected && (

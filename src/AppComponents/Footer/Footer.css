@@ -1,12 +1,15 @@
 footer {
-    background-color: black;
+    background: 
+        linear-gradient(180deg, rgb(0,0,0,0), black),
+        linear-gradient(90deg, rgb(12, 38, 167) 10%, rgb(180, 33, 62) 100%);
+    height: 7vh;
 }
 
 button {
-    background-color: white;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 1em;
     border-radius: 0.5em;
     padding: 0.5em;
-    margin: 1em;
+    margin-top: 0;
+    margin-bottom: 0;
 }

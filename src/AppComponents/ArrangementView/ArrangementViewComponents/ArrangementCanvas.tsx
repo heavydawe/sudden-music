@@ -2,6 +2,8 @@ import { Stage, Line, Layer, Rect } from "react-konva";
 import { KonvaEventObject } from "konva/types/Node";
 import { useState } from "react";
 import MidiClip from "./MidiClip";
+import { getPositionX, getPositionY } from '../../GetPositionFunctions';
+import './ArrangementCanvas.css';
 
 function checkDeselect(
   e: KonvaEventObject<MouseEvent | TouchEvent>,
@@ -14,49 +16,6 @@ function checkDeselect(
     e.target.getAttr("name") === "line"
   ) {
     selectNoteId(-1);
-  }
-}
-
-function getPositionX(
-  curX: number,
-  width: number,
-  canvasWidth: number,
-  blockSnapSize: number,
-  useFloor: boolean
-) {
-  if (curX < 0) {
-    return 0;
-  }
-
-  if (curX + width > canvasWidth) {
-    return canvasWidth - width;
-  }
-
-  if (useFloor) {
-    return Math.floor(curX / blockSnapSize) * blockSnapSize;
-  } else {
-    return Math.round(curX / blockSnapSize) * blockSnapSize;
-  }
-}
-
-function getPositionY(
-  curY: number,
-  canvasHeight: number,
-  tileHeight: number,
-  useFloor: boolean
-) {
-  if (curY < 0) {
-    return 0;
-  }
-
-  if (curY + tileHeight > canvasHeight) {
-    return canvasHeight - tileHeight;
-  }
-
-  if (useFloor) {
-    return Math.floor(curY / tileHeight) * tileHeight;
-  } else {
-    return Math.round(curY / tileHeight) * tileHeight;
   }
 }
 
@@ -131,12 +90,13 @@ function ArrangementCanvas() {
         height={canvasHeight}
         width={canvasWidth / numOfMeasures}
         fill="#aaa"
+        opacity={0.5}
       />
     );
   }
 
   return (
-    <div key="arrangementCanvas">
+    <div key="arrangementCanvas" className="stageClass">
       <Stage
         key="arrangementStage"
         name="stage"
@@ -145,6 +105,8 @@ function ArrangementCanvas() {
         onMouseDown={(e) => checkDeselect(e, selectMidiClipId)}
         //onTouchStart={checkDeselect}
         onDblClick={(e) => {
+
+          // Adding new MIDI clip
           if (e.target.getAttr("dataKey") === undefined) {
             const transform = e.currentTarget
               .getAbsoluteTransform()
