@@ -1,13 +1,13 @@
 import PianoTiles from "./PianoRollViewComponents/PianoTiles";
-import BodyCanvas from "./PianoRollViewComponents/BodyCanvas";
 import './PianoRollView.css';
+import PianoRollCanvas from "./PianoRollViewComponents/PianoRollCanvas";
 
 function PianoRollView() {
 
   return (
     <div key="gridContainer" className="gridContainer">
       <PianoTiles />
-      <BodyCanvas />
+      <PianoRollCanvas />
     </div>
   );
 }

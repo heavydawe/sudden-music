@@ -2,6 +2,36 @@ import React from "react";
 import * as Tone from "tone";
 import "./NavigationBar.css"
 
+function initSong() {
+
+  Tone.Transport.bpm.value = 125;
+  // Tone.Transport.swing = 0;
+  // Tone.Transport.PPQ = 192;
+  const keys = new Tone.MonoSynth().toDestination();
+
+  // // Repeated 8th notes every 8th note; IMPORTANT: 192i = 4n!! (so 96i = 8n)
+  // Tone.Transport.scheduleRepeat(() => {
+  //   keys.triggerAttackRelease("C4", 0.05);
+  // }, "8n");
+
+  const osc = new Tone.Oscillator().toDestination();
+  // repeated event every 8th note
+  Tone.Transport.scheduleRepeat((time) => {
+    // use the callback time to schedule events
+    osc.start(time).stop(time + 0.1);
+  }, "96i");
+}
+
+function playSong() {
+  Tone.start();   // make sure that audio context is running
+  Tone.Transport.start(); // 0.1 helps scheduling in advance
+  
+}
+
+function stopSong() {
+  Tone.Transport.stop();
+}
+
 function NavigationBar() {
   // function initSong() {
   //   /**
@@ -95,18 +125,9 @@ function NavigationBar() {
   //   //bassPart.humanize = true;
   // }
 
-  function playSong() {
-    Tone.start();   // make sure that audio context is running
-    Tone.Transport.start("+0.1"); // 0.1 helps scheduling in advance
-  }
-
-  function stopSong() {
-    Tone.Transport.stop();
-  }
-
   return (
     <nav>
-      {/* <button onClick={initSong}>INIT</button> */}
+      <button onClick={initSong}>INIT</button>
       <button onClick={playSong}>PLAY</button>
       <button onClick={stopSong}>STOP</button>
     </nav>

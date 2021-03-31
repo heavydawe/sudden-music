@@ -23,7 +23,7 @@ interface Props {
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
-  getNoteInfo: (posX: number, posY: number, length: number) => void;
+  getNoteInfo?: (posX: number, posY: number, length: number) => void;
 }
 
 function Note(props: Props) {
@@ -46,19 +46,13 @@ function Note(props: Props) {
     <>
       <Rect
         dataKey={props.dataKey}
-        x={getPositionX(
-          props.shapeProps.x,
-          props.shapeProps.size * blockSnapSize,
-          canvasWidth,
-          blockSnapSize,
-          true
-        )}
-        y={getPositionY(props.shapeProps.y, canvasHeight, tileHeight, true)}
+        x={props.shapeProps.x}
+        y={props.shapeProps.y}
         width={props.shapeProps.size * blockSnapSize}
         height={tileHeight}
         fill="#6fff00"
         strokeWidth={0}
-        stroke="gray"
+        stroke="black"
         draggable={true}
         ref={noteRef}
         onClick={(e) => {

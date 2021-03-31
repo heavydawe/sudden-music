@@ -26,7 +26,7 @@ function ArrangementCanvas() {
   const numOfMeasures = 4; // How many measures long the piano roll should be
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
 
-  // should be a hardcoded "4", so the first 4 measure will fit on the screen no porblem
+  // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
   // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigate
 
@@ -99,7 +99,6 @@ function ArrangementCanvas() {
     <div key="arrangementCanvas" className="stageClass">
       <Stage
         key="arrangementStage"
-        name="stage"
         width={canvasWidth + 2} // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
         onMouseDown={(e) => checkDeselect(e, selectMidiClipId)}
