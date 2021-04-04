@@ -3,7 +3,10 @@ import { KonvaEventObject } from "konva/types/Node";
 import { useState } from "react";
 import MidiClip from "./MidiClip";
 import { getPositionX, getPositionY } from '../../GetPositionFunctions';
+import { MidiClipRectProps } from "../../Interfaces";
 import './ArrangementCanvas.css';
+import { useDispatch } from "react-redux";
+import { selectNewView } from "../../Actions";
 
 function checkDeselect(
   e: KonvaEventObject<MouseEvent | TouchEvent>,
@@ -25,6 +28,7 @@ function ArrangementCanvas() {
   const numOfTracks = 2;
   const numOfMeasures = 4; // How many measures long the piano roll should be
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
+  const dispatch = useDispatch();
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
@@ -37,20 +41,7 @@ function ArrangementCanvas() {
 
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
-  const [curMidiClips, setCurMidiClips] = useState<
-    {
-      dataKey: number;
-      midiClipName: string;
-      posX: number;
-      posY: number;
-      size: number;
-      midiNotes: {
-        startTime: string;
-        length: string;
-        note: string;
-      }[];
-    }[]
-  >([]);
+  const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>([]);
 
   let gridLines: JSX.Element[] = [];
 
@@ -112,11 +103,10 @@ function ArrangementCanvas() {
               .copy()
               .invert();
             const pos = e.currentTarget.getStage()!.getPointerPosition()!;
-            setCurMidiClips([
-              ...curMidiClips,
+            setCurMidiClipsRect([
+              ...curMidiClipsRect,
               {
                 dataKey: midiKeyGenerator,
-                midiClipName: "midiClip_1",
                 posX: getPositionX(
                   transform.point(pos).x,
                   4 * blockSnapSize,
@@ -130,8 +120,7 @@ function ArrangementCanvas() {
                   trackHeight,
                   true
                 ),
-                size: 4,
-                midiNotes: [],
+                width: 4
               },
             ]);
 
@@ -148,34 +137,46 @@ function ArrangementCanvas() {
           key="arrangementMidiClips"
           onClick={(e) => {
             if (e.evt.button === 2) {
-              setCurMidiClips(
-                curMidiClips.filter(
+              setCurMidiClipsRect(
+                curMidiClipsRect.filter(
                   (item) => item.dataKey !== e.target.getAttr("dataKey")
                 )
               );
             }
           }}
         >
-          {curMidiClips.map((item, i) => {
+          {curMidiClipsRect.map((item, i) => {
             return (
               <MidiClip
                 key={item.dataKey}
                 dataKey={item.dataKey}
-                midiClipName={item.midiClipName}
-                midiNotes={item.midiNotes}
                 shapeProps={{
                   posX: item.posX,
                   posY: item.posY,
-                  size: item.size,
+                  width: item.width,
                 }}
                 isSelected={item.dataKey === selectedMidiClipId}
                 handleSelect={() => {
                   selectMidiClipId(item.dataKey);
                 }}
                 changeSize={(newSize) => {
-                  const newCurNotes = curMidiClips.slice();
-                  newCurNotes[i].size = newSize;
-                  setCurMidiClips(newCurNotes);
+                  const newCurNotes = curMidiClipsRect.slice();
+                  newCurNotes[i].width = newSize;
+                  setCurMidiClipsRect(newCurNotes);
+                }}
+                changeView={() => {dispatch(selectNewView("piano"))}}
+                changePos={(newPosX: number, newPosY: number) => {
+                  if (
+                    newPosX === curMidiClipsRect[i].posX &&
+                    newPosY === curMidiClipsRect[i].posY
+                  ) {
+                    return;
+                  }
+
+                  const newCurMidiClipsRect = curMidiClipsRect.slice();
+                  newCurMidiClipsRect[i].posX = newPosX;
+                  newCurMidiClipsRect[i].posY = newPosY;
+                  setCurMidiClipsRect(newCurMidiClipsRect);
                 }}
               />
             );

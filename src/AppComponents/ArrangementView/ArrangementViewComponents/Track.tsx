@@ -18,6 +18,7 @@ function getInstrument(instrumentName: string) {
 }
 
 interface Props {
+  dataKey: number;
   trackName: string;
   trackColor: string;
   instrumentName: string;

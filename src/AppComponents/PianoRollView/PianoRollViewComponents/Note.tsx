@@ -1,13 +1,8 @@
 import Konva from "konva";
 import { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
-import { getPositionX, getPositionY } from '../../GetPositionFunctions';
-
-interface ShapeProps {
-  x: number;
-  y: number;
-  size: number;
-}
+import { getPositionX, getPositionY } from "../../GetPositionFunctions";
+import { ShapeProps } from "../../Interfaces";
 
 interface CanvasProps {
   canvasWidth: number;
@@ -23,6 +18,7 @@ interface Props {
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
+  changePos: (newPosX: number, newPosY: number) => void;
   getNoteInfo?: (posX: number, posY: number, length: number) => void;
 }
 
@@ -46,9 +42,9 @@ function Note(props: Props) {
     <>
       <Rect
         dataKey={props.dataKey}
-        x={props.shapeProps.x}
-        y={props.shapeProps.y}
-        width={props.shapeProps.size * blockSnapSize}
+        x={props.shapeProps.posX}
+        y={props.shapeProps.posY}
+        width={props.shapeProps.width * blockSnapSize}
         height={tileHeight}
         fill="#6fff00"
         strokeWidth={0}
@@ -72,21 +68,22 @@ function Note(props: Props) {
           e.currentTarget.draw();
         }}
         onDragEnd={(e) => {
-          e.target.position({
-            x: getPositionX(
-              e.target.x(),
-              e.target.width(),
-              canvasWidth,
-              blockSnapSize,
-              false
-            ),
-            y: getPositionY(e.target.y(), canvasHeight, tileHeight, false),
-          });
+          const posX = getPositionX(
+            e.target.x(),
+            e.target.width(),
+            canvasWidth,
+            blockSnapSize,
+            false
+          );
+          const posY = getPositionY(e.target.y(), canvasHeight, tileHeight, false);
+
+          e.target.position({x: posX, y: posY});
+          props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {
           const scaleAmmount = noteRef.current!.scaleX();
           noteRef.current!.scaleX(1);
-          const newSize = Math.round(props.shapeProps.size * scaleAmmount);
+          const newSize = Math.round(props.shapeProps.width * scaleAmmount);
 
           if (newSize * blockSnapSize > canvasWidth - e.target.x()) {
             props.changeSize(

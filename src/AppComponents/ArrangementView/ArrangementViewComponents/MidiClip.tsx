@@ -2,27 +2,16 @@ import Konva from "konva";
 import { Rect, Transformer } from "react-konva";
 import { useRef, useEffect } from "react";
 import { getPositionX, getPositionY } from '../../GetPositionFunctions';
-
-interface MidiNote {
-  startTime: string;
-  length: string;
-  note: string;
-}
-
-interface ShapeProps {
-  posX: number;
-  posY: number;
-  size: number;
-}
+import { ShapeProps } from "../../Interfaces";
 
 interface Props {
   dataKey: number;
-  midiClipName: string;
   shapeProps: ShapeProps;
-  midiNotes: MidiNote[];
   isSelected: boolean;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
+  changeView: (newView: string) => void;
+  changePos: (newPosX: number, newPosY: number) => void;
 }
 
 function MidiClip(props: Props) {
@@ -58,9 +47,7 @@ function MidiClip(props: Props) {
         ref={midiClipRef}
         x={props.shapeProps.posX}
         y={props.shapeProps.posY}
-        midiClipName={props.midiClipName}
-        curTrackIndex={Math.round(props.shapeProps.posY / trackHeight)}
-        width={props.shapeProps.size * blockSnapSize}
+        width={props.shapeProps.width * blockSnapSize}
         height={trackHeight}
         fill="grey"
         draggable={true}
@@ -70,30 +57,30 @@ function MidiClip(props: Props) {
           }
         }}
         onDragEnd={(e) => {
-          const newX = getPositionX(
+          const posX = getPositionX(
             e.target.x(),
             e.target.width(),
             canvasWidth,
             blockSnapSize,
             false
           );
-          const newY = getPositionY(
+          const posY = getPositionY(
             e.target.y(),
             canvasHeight,
             trackHeight,
             false
           );
-
-          e.target.setAttr("curTrackIndex", Math.round(newY / trackHeight));
+          
           e.target.position({
-            x: newX,
-            y: newY,
+            x: posX,
+            y: posY,
           });
+          props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {
           const scaleAmmount = midiClipRef.current!.scaleX();
           midiClipRef.current!.scaleX(1);
-          const newSize = Math.round(props.shapeProps.size * scaleAmmount);
+          const newSize = Math.round(props.shapeProps.width * scaleAmmount);
 
           if (newSize * blockSnapSize > canvasWidth - e.target.x()) {
             props.changeSize(
@@ -104,9 +91,7 @@ function MidiClip(props: Props) {
           }
         }}
         onDblClick={(e) => {
-
-          // Open piano roll for this MIDI clip
-          // openPianoRoll(e.target.getAttr("dataKey"), props.midiNotes);
+          props.changeView("piano");
         }}
       />
       {props.isSelected && (

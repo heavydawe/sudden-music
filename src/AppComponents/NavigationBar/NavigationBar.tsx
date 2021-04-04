@@ -7,7 +7,7 @@ function initSong() {
   Tone.Transport.bpm.value = 125;
   // Tone.Transport.swing = 0;
   // Tone.Transport.PPQ = 192;
-  const keys = new Tone.MonoSynth().toDestination();
+  // const keys = new Tone.MonoSynth().toDestination();
 
   // // Repeated 8th notes every 8th note; IMPORTANT: 192i = 4n!! (so 96i = 8n)
   // Tone.Transport.scheduleRepeat(() => {
