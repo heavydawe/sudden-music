@@ -1,17 +1,17 @@
 import { Dispatch } from "react";
 
 export interface MidiNote {
-  datakey: number;
+  dataKey: number;
   startTime: number;
   length: number;
   note: string;
 }
 
 export interface MidiClip {
-  dataKey: string;
-  track: string;
-  startTime: string;
-  length: string;
+  dataKey: number;
+  trackKey: number;
+  startTime: number;
+  length: number;
   notes: MidiNote[];
 }
 
@@ -43,4 +43,41 @@ export interface ShapeProps {
   posX: number;
   posY: number;
   width: number;
+}
+
+export interface TrackInterface {
+  dataKey: number;
+  name: string;
+  color: string;
+  instrument: string;
+  midiClips: MidiClip[];
+  // Instrument props here as well (for example: attack or release)?
+}
+
+export interface Rootstate {
+  curTracks: {tracks: TrackInterface[], modifiedNote: ModifyNote};
+  selectedMidiClip: MidiClip;
+  modifyNote: ModifyNote;
+}
+
+export interface CanvasProps {
+  canvasWidth: number;
+  canvasHeight: number;
+  blockSnapSize: number;
+  trackOrTileHeight: number;
+}
+
+export interface ModifyNote {
+  trackDataKey: number;
+  midiClipDataKey: number;
+  noteDataKey: number;
+  type: "ADD" | "DELETE" | "UPDATE";
+  newNoteProps?: MidiNote;
+}
+
+export interface ModifyMidiClip {
+  trackDataKey: number;
+  midiClipDataKey: number;
+  type: "ADD" | "DELETE" | "UPDATE";
+  newMidiClipProps?: MidiClip;
 }

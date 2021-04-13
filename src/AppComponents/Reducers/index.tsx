@@ -1,9 +1,13 @@
 import { combineReducers } from 'redux';
-import SelectViewReducer from "./SelectViewReducer"
+import CurTracksReducer from './CurTracksReducer';
+import ModifyNoteReducer from './ModifyNoteReducer';
+import SelectedMidiClipReducer from './SelectedMidiClipReducer';
 
 
 const allReducers = combineReducers({
-  selectView: SelectViewReducer
+  curTracks: CurTracksReducer,
+  selectedMidiClip: SelectedMidiClipReducer,
+  modifyNote: ModifyNoteReducer,
 });
 
 export default allReducers;

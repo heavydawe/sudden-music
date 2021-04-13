@@ -1,47 +1,86 @@
 import { Stage, Line, Layer, Rect } from "react-konva";
-import { KonvaEventObject } from "konva/types/Node";
 import { useState } from "react";
 import MidiClip from "./MidiClip";
-import { getPositionX, getPositionY } from '../../GetPositionFunctions';
-import { MidiClipRectProps } from "../../Interfaces";
-import './ArrangementCanvas.css';
+import { getPositionX, getPositionY } from "../../GetPositionFunctions";
+import {
+  MidiClip as MidiClipInterface,
+  MidiClipRectProps,
+  MidiNote,
+} from "../../Interfaces";
+import "./ArrangementCanvas.css";
 import { useDispatch } from "react-redux";
-import { selectNewView } from "../../Actions";
+import {
+  addNewMidiClip,
+  selectMidiClip,
+  deselectMidiClip,
+  deleteMidiClip,
+  updateMidiClip,
+} from "../../Actions";
 
-function checkDeselect(
-  e: KonvaEventObject<MouseEvent | TouchEvent>,
-  selectNoteId: React.Dispatch<React.SetStateAction<number>>
+function getMidiClipStartTime(
+  posX: number,
+  blockSnapSize: number,
+  blockSnapSizeToTick: number
 ) {
-  // deselect when clicked on empty area
-  if (
-    e.target === e.target.getStage() ||
-    e.target.getAttr("name") === "darkMeasure" ||
-    e.target.getAttr("name") === "line"
-  ) {
-    selectNoteId(-1);
-  }
+  return (posX / blockSnapSize) * blockSnapSizeToTick;
 }
 
-function ArrangementCanvas() {
+function getMidiClipTrackKey(posY: number, trackHeight: number) {
+  return posY / trackHeight;
+}
+
+function getMidiClipFromRect(
+  midiClipRect: MidiClipRectProps,
+  midiClipNotes: MidiNote[],
+  trackHeight: number,
+  blockSnapSize: number,
+  blockSnapSizeToTick: number
+): MidiClipInterface {
+  return {
+    dataKey: midiClipRect.dataKey,
+    trackKey: getMidiClipTrackKey(midiClipRect.posY, trackHeight),
+    startTime: getMidiClipStartTime(
+      midiClipRect.posX,
+      blockSnapSize,
+      blockSnapSizeToTick
+    ),
+    length: midiClipRect.width,
+    notes: midiClipNotes,
+  };
+}
+
+interface Props {
+  midiClips: MidiClipInterface[];
+}
+
+function ArrangementCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
+
+  console.log("IN ARR CANVAS");
+
   const trackHeight = 100 + 2; // + 1 -> margins and gaps
-  const numOfTracks = 2;
+  const numOfTracks = 5;
   const numOfMeasures = 4; // How many measures long the piano roll should be
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
+  const blockSnapSizeToTick = 192 / (gridPadding / 4);
   const dispatch = useDispatch();
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
   // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigate
 
-  const canvasHeight = trackHeight * numOfTracks + 1; //only show the neccessary ammount of rows
+  const canvasHeight = trackHeight * numOfTracks; //only show the neccessary ammount of rows
 
   // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
   const blockSnapSize = Math.round(canvasWidth / (numOfMeasures * gridPadding));
 
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
-  const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>([]);
+
+  // Init correctly when a project is imported
+  const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>(
+    []
+  );
 
   let gridLines: JSX.Element[] = [];
 
@@ -92,10 +131,20 @@ function ArrangementCanvas() {
         key="arrangementStage"
         width={canvasWidth + 2} // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
-        onMouseDown={(e) => checkDeselect(e, selectMidiClipId)}
+        onMouseDown={(e) => {
+          if (selectedMidiClipId !== -1) {
+            if (
+              e.target === e.target.getStage() ||
+              e.target.getAttr("name") === "darkMeasure" ||
+              e.target.getAttr("name") === "line"
+            ) {
+              selectMidiClipId(-1);
+              dispatch(deselectMidiClip());
+            }
+          }
+        }}
         //onTouchStart={checkDeselect}
         onDblClick={(e) => {
-
           // Adding new MIDI clip
           if (e.target.getAttr("dataKey") === undefined) {
             const transform = e.currentTarget
@@ -103,28 +152,43 @@ function ArrangementCanvas() {
               .copy()
               .invert();
             const pos = e.currentTarget.getStage()!.getPointerPosition()!;
-            setCurMidiClipsRect([
-              ...curMidiClipsRect,
-              {
-                dataKey: midiKeyGenerator,
-                posX: getPositionX(
-                  transform.point(pos).x,
-                  4 * blockSnapSize,
-                  canvasWidth,
-                  blockSnapSize,
-                  true
-                ),
-                posY: getPositionY(
-                  transform.point(pos).y,
-                  canvasHeight,
-                  trackHeight,
-                  true
-                ),
-                width: 4
-              },
-            ]);
 
+            const newMidiClipRect = {
+              dataKey: midiKeyGenerator,
+              posX: getPositionX(
+                transform.point(pos).x,
+                4 * blockSnapSize,
+                canvasWidth,
+                blockSnapSize,
+                true
+              ),
+              posY: getPositionY(
+                transform.point(pos).y,
+                canvasHeight,
+                trackHeight,
+                true
+              ),
+              width: 4,
+            };
+
+            const newMidi = getMidiClipFromRect(
+              newMidiClipRect,
+              [],
+              trackHeight,
+              blockSnapSize,
+              blockSnapSizeToTick
+            );
+
+            setCurMidiClipsRect([...curMidiClipsRect, newMidiClipRect]);
             setMidiKeyGenerator(midiKeyGenerator + 1);
+            dispatch(
+              addNewMidiClip({
+                midiClipDataKey: newMidi.dataKey,
+                trackDataKey: newMidi.trackKey,
+                type: "ADD",
+                newMidiClipProps: newMidi,
+              })
+            );
           }
         }}
         onContextMenu={(e) => {
@@ -137,9 +201,27 @@ function ArrangementCanvas() {
           key="arrangementMidiClips"
           onClick={(e) => {
             if (e.evt.button === 2) {
+              const midiClipToDeleteDataKey = e.target.getAttr("dataKey");
+
+              dispatch(deselectMidiClip());
+
+              // Only need the dataKey and trackKey to delete a midi clip
+              dispatch(
+                deleteMidiClip({
+                  midiClipDataKey: midiClipToDeleteDataKey,
+                  trackDataKey: getMidiClipTrackKey(
+                    curMidiClipsRect.find(
+                      (item) => item.dataKey === midiClipToDeleteDataKey
+                    )!.posY,
+                    trackHeight
+                  ),
+                  type: "DELETE"
+                })
+              );
+
               setCurMidiClipsRect(
                 curMidiClipsRect.filter(
-                  (item) => item.dataKey !== e.target.getAttr("dataKey")
+                  (item) => item.dataKey !== midiClipToDeleteDataKey
                 )
               );
             }
@@ -156,15 +238,67 @@ function ArrangementCanvas() {
                   width: item.width,
                 }}
                 isSelected={item.dataKey === selectedMidiClipId}
+                canvasProps={{
+                  canvasHeight: canvasHeight,
+                  blockSnapSize: blockSnapSize,
+                  canvasWidth: canvasWidth,
+                  trackOrTileHeight: trackHeight,
+                }}
                 handleSelect={() => {
-                  selectMidiClipId(item.dataKey);
+                  if (selectedMidiClipId !== item.dataKey) {
+                    if (selectedMidiClipId !== -1) {
+                      dispatch(deselectMidiClip());
+                    }
+
+                    selectMidiClipId(item.dataKey);
+                    dispatch(
+                      selectMidiClip(
+                        getMidiClipFromRect(
+                          {
+                            dataKey: item.dataKey,
+                            posX: item.posX,
+                            posY: item.posY,
+                            width: item.width,
+                          },
+                          props.midiClips.find(
+                            (midiClip) => midiClip.dataKey === item.dataKey
+                          )!.notes,
+                          trackHeight,
+                          blockSnapSize,
+                          blockSnapSizeToTick
+                        )
+                      )
+                    );
+                  }
                 }}
                 changeSize={(newSize) => {
                   const newCurNotes = curMidiClipsRect.slice();
                   newCurNotes[i].width = newSize;
+
+                  const newMidiClip = getMidiClipFromRect(
+                    {
+                      dataKey: curMidiClipsRect[i].dataKey,
+                      posX: curMidiClipsRect[i].posX,
+                      posY: curMidiClipsRect[i].posY,
+                      width: curMidiClipsRect[i].width,
+                    },
+                    [],
+                    trackHeight,
+                    blockSnapSize,
+                    blockSnapSizeToTick
+                  );
+
+                  // TODO:
+                  // WHEN WE MOVE MIDICLIP, WE NEED AN OTHER PROP: prevTrackKey, or stmh like that
+                  // ALSO a ModifyMidiClip interface would be nice, to again, optimize the Track component
+                  dispatch(updateMidiClip({
+                    midiClipDataKey: newMidiClip.dataKey,
+                    trackDataKey: newMidiClip.trackKey,
+                    type: "UPDATE",
+                    newMidiClipProps: newMidiClip
+                  }));
                   setCurMidiClipsRect(newCurNotes);
                 }}
-                changeView={() => {dispatch(selectNewView("piano"))}}
                 changePos={(newPosX: number, newPosY: number) => {
                   if (
                     newPosX === curMidiClipsRect[i].posX &&
@@ -173,9 +307,34 @@ function ArrangementCanvas() {
                     return;
                   }
 
+                  const prevTrackKey = getMidiClipTrackKey(
+                    curMidiClipsRect[i].posY,
+                    trackHeight
+                  );
+
                   const newCurMidiClipsRect = curMidiClipsRect.slice();
                   newCurMidiClipsRect[i].posX = newPosX;
                   newCurMidiClipsRect[i].posY = newPosY;
+
+                  const newMidiClip = getMidiClipFromRect(
+                    {
+                      dataKey: newCurMidiClipsRect[i].dataKey,
+                      posX: newCurMidiClipsRect[i].posX,
+                      posY: newCurMidiClipsRect[i].posY,
+                      width: newCurMidiClipsRect[i].width,
+                    },
+                    [],
+                    trackHeight,
+                    blockSnapSize,
+                    blockSnapSizeToTick
+                  );
+
+                  dispatch(updateMidiClip({
+                    midiClipDataKey: newMidiClip.dataKey,
+                    trackDataKey: prevTrackKey,
+                    type: "UPDATE",
+                    newMidiClipProps: newMidiClip
+                  }));
                   setCurMidiClipsRect(newCurMidiClipsRect);
                 }}
               />

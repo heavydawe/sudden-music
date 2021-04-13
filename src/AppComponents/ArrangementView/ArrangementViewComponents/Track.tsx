@@ -1,4 +1,6 @@
+import React from 'react';
 import * as Tone from 'tone';
+import { MidiClip, ModifyNote } from '../../Interfaces';
 
 function getInstrument(instrumentName: string) {
   switch (instrumentName) {
@@ -22,11 +24,15 @@ interface Props {
   trackName: string;
   trackColor: string;
   instrumentName: string;
+  midiClips: MidiClip[];
+  curNoteToModify: ModifyNote | null;
 }
 
-function Track(props: Props) {
+const Track = React.memo((props: Props) => {
 
   const instrument = getInstrument(props.instrumentName);
+
+  console.log("RENDERING IN TRACK, KEY:", props.dataKey);
 
   const chord1 = ["D3", "G3"];
   const chord2 = ["F3", "Bb3"];
@@ -61,6 +67,6 @@ function Track(props: Props) {
       {props.trackName}
     </div>
   );
-}
+});
 
 export default Track;

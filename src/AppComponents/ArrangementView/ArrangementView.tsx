@@ -1,44 +1,51 @@
 import Track from "./ArrangementViewComponents/Track";
-import './ArrangementView.css'
+import "./ArrangementView.css";
 import ArrangementCanvas from "./ArrangementViewComponents/ArrangementCanvas";
-import { useState } from "react";
+import { Rootstate } from "../Interfaces";
+import { useSelector } from "react-redux";
+// import { useState } from "react";
 
 function ArrangementView() {
+  const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
+  // const curNoteToModify = useSelector((state: Rootstate) => state.modifyNote);
+  // const [keyGenerator, setKeyGenerator] = useState<number>(curTrackInfos.length);
 
-  // Stats where track infos are stored
+  console.log("RENDERING ARR VIEW", curTrackInfos);
+  //console.log(curNoteToModify);
 
-  // needs to be inited when a project is imported
-  const [keyGenerator, setKeyGenerator] = useState<number>(0);
-
-  let testTrack = []
-  
-  testTrack.push({
-    dataKey: -2,
-    name: "track_1",
-    color: "blue",
-    instrument: "polySynth",
-  });
-
-  testTrack.push({
-    dataKey: -1,
-    name: "track_2",
-    color: "red",
-    instrument: "polySynth",
-  });
-
-   return (
-     //List the tracks here
+  return (
+    //List the tracks here
     <div key="arrangementViewContainer" className="arrangementViewContainer">
       <div key="trackHeaders" className="trackHeaderColumn">
-        {testTrack.map((item, i) => {
-          return(
-            <Track key={item.dataKey} dataKey={item.dataKey} trackName={item.name} trackColor={item.color} instrumentName={item.instrument} />
+        {curTrackInfos.tracks.map((item) => {
+          return (
+            <Track
+              key={item.dataKey}
+              dataKey={item.dataKey}
+              trackName={item.name}
+              trackColor={item.color}
+              instrumentName={item.instrument}
+              curNoteToModify={
+                curTrackInfos.modifiedNote !== null
+                  ? curTrackInfos.modifiedNote.trackDataKey === item.dataKey
+                    ? curTrackInfos.modifiedNote
+                    : null
+                  : null
+              }
+              midiClips={item.midiClips}
+            />
           );
         })}
       </div>
-      <ArrangementCanvas />
+      <ArrangementCanvas
+        midiClips={curTrackInfos.tracks
+          .map((track) => {
+            return track.midiClips;
+          })
+          .flat()}
+      />
     </div>
-   );
+  );
 }
 
 export default ArrangementView;

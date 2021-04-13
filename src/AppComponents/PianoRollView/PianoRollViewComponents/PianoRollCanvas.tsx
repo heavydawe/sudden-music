@@ -4,7 +4,9 @@ import { Layer, Stage, Rect, Line } from "react-konva";
 import Note from "./Note";
 import { getPositionX, getPositionY } from "../../GetPositionFunctions";
 import "./PianoRollCanvas.css";
-import { MidiNote, NoteRectProps } from "../../Interfaces";
+import { MidiClip, MidiNote, NoteRectProps } from "../../Interfaces";
+import { useDispatch } from "react-redux";
+import { addNewNote, deleteNote, updateNote } from "../../Actions";
 
 function checkDeselect(
   e: KonvaEventObject<MouseEvent | TouchEvent>,
@@ -68,12 +70,13 @@ function getNoteInfo(
   blockSnapSize: number,
   blockSnapSizeToTick: number
 ) {
-  console.log(
-    getNoteName(119 - posY / tileHeight),
-    getNoteStartTime(posX / blockSnapSize, blockSnapSizeToTick).toString() +
-      "i",
-    getNoteDuration(length, blockSnapSizeToTick).toString() + "i"
-  );
+  // console.log(posX, posY, length);
+
+  return {
+    noteName: getNoteName(119 - posY / tileHeight),
+    startTime: getNoteStartTime(posX / blockSnapSize, blockSnapSizeToTick),
+    noteDuration: getNoteDuration(length, blockSnapSizeToTick),
+  };
 }
 
 function getNotePosY(noteName: string, tileHeight: number) {
@@ -146,11 +149,11 @@ function initNotes(
     console.log(
       getNotePosX(note.startTime, blockSnapSizeToTick) * blockSnapSize,
       getNotePosY(note.note, tileHeight),
-      getNoteWidth(note.length, blockSnapSizeToTick) * blockSnapSize
+      getNoteWidth(note.length, blockSnapSizeToTick)
     );
 
     initedNotes.push({
-      dataKey: note.datakey,
+      dataKey: note.dataKey,
       posX: getNotePosX(note.startTime, blockSnapSizeToTick) * blockSnapSize,
       posY: getNotePosY(note.note, tileHeight),
       width: getNoteWidth(note.length, blockSnapSizeToTick),
@@ -164,25 +167,29 @@ function initDataKey(notes: MidiNote[]) {
   if (notes.length === 0) {
     return 0;
   } else {
-    return Math.max.apply(
-      Math,
-      notes.map((note) => {
-        return note.datakey;
-      })
+    return (
+      Math.max.apply(
+        Math,
+        notes.map((note) => {
+          return note.dataKey;
+        })
+      ) + 1
     );
   }
 }
 
 interface Props {
-  notes: MidiNote[];
+  midiClip: MidiClip;
 }
 
 function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
+  console.log("new MIDI IN CANV", props.midiClip);
   const tileHeight = 25 + 1; // + 1 -> margins and gaps
   const numOfMeasures = 4; // How many measures long the piano roll should be
   const gridPadding = 16; // 1 / gridPadding -> density of the grids in a measure
   const blockSnapSizeToTick = 192 / (gridPadding / 4);
+  const dispatch = useDispatch();
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth =
@@ -207,11 +214,18 @@ function PianoRollCanvas(props: Props) {
   // only saves starting position and sizes, as the canvas will do the rerendering, no need for state change here
   // only needed for tracking existing notes' keys
   const [curNotesRect, setCurNotesRect] = useState<NoteRectProps[]>(
-    initNotes(props.notes, tileHeight, blockSnapSize, blockSnapSizeToTick)
+    initNotes(
+      props.midiClip.notes,
+      tileHeight,
+      blockSnapSize,
+      blockSnapSizeToTick
+    )
   );
 
+  console.log("PIANO CANVAS RENDER", curNotesRect);
+
   const [keyGenerator, setKeyGenerator] = useState<number>(
-    initDataKey(props.notes)
+    initDataKey(props.midiClip.notes)
   );
   const [selectedNoteId, selectNoteId] = useState<number>(-1);
 
@@ -269,7 +283,11 @@ function PianoRollCanvas(props: Props) {
         key="pianoRollBody"
         width={canvasWidth + 2} // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
-        onMouseDown={(e) => checkDeselect(e, selectNoteId)}
+        onMouseDown={(e) => {
+          if (selectedNoteId !== -1) {
+            checkDeselect(e, selectNoteId);
+          }
+        }}
         //onTouchStart={checkDeselect}
         onDblClick={(e) => {
           if (e.target.getAttr("dataKey") === undefined) {
@@ -278,44 +296,72 @@ function PianoRollCanvas(props: Props) {
               .copy()
               .invert();
             const pos = e.currentTarget.getStage()!.getPointerPosition()!;
+
+            const posX = getPositionX(
+              transform.point(pos).x,
+              4 * blockSnapSize,
+              canvasWidth,
+              blockSnapSize,
+              true
+            );
+
+            const posY = getPositionY(
+              transform.point(pos).y,
+              canvasHeight,
+              tileHeight,
+              true
+            );
+
             setCurNotesRect([
               ...curNotesRect,
               {
                 dataKey: keyGenerator,
-                posX: getPositionX(
-                  transform.point(pos).x,
-                  4 * blockSnapSize,
-                  canvasWidth,
-                  blockSnapSize,
-                  true
-                ),
-                posY: getPositionY(
-                  transform.point(pos).y,
-                  canvasHeight,
-                  tileHeight,
-                  true
-                ),
+                posX: posX,
+                posY: posY,
                 width: 4,
               },
             ]);
-            getNoteInfo(
-              getPositionX(
-                transform.point(pos).x,
-                4 * blockSnapSize,
-                canvasWidth,
-                blockSnapSize,
-                true
-              ),
-              getPositionY(
-                transform.point(pos).y,
-                canvasHeight,
-                tileHeight,
-                true
-              ),
+            // getNoteInfo(
+            //   getPositionX(
+            //     transform.point(pos).x,
+            //     4 * blockSnapSize,
+            //     canvasWidth,
+            //     blockSnapSize,
+            //     true
+            //   ),
+            //   getPositionY(
+            //     transform.point(pos).y,
+            //     canvasHeight,
+            //     tileHeight,
+            //     true
+            //   ),
+            //   4,
+            //   tileHeight,
+            //   blockSnapSize,
+            //   blockSnapSizeToTick
+            // );
+
+            const newNoteInfo = getNoteInfo(
+              posX,
+              posY,
               4,
               tileHeight,
               blockSnapSize,
               blockSnapSizeToTick
+            );
+            dispatch(
+              addNewNote({
+                midiClipDataKey: props.midiClip.dataKey,
+                noteDataKey: keyGenerator,
+                trackDataKey: props.midiClip.trackKey,
+                type: "ADD",
+                newNoteProps: {
+                  dataKey: keyGenerator,
+                  length: newNoteInfo.noteDuration,
+                  note: newNoteInfo.noteName,
+                  startTime: newNoteInfo.startTime,
+                },
+              })
             );
             setKeyGenerator(keyGenerator + 1);
           }
@@ -330,9 +376,36 @@ function PianoRollCanvas(props: Props) {
           key="notesLayer"
           onClick={(e) => {
             if (e.evt.button === 2) {
+
+              const curDataKey = e.target.getAttr("dataKey");
+
+              const noteToDeleteInfo = getNoteInfo(
+                e.target.x(),
+                e.target.y(),
+                4,
+                tileHeight,
+                blockSnapSize,
+                blockSnapSizeToTick
+              );
+
+              dispatch(
+                deleteNote({
+                  midiClipDataKey: props.midiClip.dataKey,
+                  noteDataKey: curDataKey,
+                  trackDataKey: props.midiClip.trackKey,
+                  type: "DELETE",
+                  newNoteProps: {
+                    dataKey: curDataKey,
+                    length: noteToDeleteInfo.noteDuration,
+                    note: noteToDeleteInfo.noteName,
+                    startTime: noteToDeleteInfo.startTime,
+                  },
+                })
+              );
+
               setCurNotesRect(
                 curNotesRect.filter(
-                  (item) => item.dataKey !== e.target.getAttr("dataKey")
+                  (item) => item.dataKey !== curDataKey
                 )
               );
             }
@@ -352,15 +425,45 @@ function PianoRollCanvas(props: Props) {
                   canvasWidth: canvasWidth,
                   canvasHeight: canvasHeight,
                   blockSnapSize: blockSnapSize,
-                  tileHeight: tileHeight,
+                  trackOrTileHeight: tileHeight,
                 }}
                 isSelected={item.dataKey === selectedNoteId}
                 handleSelect={() => {
-                  selectNoteId(item.dataKey);
+                  if (selectedNoteId !== item.dataKey) {
+                    selectNoteId(item.dataKey);
+                  }
                 }}
                 changeSize={(newSize) => {
+                  if (newSize === curNotesRect[i].width) {
+                    return;
+                  }
+
                   const newCurNotesRect = curNotesRect.slice();
                   newCurNotesRect[i].width = newSize;
+                  const noteToUpdateInfo = getNoteInfo(
+                    newCurNotesRect[i].posX,
+                    newCurNotesRect[i].posY,
+                    newSize,
+                    tileHeight,
+                    blockSnapSize,
+                    blockSnapSizeToTick
+                  );
+
+                  dispatch(
+                    updateNote({
+                      midiClipDataKey: props.midiClip.dataKey,
+                      noteDataKey: newCurNotesRect[i].dataKey,
+                      trackDataKey: props.midiClip.trackKey,
+                      type: "UPDATE",
+                      newNoteProps: {
+                        dataKey: newCurNotesRect[i].dataKey,
+                        length: noteToUpdateInfo.noteDuration,
+                        note: noteToUpdateInfo.noteName,
+                        startTime: noteToUpdateInfo.startTime,
+                      },
+                    })
+                  );
+
                   setCurNotesRect(newCurNotesRect);
                 }}
                 changePos={(newPosX: number, newPosY: number) => {
@@ -374,6 +477,31 @@ function PianoRollCanvas(props: Props) {
                   const newCurNotesRect = curNotesRect.slice();
                   newCurNotesRect[i].posX = newPosX;
                   newCurNotesRect[i].posY = newPosY;
+
+                  const noteToUpdateInfo = getNoteInfo(
+                    newPosX,
+                    newPosY,
+                    newCurNotesRect[i].width,
+                    tileHeight,
+                    blockSnapSize,
+                    blockSnapSizeToTick
+                  );
+
+                  dispatch(
+                    updateNote({
+                      midiClipDataKey: props.midiClip.dataKey,
+                      noteDataKey: newCurNotesRect[i].dataKey,
+                      trackDataKey: props.midiClip.trackKey,
+                      type: "UPDATE",
+                      newNoteProps: {
+                        dataKey: newCurNotesRect[i].dataKey,
+                        length: noteToUpdateInfo.noteDuration,
+                        note: noteToUpdateInfo.noteName,
+                        startTime: noteToUpdateInfo.startTime,
+                      },
+                    })
+                  );
+
                   setCurNotesRect(newCurNotesRect);
                 }}
               />

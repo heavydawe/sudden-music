@@ -2,14 +2,7 @@ import Konva from "konva";
 import { useRef, useEffect } from "react";
 import { Rect, Transformer } from "react-konva";
 import { getPositionX, getPositionY } from "../../GetPositionFunctions";
-import { ShapeProps } from "../../Interfaces";
-
-interface CanvasProps {
-  canvasWidth: number;
-  canvasHeight: number;
-  blockSnapSize: number;
-  tileHeight: number;
-}
+import { ShapeProps, CanvasProps } from "../../Interfaces";
 
 interface Props {
   dataKey: number;
@@ -26,7 +19,7 @@ function Note(props: Props) {
   const canvasWidth = props.canvasProps.canvasWidth;
   const canvasHeight = props.canvasProps.canvasHeight;
   const blockSnapSize = props.canvasProps.blockSnapSize;
-  const tileHeight = props.canvasProps.tileHeight;
+  const tileHeight = props.canvasProps.trackOrTileHeight;
 
   const noteRef = useRef<Konva.Rect>(null);
   const trRefNote = useRef<Konva.Transformer>(null);
@@ -51,6 +44,11 @@ function Note(props: Props) {
         stroke="black"
         draggable={true}
         ref={noteRef}
+        onDragStart={(e) => {
+          if (e.evt.button === 0) {
+            props.handleSelect();
+          }
+        }}
         onClick={(e) => {
           if (e.evt.button === 0) {
             props.handleSelect();

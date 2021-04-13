@@ -1,13 +1,77 @@
-export const selectNewView = (newView: string) => {
+import { MidiClip, ModifyMidiClip, ModifyNote } from "../Interfaces";
+
+export const addNewTracks = () => {
   return {
-    type: "SELECT_VIEW",
-    payload: newView,
+    type: "ADD_NEW_TRACK",
+    payload: "todo",
   };
 };
 
-export const addToTest = (namespace: string, newKey: string, newValue: number) => {
+export const renameTrack = (trackKey: number, newName: string) => {
   return {
-    type: `${namespace}/ADD_NEW`,
-    payload: { key: newKey, value: newValue },
+    type: "CHANGE_TRACK_NAME",
+    trackIndex: trackKey,
+    payload: newName,
   };
 };
+
+export const selectMidiClip = (selectedMidiClip: MidiClip) => {
+  return {
+    type: "SELECT_MIDI_CLIP",
+    payload: selectedMidiClip,
+  };
+};
+
+export const deselectMidiClip = () => {
+  return {
+    type: "DESELECT_MIDI_CLIP",
+  };
+};
+
+export const addNewMidiClip = (modifyMidiClip: ModifyMidiClip) => {
+  return {
+    type: "ADD_MIDI_CLIP",
+    trackIndex: modifyMidiClip.trackDataKey,
+    modifyMidiClip: modifyMidiClip,
+  };
+};
+
+export const deleteMidiClip = (modifyMidiClip: ModifyMidiClip) => {
+  return {
+    type: "DELETE_MIDI_CLIP",
+    trackIndex: modifyMidiClip.trackDataKey,
+    modifyMidiClip: modifyMidiClip,
+  };
+};
+
+export const updateMidiClip = (modifyMidiClip: ModifyMidiClip) => {
+  return {
+    type: "UPDATE_MIDI_CLIP",
+    trackIndex: modifyMidiClip.trackDataKey,
+    modifyMidiClip: modifyMidiClip,
+  };
+};
+
+export const addNewNote = (modifyNote: ModifyNote) => {
+  return {
+    type: "ADD_NOTE",
+    trackIndex: modifyNote.trackDataKey,
+    modifyNote: modifyNote,
+  }
+}
+
+export const deleteNote = (modifyNote: ModifyNote) => {
+  return {
+    type: "DELETE_NOTE",
+    trackIndex: modifyNote.trackDataKey,
+    modifyNote: modifyNote,
+  }
+}
+
+export const updateNote = (modifyNote: ModifyNote) => {
+  return {
+    type: "UPDATE_NOTE",
+    trackIndex: modifyNote.trackDataKey,
+    modifyNote: modifyNote,
+  }
+}

@@ -2,33 +2,24 @@ import Konva from "konva";
 import { Rect, Transformer } from "react-konva";
 import { useRef, useEffect } from "react";
 import { getPositionX, getPositionY } from '../../GetPositionFunctions';
-import { ShapeProps } from "../../Interfaces";
+import { ShapeProps, CanvasProps } from "../../Interfaces";
 
 interface Props {
   dataKey: number;
   shapeProps: ShapeProps;
   isSelected: boolean;
+  canvasProps: CanvasProps;
   handleSelect: () => void;
   changeSize: (newSize: number) => void;
-  changeView: (newView: string) => void;
   changePos: (newPosX: number, newPosY: number) => void;
 }
 
 function MidiClip(props: Props) {
-  // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
-  const trackHeight = 100 + 2; // + 1 -> margins and gaps
-  const numOfTracks = 2;
-  const numOfMeasures = 4; // How many measures long the piano roll should be
-  const gridPadding = 16; // 1 / gridPadding -> density of the grids
 
-  // should be a hardcoded "4", so the first 4 measure will fit on the screen no porblem
-  const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
-  // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigate
-
-  const canvasHeight = trackHeight * numOfTracks + 1; //only show the neccessary ammount of rows
-
-  // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
-  const blockSnapSize = Math.round(canvasWidth / (numOfMeasures * gridPadding));
+  const canvasWidth = props.canvasProps.canvasWidth;
+  const canvasHeight = props.canvasProps.canvasHeight;
+  const blockSnapSize = props.canvasProps.blockSnapSize;
+  const trackHeight = props.canvasProps.trackOrTileHeight;
 
   const midiClipRef = useRef<Konva.Rect>(null);
   const trRefMidi = useRef<Konva.Transformer>(null);
@@ -51,6 +42,11 @@ function MidiClip(props: Props) {
         height={trackHeight}
         fill="grey"
         draggable={true}
+        onDragStart={(e) => {
+          if (e.evt.button === 0) {
+            props.handleSelect();
+          }
+        }}
         onClick={(e) => {
           if (e.evt.button === 0) {
             props.handleSelect();
@@ -89,9 +85,6 @@ function MidiClip(props: Props) {
           } else {
             props.changeSize(newSize);
           }
-        }}
-        onDblClick={(e) => {
-          props.changeView("piano");
         }}
       />
       {props.isSelected && (
