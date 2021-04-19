@@ -3,6 +3,7 @@ import "./ArrangementView.css";
 import ArrangementCanvas from "./ArrangementViewComponents/ArrangementCanvas";
 import { Rootstate } from "../Interfaces";
 import { useSelector } from "react-redux";
+import addButton from "../Icons/addButton.png"
 // import { useState } from "react";
 
 function ArrangementView() {
@@ -36,6 +37,7 @@ function ArrangementView() {
             />
           );
         })}
+        <button><img src={addButton} alt="" width="15px"></img>Add new</button>
       </div>
       <ArrangementCanvas
         midiClips={curTrackInfos.tracks

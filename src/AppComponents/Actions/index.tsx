@@ -15,6 +15,26 @@ export const renameTrack = (trackKey: number, newName: string) => {
   };
 };
 
+export const changeInstrument = (trackKey: number, newInstrumentName: string) => {
+  return {
+    type: "CHANGE_INSTRUMENT",
+    trackIndex: trackKey,
+    payload: newInstrumentName,
+  };
+};
+
+export const clearModifyNote = () => {
+  return {
+    type: "CLEAR_MODIFY_NOTE"
+  }
+}
+
+export const clearModifyMidiclip = () => {
+  return {
+    type: "CLEAR_MODIFY_MIDICLIP"
+  }
+}
+
 export const selectMidiClip = (selectedMidiClip: MidiClip) => {
   return {
     type: "SELECT_MIDI_CLIP",

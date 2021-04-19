@@ -1,5 +1,5 @@
 import { Stage, Line, Layer, Rect } from "react-konva";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MidiClip from "./MidiClip";
 import { getPositionX, getPositionY } from "../../GetPositionFunctions";
 import {
@@ -16,6 +16,8 @@ import {
   deleteMidiClip,
   updateMidiClip,
 } from "../../Actions";
+import Konva from "konva";
+import * as Tone from "tone";
 
 function getMidiClipStartTime(
   posX: number,
@@ -64,6 +66,8 @@ function ArrangementCanvas(props: Props) {
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
   const blockSnapSizeToTick = 192 / (gridPadding / 4);
   const dispatch = useDispatch();
+  const curPositionRef = useRef<Konva.Rect>(null);
+  const curPositionLayer = useRef<Konva.Layer>(null);
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
@@ -124,6 +128,25 @@ function ArrangementCanvas(props: Props) {
       />
     );
   }
+
+  useEffect(() => {
+    Tone.Transport.scheduleRepeat((time) => {
+      Tone.Draw.schedule(() => {
+        curPositionRef.current!.position({x: curPositionRef.current!.x() + blockSnapSize, y: 0});
+        curPositionLayer.current!.draw();
+      }, time);
+    }, "4n");
+  }, [blockSnapSize]);
+
+  const curPositionRect = <Rect 
+    x={0}
+    y={0}
+    width={blockSnapSize}
+    height={canvasHeight}
+    fill="orange"
+    opacity={0.7}
+    ref={curPositionRef}
+  />
 
   return (
     <div key="arrangementCanvas" className="stageClass">
@@ -197,6 +220,7 @@ function ArrangementCanvas(props: Props) {
       >
         <Layer key="arrangementDarkMeasures">{darkMeasureRects}</Layer>
         <Layer key="arrangementGridLines">{gridLines}</Layer>
+        <Layer key="curPosition" ref={curPositionLayer}>{curPositionRect}</Layer>
         <Layer
           key="arrangementMidiClips"
           onClick={(e) => {

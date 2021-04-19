@@ -10,35 +10,35 @@ const CurTracksReducer = (
       {
         dataKey: 0,
         color: "blue",
-        instrument: "polySynth",
+        instrument: "PolySynth",
         midiClips: [],
         name: "test_a",
       },
       {
         dataKey: 1,
         color: "blue",
-        instrument: "polySynth",
+        instrument: "PolySynth",
         midiClips: [],
         name: "test_b",
       },
       {
         dataKey: 2,
         color: "blue",
-        instrument: "polySynth",
+        instrument: "PolySynth",
         midiClips: [],
         name: "test_0",
       },
       {
         dataKey: 3,
         color: "blue",
-        instrument: "polySynth",
+        instrument: "PolySynth",
         midiClips: [],
         name: "test_1",
       },
       {
         dataKey: 4,
         color: "red",
-        instrument: "polySynth",
+        instrument: "PolySynth",
         midiClips: [],
         name: "test_2",
       },
@@ -79,6 +79,32 @@ const CurTracksReducer = (
           {
             ...state.tracks[action.trackIndex],
             name: action.payload,
+          },
+          ...state.tracks.slice(action.trackIndex + 1),
+        ],
+        modifiedNote: null,
+        modifiedMidiClip: null,
+      };
+
+    case "CLEAR_MODIFY_NOTE":
+      return {
+        ...state,
+        modifiedNote: null,
+      }
+
+    case "CLEAR_MODIFY_MIDICLIP":
+      return {
+        ...state,
+        modifiedMidiClip: null,
+      }
+
+    case "CHANGE_INSTRUMENT":
+      return {
+        tracks: [
+          ...state.tracks.slice(0, action.trackIndex),
+          {
+            ...state.tracks[action.trackIndex],
+            instrument: action.payload,
           },
           ...state.tracks.slice(action.trackIndex + 1),
         ],

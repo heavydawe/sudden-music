@@ -7,7 +7,9 @@ import PianoRollView from "./AppComponents/PianoRollView/PianoRollView";
 
 function App() {
   return (
-    <div className="App">
+    <div
+      className="App"
+    >
       <Header />
       <NavigationBar />
       <div>
@@ -15,6 +17,7 @@ function App() {
         <PianoRollView />
       </div>
       <Footer />
+      <button onClick={() => {}}>TEST</button>
     </div>
   );
 }

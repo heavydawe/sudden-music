@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import * as Tone from "tone";
-import "./NavigationBar.css"
+import "./NavigationBar.css";
+import playButton from "../Icons/playButton.png";
+import stopButton from "../Icons/stopButton.png";
 
 function initSong() {
-
   Tone.Transport.bpm.value = 125;
   // Tone.Transport.swing = 0;
   // Tone.Transport.PPQ = 192;
@@ -14,22 +15,27 @@ function initSong() {
   //   keys.triggerAttackRelease("C4", 0.05);
   // }, "8n");
 
-  const osc = new Tone.Oscillator().toDestination();
-  // repeated event every 8th note
-  Tone.Transport.scheduleRepeat((time) => {
-    // use the callback time to schedule events
-    osc.start(time).stop(time + 0.1);
-  }, "96i");
+  // const osc = new Tone.Oscillator().toDestination();
+  // // repeated event every 8th note
+  // Tone.Transport.scheduleRepeat((time) => {
+  //   // use the callback time to schedule events
+  //   osc.start(time).stop(time + 0.1);
+  // }, "96i");
 }
 
-function playSong() {
-  Tone.start();   // make sure that audio context is running
-  Tone.Transport.start(); // 0.1 helps scheduling in advance
-  
-}
+// function pauseSong() {
+//   Tone.Transport.pause();
+// }
 
-function stopSong() {
-  Tone.Transport.stop();
+function togglePlay(buttonRef: React.RefObject<HTMLImageElement>) {
+  if (Tone.Transport.state === "stopped") {
+    buttonRef.current!.src = stopButton;
+    Tone.start();
+    Tone.Transport.start();
+  } else {
+    buttonRef.current!.src = playButton;
+    Tone.Transport.stop();
+  }
 }
 
 function NavigationBar() {
@@ -125,11 +131,21 @@ function NavigationBar() {
   //   //bassPart.humanize = true;
   // }
 
+  const playStopButtonRef = useRef<HTMLImageElement>(null);
+
+  document.onkeypress = (e) => {
+    if (e.key === " ") {
+      e.preventDefault();
+      togglePlay(playStopButtonRef);
+    }
+  };
+
   return (
     <nav>
       <button onClick={initSong}>INIT</button>
-      <button onClick={playSong}>PLAY</button>
-      <button onClick={stopSong}>STOP</button>
+      <button onClick={() => togglePlay(playStopButtonRef)}>
+        <img src={playButton} alt="Play" width="10px" ref={playStopButtonRef} />
+      </button>
     </nav>
   );
 }

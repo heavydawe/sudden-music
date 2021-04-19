@@ -81,3 +81,9 @@ export interface ModifyMidiClip {
   type: "ADD" | "DELETE" | "UPDATE";
   newMidiClipProps?: MidiClip;
 }
+
+export interface NoteEvent {
+  eventID: number;
+  midiClipDataKey: number;
+  noteDataKey: number;
+}
