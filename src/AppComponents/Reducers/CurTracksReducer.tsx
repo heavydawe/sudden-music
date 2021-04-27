@@ -50,23 +50,85 @@ const CurTracksReducer = (
     type: string;
     trackIndex: number;
     payload?: string;
-    // midiClip?: MidiClip;
+    modifyTrack?: TrackInterface;
     modifyNote?: ModifyNote;
     modifyMidiClip?: ModifyMidiClip;
   }
 ) => {
   switch (action.type) {
+    case "EXPORT_PROJECT":
+      const element = document.createElement("a");
+      const file = new Blob(
+        [
+          "!!!WARNING!!!\nDO NOT MODIFY THIS FILE OR THE PROJECT MIGHT NOT LOAD CORRECTLY!\n" +
+            JSON.stringify(state.tracks),
+        ],
+        { type: "text/plain" }
+      );
+      element.href = URL.createObjectURL(file);
+      element.download = "SuddenMusicProject.sudden";
+      element.click();
+
+      return state;
+
+    case "IMPORT_PROJECT":
+
+      if (action.payload === undefined) {
+        throw Error("Payload is missing when importing");
+      }
+
+      const fileParts = action.payload.split("\n");
+
+      if (fileParts.length !== 3) {
+        throw Error("File has been modified and cannot import it...");
+      }
+
+      const projectToImport = fileParts[2];
+
+      // TODO: fix piano roll then check importing again, midiclips were not showing correctly
+
+      try {
+        console.log(JSON.parse(projectToImport));
+        return {
+          tracks: JSON.parse(projectToImport),
+          modifiedNote: null,
+          modifiedMidiClip: null,
+        };
+      } catch (e) {
+        throw Error("Cannot parse JSON file, probably due to unwanted modifications to the file...");
+      }
+
     case "ADD_NEW_TRACK":
+      if (action.modifyTrack === undefined) {
+        throw Error("Track missing!");
+      }
+
+      const maxDataKey = state.tracks[state.tracks.length - 1].dataKey;
+
       return {
         tracks: [
           ...state.tracks,
           {
-            dataKey: 0,
-            name: "track_test",
-            color: "blue",
-            instrument: "polySynth",
+            dataKey: maxDataKey + 1,
+            name: action.modifyTrack.name,
+            color: action.modifyTrack.color,
+            instrument: action.modifyTrack!.instrument,
             midiClips: [],
           },
+        ],
+        modifiedNote: null,
+        modifiedMidiClip: null,
+      };
+
+    case "DELETE_TRACK":
+      const trackToDeleteIndex = state.tracks.findIndex(
+        (track) => track.dataKey === action.trackIndex
+      );
+
+      return {
+        tracks: [
+          ...state.tracks.slice(0, trackToDeleteIndex),
+          ...state.tracks.slice(trackToDeleteIndex + 1),
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
@@ -90,13 +152,13 @@ const CurTracksReducer = (
       return {
         ...state,
         modifiedNote: null,
-      }
+      };
 
     case "CLEAR_MODIFY_MIDICLIP":
       return {
         ...state,
         modifiedMidiClip: null,
-      }
+      };
 
     case "CHANGE_INSTRUMENT":
       return {
@@ -222,7 +284,8 @@ const CurTracksReducer = (
         const newTracks = state.tracks.slice();
 
         // Make a copy of the midiClip that needs to be moved
-        const midiClipToCopy = state.tracks[action.trackIndex].midiClips[midiClipToUpdateIndex];
+        const midiClipToCopy =
+          state.tracks[action.trackIndex].midiClips[midiClipToUpdateIndex];
 
         // TrackKey changed, so delete midiClip from old track
         newTracks[action.trackIndex].midiClips = [

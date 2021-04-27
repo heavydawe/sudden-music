@@ -3,6 +3,7 @@ import * as Tone from "tone";
 import "./NavigationBar.css";
 import playButton from "../Icons/playButton.png";
 import stopButton from "../Icons/stopButton.png";
+import pauseButton from "../Icons/pauseButton.png";
 
 function initSong() {
   Tone.Transport.bpm.value = 125;
@@ -142,9 +143,11 @@ function NavigationBar() {
 
   return (
     <nav>
-      <button onClick={initSong}>INIT</button>
       <button onClick={() => togglePlay(playStopButtonRef)}>
         <img src={playButton} alt="Play" width="10px" ref={playStopButtonRef} />
+      </button>
+      <button>
+        <img src={pauseButton} alt="Pause" width="10px"/>
       </button>
     </nav>
   );

@@ -20,4 +20,94 @@
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
   height: 100px;
+  font-weight: bold;
+}
+
+.addNewTrackButton {
+  background-color: transparent;
+  display: table-cell;
+  vertical-align: middle;
+  border-radius: 10px;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+  transition: letter-spacing 0.5s;
+}
+
+.addNewTrackButton:hover {
+  letter-spacing: 1px;
+}
+
+.addNewTrackImg {
+  padding-right: 10px;
+  vertical-align: middle;
+}
+
+.newTrackModal {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  background-color: gray;
+  width: 350px;
+  height: 20%;
+  border-radius: 25px;
+  margin-left: -175px;
+  animation: showPopUp 0.5s ease-in-out 1 forwards;
+}
+
+@keyframes showPopUp {
+  0% {
+    transform: scale(0);
+  }
+
+  75% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.newTrackModal label {
+  padding: 40px;
+}
+
+.newTrackModal input {
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+.newTrackModal select {
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.newTrackModal button {
+  margin: 3px;
+  padding: 5px;
+  border-radius: 10px;
+  border: none;
+  position: absolute;
+  cursor: pointer;
+  transition: background-color 0.5s, padding 0.2s;
+}
+
+.newTrackModal button:hover {
+  background-color: yellow;
+  padding: 4px;
+}
+
+.newTrackModalAddButton {
+  bottom: 10px;
+  right: 20px;
+}
+
+.newTrackModalCancelButton {
+  bottom: 10px;
+  left: 20px;
 }

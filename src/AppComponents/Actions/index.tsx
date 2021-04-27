@@ -1,11 +1,18 @@
-import { MidiClip, ModifyMidiClip, ModifyNote } from "../Interfaces";
+import { MidiClip, ModifyMidiClip, ModifyNote, TrackInterface } from "../Interfaces";
 
-export const addNewTracks = () => {
+export const addNewTrack = (newTrack: TrackInterface) => {
   return {
     type: "ADD_NEW_TRACK",
-    payload: "todo",
+    modifyTrack: newTrack,
   };
 };
+
+export const deleteTrack = (trackToDeleteDataKey: number) => {
+  return {
+    type: "DELETE_TRACK",
+    trackIndex: trackToDeleteDataKey,
+  }
+}
 
 export const renameTrack = (trackKey: number, newName: string) => {
   return {
@@ -93,5 +100,18 @@ export const updateNote = (modifyNote: ModifyNote) => {
     type: "UPDATE_NOTE",
     trackIndex: modifyNote.trackDataKey,
     modifyNote: modifyNote,
+  }
+}
+
+export const exportProject = () => {
+  return {
+    type: "EXPORT_PROJECT",
+  }
+}
+
+export const importProject = (inputFile: string) => {
+  return {
+    type: "IMPORT_PROJECT",
+    payload: inputFile,
   }
 }

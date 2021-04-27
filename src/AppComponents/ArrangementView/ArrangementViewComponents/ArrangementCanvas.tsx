@@ -53,6 +53,7 @@ function getMidiClipFromRect(
 
 interface Props {
   midiClips: MidiClipInterface[];
+  numOfTracks: number;
 }
 
 function ArrangementCanvas(props: Props) {
@@ -61,7 +62,7 @@ function ArrangementCanvas(props: Props) {
   console.log("IN ARR CANVAS");
 
   const trackHeight = 100 + 2; // + 1 -> margins and gaps
-  const numOfTracks = 5;
+  const numOfTracks = props.numOfTracks;
   const numOfMeasures = 4; // How many measures long the piano roll should be
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
   const blockSnapSizeToTick = 192 / (gridPadding / 4);
@@ -132,21 +133,26 @@ function ArrangementCanvas(props: Props) {
   useEffect(() => {
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
-        curPositionRef.current!.position({x: curPositionRef.current!.x() + blockSnapSize, y: 0});
+        curPositionRef.current!.position({
+          x: curPositionRef.current!.x() + blockSnapSize,
+          y: 0,
+        });
         curPositionLayer.current!.draw();
       }, time);
     }, "4n");
   }, [blockSnapSize]);
 
-  const curPositionRect = <Rect 
-    x={0}
-    y={0}
-    width={blockSnapSize}
-    height={canvasHeight}
-    fill="orange"
-    opacity={0.7}
-    ref={curPositionRef}
-  />
+  const curPositionRect = (
+    <Rect
+      x={0}
+      y={0}
+      width={blockSnapSize}
+      height={canvasHeight}
+      fill="orange"
+      opacity={0.7}
+      ref={curPositionRef}
+    />
+  );
 
   return (
     <div key="arrangementCanvas" className="stageClass">
@@ -220,7 +226,9 @@ function ArrangementCanvas(props: Props) {
       >
         <Layer key="arrangementDarkMeasures">{darkMeasureRects}</Layer>
         <Layer key="arrangementGridLines">{gridLines}</Layer>
-        <Layer key="curPosition" ref={curPositionLayer}>{curPositionRect}</Layer>
+        <Layer key="curPosition" ref={curPositionLayer}>
+          {curPositionRect}
+        </Layer>
         <Layer
           key="arrangementMidiClips"
           onClick={(e) => {
@@ -239,7 +247,7 @@ function ArrangementCanvas(props: Props) {
                     )!.posY,
                     trackHeight
                   ),
-                  type: "DELETE"
+                  type: "DELETE",
                 })
               );
 
@@ -315,12 +323,14 @@ function ArrangementCanvas(props: Props) {
                   // TODO:
                   // WHEN WE MOVE MIDICLIP, WE NEED AN OTHER PROP: prevTrackKey, or stmh like that
                   // ALSO a ModifyMidiClip interface would be nice, to again, optimize the Track component
-                  dispatch(updateMidiClip({
-                    midiClipDataKey: newMidiClip.dataKey,
-                    trackDataKey: newMidiClip.trackKey,
-                    type: "UPDATE",
-                    newMidiClipProps: newMidiClip
-                  }));
+                  dispatch(
+                    updateMidiClip({
+                      midiClipDataKey: newMidiClip.dataKey,
+                      trackDataKey: newMidiClip.trackKey,
+                      type: "UPDATE",
+                      newMidiClipProps: newMidiClip,
+                    })
+                  );
                   setCurMidiClipsRect(newCurNotes);
                 }}
                 changePos={(newPosX: number, newPosY: number) => {
@@ -353,12 +363,14 @@ function ArrangementCanvas(props: Props) {
                     blockSnapSizeToTick
                   );
 
-                  dispatch(updateMidiClip({
-                    midiClipDataKey: newMidiClip.dataKey,
-                    trackDataKey: prevTrackKey,
-                    type: "UPDATE",
-                    newMidiClipProps: newMidiClip
-                  }));
+                  dispatch(
+                    updateMidiClip({
+                      midiClipDataKey: newMidiClip.dataKey,
+                      trackDataKey: prevTrackKey,
+                      type: "UPDATE",
+                      newMidiClipProps: newMidiClip,
+                    })
+                  );
                   setCurMidiClipsRect(newCurMidiClipsRect);
                 }}
               />

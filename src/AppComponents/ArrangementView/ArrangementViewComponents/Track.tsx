@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as Tone from "tone";
-import { clearModifyNote } from "../../Actions";
+import { clearModifyNote, deleteTrack } from "../../Actions";
 import {
   MidiClip,
   ModifyMidiClip,
@@ -9,6 +9,8 @@ import {
   NoteEvent,
 } from "../../Interfaces";
 import { getInstrument, Instrument, updateCurEvents } from "./TrackFunctions";
+import "./Track.css";
+import deleteButton from "../../Icons/deleteButton.png";
 
 interface Props {
   dataKey: number;
@@ -69,15 +71,19 @@ const Track = React.memo((props: Props) => {
         startTime: `+${note.startTime}i`,
       };
     });
-  
+
     if (Tone.Transport.state === "started") {
       Tone.Transport.stop();
     }
 
     Tone.Transport.cancel(0);
     Tone.Transport.scheduleRepeat(() => {
-      tempArr.forEach(item => {
-        const eventID = curInstrument.triggerAttackRelease(item.note, item.duration, item.startTime);
+      tempArr.forEach((item) => {
+        const eventID = curInstrument.triggerAttackRelease(
+          item.note,
+          item.duration,
+          item.startTime
+        );
         console.log(eventID);
       });
     }, "1m");
@@ -115,7 +121,17 @@ const Track = React.memo((props: Props) => {
   // pianoPart.loop = true;
   // pianoPart.loopEnd = "4m";
 
-  return <div className="trackHeader">{props.trackName}</div>;
+  return (
+    <div className="trackHeader">
+      {props.trackName}
+      <button
+        className="trackHeaderDeleteButton"
+        onClick={() => dispatch(deleteTrack(props.dataKey))}
+      >
+        <img className="deleteButtonImg" src={deleteButton} alt="X" />
+      </button>
+    </div>
+  );
 });
 
 export default Track;

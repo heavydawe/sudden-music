@@ -27,15 +27,22 @@ function PianoRollView() {
   console.log("new MIDI CLIP", selectedMidiClip); 
   // TODO: piano roll needs to update correctly, when a new midi clip is selected
 
+  // return (
+  //   <div key="gridContainer" className="gridContainer">
+  //     <PianoTiles />
+  //     <PianoRollCanvas midiClip={selectedMidiClip === null ? {dataKey: -1, notes: [], length: 0, startTime: 0, trackKey: 0} : selectedMidiClip} />
+  //   </div>
+  // );
+
   return (
     <>
-      {selectedMidiClip !== null && (
-        <div key="gridContainer" className="gridContainer">
-          <PianoTiles />
-          <PianoRollCanvas midiClip={selectedMidiClip} />
-        </div>
-      )}
-    </>
+    {selectedMidiClip !== null && (
+      <div key="gridContainer" className="gridContainer">
+        <PianoTiles />
+        <PianoRollCanvas midiClip={selectedMidiClip} />
+      </div>
+    )}
+  </>
   );
 }
 

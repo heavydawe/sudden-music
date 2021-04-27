@@ -1,0 +1,22 @@
+.trackHeaderDeleteButton {
+  color: red;
+  float: right;
+  padding: 2px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.deleteButtonImg {
+  height: 20px;
+  width: 20px;
+  transition: filter 0.2s linear;
+}
+
+.deleteButtonImg:hover {
+  filter: invert();
+}
+
+.trackHeader {
+  padding-left: 10px;
+}

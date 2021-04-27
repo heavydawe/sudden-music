@@ -4,7 +4,7 @@ nav {
     linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 8%, rgb(180, 33, 62) 100%);
 }
 
-button {
+nav button {
   background: linear-gradient(90deg, black, grey, black);
   color: white;
   margin-top: 10px;
