@@ -3,6 +3,7 @@ import "./PianoRollView.css";
 import PianoRollCanvas from "./PianoRollViewComponents/PianoRollCanvas";
 import { Rootstate } from "../Interfaces";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 // const testNotes: MidiNote[] = [
 //   {
@@ -33,6 +34,10 @@ function PianoRollView() {
   //     <PianoRollCanvas midiClip={selectedMidiClip === null ? {dataKey: -1, notes: [], length: 0, startTime: 0, trackKey: 0} : selectedMidiClip} />
   //   </div>
   // );
+
+  useEffect(() => {
+    document.getElementById("piano60")?.scrollIntoView({behavior: "smooth"});
+  })
 
   return (
     <>

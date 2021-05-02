@@ -5,22 +5,12 @@
   padding: 0px;
   height: 80vh;
   width: 100vw;
-  overflow-y: hidden;
+  overflow: hidden;
 }
 
 .trackHeaderColumn {
   /* border-right: 2px dashed black; */
   background: linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 100%);
-}
-
-.trackHeader {
-  background: linear-gradient(90deg, rgb(23, 3, 56) 0%, rgb(46, 12, 167) 100%);
-  color: white;
-  border: 1px solid black;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-  height: 100px;
-  font-weight: bold;
 }
 
 .addNewTrackButton {
@@ -56,6 +46,7 @@
   border-radius: 25px;
   margin-left: -175px;
   animation: showPopUp 0.5s ease-in-out 1 forwards;
+  min-height: 200px;
 }
 
 @keyframes showPopUp {

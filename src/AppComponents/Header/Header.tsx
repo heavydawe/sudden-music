@@ -3,7 +3,7 @@ import './Header.css'
 
 function Header() {
   return (
-    <header>Sudden Music</header>
+    <header id="header">Sudden Music</header>
   );
 }
 

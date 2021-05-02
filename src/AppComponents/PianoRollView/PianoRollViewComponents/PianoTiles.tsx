@@ -5,7 +5,7 @@ function initPianoTile(
   note: string,
   octave: number,
   tileColor: string,
-  id: number
+  id: number,
 ) {
   pianoTiles.unshift(
     <div
@@ -13,6 +13,7 @@ function initPianoTile(
       id={"piano" + id.toString()}
       title={note + octave.toString()}
       key={"piano" + id.toString()}
+      ref={null}
       onClick={() => {
         console.log("ID: " + id + "; NOTE: " + note + octave.toString());
       }}
@@ -26,7 +27,6 @@ function PianoTiles() {
   const numberOfGridRows = 120;
 
   let pianoTiles: JSX.Element[] = [];
-  //const scrollStartRef = useRef<HTMLDivElement>(null);
 
   for (let i = 0; i < numberOfGridRows; i++) {
     switch (i % 12) {

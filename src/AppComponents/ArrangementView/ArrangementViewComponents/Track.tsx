@@ -11,6 +11,9 @@ import {
 import { getInstrument, Instrument, updateCurEvents } from "./TrackFunctions";
 import "./Track.css";
 import deleteButton from "../../Icons/deleteButton.png";
+import editButton from "../../Icons/editButton.png";
+import ReactModal from "react-modal";
+import NewTrackModal from "./NewTrackModal";
 
 interface Props {
   dataKey: number;
@@ -27,7 +30,8 @@ const Track = React.memo((props: Props) => {
 
   // Instrument should be created only once, and change when the user changes it
   const [curInstrument, setCurInstrument] = useState<Instrument>();
-  console.log(curInstrument);
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  // console.log(curInstrument);
 
   // We need MidiClipDataKey as well, because NoteDataKeys will only differ inside one MidiClip
   const [curEvents, setCurEvents] = useState<NoteEvent[]>([]);
@@ -123,13 +127,20 @@ const Track = React.memo((props: Props) => {
 
   return (
     <div className="trackHeader">
-      {props.trackName}
+      <span className="trackHeaderTitle">{props.trackName}</span>
+      <button
+        className="trackHeaderEditButton"
+        onClick={() => setIsEditOpen(true)}
+      >
+        <img src={editButton} alt="Edit" />
+      </button>
       <button
         className="trackHeaderDeleteButton"
         onClick={() => dispatch(deleteTrack(props.dataKey))}
       >
-        <img className="deleteButtonImg" src={deleteButton} alt="X" />
+        <img src={deleteButton} alt="X" />
       </button>
+      <NewTrackModal showModal={isEditOpen} setShowModal={setIsEditOpen} mode="edit" trackKey={props.dataKey} />
     </div>
   );
 });

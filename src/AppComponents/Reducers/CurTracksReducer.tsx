@@ -1,4 +1,4 @@
-import { ModifyMidiClip, ModifyNote, TrackInterface } from "../Interfaces";
+import { ModifyMidiClip, ModifyNote, TrackInterface, TrackProps } from "../Interfaces";
 
 const CurTracksReducer = (
   state: {
@@ -50,6 +50,7 @@ const CurTracksReducer = (
     type: string;
     trackIndex: number;
     payload?: string;
+    newTrackProps: TrackProps;
     modifyTrack?: TrackInterface;
     modifyNote?: ModifyNote;
     modifyMidiClip?: ModifyMidiClip;
@@ -72,7 +73,6 @@ const CurTracksReducer = (
       return state;
 
     case "IMPORT_PROJECT":
-
       if (action.payload === undefined) {
         throw Error("Payload is missing when importing");
       }
@@ -95,7 +95,9 @@ const CurTracksReducer = (
           modifiedMidiClip: null,
         };
       } catch (e) {
-        throw Error("Cannot parse JSON file, probably due to unwanted modifications to the file...");
+        throw Error(
+          "Cannot parse JSON file, probably due to unwanted modifications to the file..."
+        );
       }
 
     case "ADD_NEW_TRACK":
@@ -134,19 +136,31 @@ const CurTracksReducer = (
         modifiedMidiClip: null,
       };
 
-    case "CHANGE_TRACK_NAME":
+    case "CHANGE_TRACK_PROPS":
+
+      if (action.newTrackProps === undefined) {
+        throw Error("NewTrackProps is missing when editing track");
+      }
+
+      const trackToChangeIndex = state.tracks.findIndex(
+        (track) => track.dataKey === action.trackIndex
+      );
+
       return {
         tracks: [
-          ...state.tracks.slice(0, action.trackIndex),
+          ...state.tracks.slice(0, trackToChangeIndex),
           {
-            ...state.tracks[action.trackIndex],
-            name: action.payload,
+            ...state.tracks[trackToChangeIndex],
+            name: action.newTrackProps.name,
+            color: action.newTrackProps.color,
+            instrument: action.newTrackProps.instrument,
           },
-          ...state.tracks.slice(action.trackIndex + 1),
+          ...state.tracks.slice(trackToChangeIndex + 1),
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
       };
+
 
     case "CLEAR_MODIFY_NOTE":
       return {

@@ -1,22 +1,43 @@
-.trackHeaderDeleteButton {
-  color: red;
-  float: right;
-  padding: 2px;
+.trackHeader button {
+  position: absolute;
+  bottom: 2px;
+  padding: 0;
   background-color: transparent;
   border: none;
   cursor: pointer;
-}
-
-.deleteButtonImg {
-  height: 20px;
-  width: 20px;
+  border-radius: 10px;
   transition: filter 0.2s linear;
 }
 
-.deleteButtonImg:hover {
+.trackHeaderDeleteButton {
+  right: 2px;
+}
+
+.trackHeaderEditButton {
+  right: 25px;
+}
+
+.trackHeader img {
+  height: 20px;
+  width: 20px;
+}
+
+.trackHeader button:hover {
   filter: invert();
 }
 
 .trackHeader {
-  padding-left: 10px;
+  background: linear-gradient(90deg, rgb(23, 3, 56) 0%, rgb(46, 12, 167) 100%);
+  color: white;
+  border: 1px solid black;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+  height: 100px;
+  font-weight: bold;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.trackHeaderTitle {
+  width: 10px;
 }

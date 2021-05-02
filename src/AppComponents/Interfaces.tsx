@@ -58,6 +58,7 @@ export interface Rootstate {
   curTracks: {tracks: TrackInterface[], modifiedNote: ModifyNote};
   selectedMidiClip: MidiClip;
   modifyNote: ModifyNote;
+  curUser: string;
 }
 
 export interface CanvasProps {
@@ -86,4 +87,10 @@ export interface NoteEvent {
   eventID: number;
   midiClipDataKey: number;
   noteDataKey: number;
+}
+
+export interface TrackProps {
+  name: string;
+  instrument: string;
+  color: string;
 }

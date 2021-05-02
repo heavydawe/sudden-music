@@ -38,6 +38,7 @@ footer button:hover {
     border-radius: 25px;
     margin-left: -175px;
     animation: showPopUp 0.5s ease-in-out 1 forwards;
+    min-height: 200px;
 }
 
 @keyframes showPopUp {
@@ -92,4 +93,125 @@ footer button:hover {
 .prefModalSaveButton {
     bottom: 10px;
     right: 20px;
+}
+
+.signUpContainer {
+    display: grid;
+    height: 200px;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.signUpModal {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+    width: 500px;
+    height: 30%;
+    border-radius: 25px;
+    margin-left: -250px;
+    animation: showPopUp 0.5s ease-in-out 1 forwards;
+    min-height: 200px;
+}
+
+.signUpModal p {
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    padding: 10px 20px 0 0;
+    text-align: right;
+}
+
+.signUpModal input {
+    text-align: center;
+    margin: 4px;
+    padding: 5px 0 5px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+.signUpModal input:focus {
+    background-color: yellow;
+}
+
+.signUpModal button {
+    margin: 3px;
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+    position: absolute;
+    cursor: pointer;
+    transition: background-color 0.5s, padding 0.2s;
+}
+
+.signUpModal button:hover {
+    background-color: yellow;
+    padding: 4px;
+}
+
+.signUpModalCancelButton {
+    bottom: 10px;
+    left: 20px;
+}
+
+.signUpModalSignUpButton {
+    bottom: 10px;
+    right: 20px;
+}
+
+.signInContainer {
+    padding-top: 8%;
+    display: grid;
+    height: 200px;
+    grid-template-columns: 40% 60%;
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.signInModal {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+    width: 500px;
+    height: 20%;
+    border-radius: 25px;
+    margin-left: -250px;
+    animation: showPopUp 0.5s ease-in-out 1 forwards;
+    min-height: 200px;
+}
+
+.signInModal p {
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    padding: 10px 20px 0 0;
+    text-align: right;
+}
+
+.signInModal input {
+    text-align: center;
+    margin: 4px;
+    padding: 5px 0 5px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+.signInModal input:focus {
+    background-color: yellow;
+}
+
+.signInModal button {
+    margin: 3px;
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+    position: absolute;
+    cursor: pointer;
+    transition: background-color 0.5s, padding 0.2s;
+}
+
+.signInModal button:hover {
+    background-color: yellow;
+    padding: 4px;
 }

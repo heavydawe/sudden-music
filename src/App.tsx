@@ -1,20 +1,17 @@
-import { useDispatch } from "react-redux";
+// import { connectAdvanced, useDispatch } from "react-redux";
 import "./App.css";
-import { exportProject } from "./AppComponents/Actions";
 import ArrangementView from "./AppComponents/ArrangementView/ArrangementView";
+import { appAuth, appStore } from "./AppComponents/firebase";
 import Footer from "./AppComponents/Footer/Footer";
 import Header from "./AppComponents/Header/Header";
 import NavigationBar from "./AppComponents/NavigationBar/NavigationBar";
 import PianoRollView from "./AppComponents/PianoRollView/PianoRollView";
 
 function App() {
-
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   return (
-    <div
-      className="App"
-    >
+    <div className="App" id="App">
       <Header />
       <NavigationBar />
       <div>
@@ -22,7 +19,21 @@ function App() {
         <PianoRollView />
       </div>
       <Footer />
-      <button onClick={() => {dispatch(exportProject())}}>TEST</button>
+      <button
+        onClick={() => {
+          appStore
+            .collection("users")
+            .doc(appAuth.currentUser!.uid)
+            .get()
+            .then((doc) => {
+              console.log(doc.data()!.backGroundColor);
+            });
+        }}
+      >
+        FireStore
+      </button>
+      <button onClick={() => console.log(appAuth.currentUser)}>CUR USER</button>
+      <button onClick={() => document.getElementById("header")!.style.setProperty("background-color", "#212121")}>CSS change</button>
     </div>
   );
 }
