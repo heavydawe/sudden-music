@@ -6,6 +6,7 @@ import Footer from "./AppComponents/Footer/Footer";
 import Header from "./AppComponents/Header/Header";
 import NavigationBar from "./AppComponents/NavigationBar/NavigationBar";
 import PianoRollView from "./AppComponents/PianoRollView/PianoRollView";
+import * as Tone from "tone";
 
 function App() {
   // const dispatch = useDispatch();
@@ -33,6 +34,7 @@ function App() {
         FireStore
       </button>
       <button onClick={() => console.log(appAuth.currentUser)}>CUR USER</button>
+      <button onClick={() => console.log(Tone.Transport.state)}>Transport state</button>
       <button onClick={() => document.getElementById("header")!.style.setProperty("background-color", "#212121")}>CSS change</button>
     </div>
   );

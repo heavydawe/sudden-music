@@ -51,6 +51,25 @@ function getMidiClipFromRect(
   };
 }
 
+function initMidiClipRects(
+  midiClips: MidiClipInterface[],
+  blockSnapSize: number,
+  blockSnapSizeToTick: number,
+  trackHeight: number
+) {
+  const asd = midiClips.map((midiClip) => {
+    return {
+      dataKey: midiClip.dataKey,
+      posX: (midiClip.startTime / blockSnapSizeToTick) * blockSnapSize,
+      posY: midiClip.trackKey * trackHeight,
+      width: midiClip.length,
+    };
+  });
+
+  console.log("initMidi", asd);
+  return asd;
+}
+
 interface Props {
   midiClips: MidiClipInterface[];
   numOfTracks: number;
@@ -59,7 +78,7 @@ interface Props {
 function ArrangementCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
 
-  console.log("IN ARR CANVAS");
+  console.log("IN ARR CANVAS", props.midiClips);
 
   const trackHeight = 100 + 2; // + 1 -> margins and gaps
   const numOfTracks = props.numOfTracks;
@@ -83,9 +102,26 @@ function ArrangementCanvas(props: Props) {
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
 
   // Init correctly when a project is imported
+  // TODO: this state MIGHT be unneeded as we update the props after each action.
   const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>(
-    []
+    initMidiClipRects(
+      props.midiClips,
+      blockSnapSize,
+      blockSnapSizeToTick,
+      trackHeight
+    )
   );
+
+  useEffect(() => {
+    setCurMidiClipsRect(
+      initMidiClipRects(
+        props.midiClips,
+        blockSnapSize,
+        blockSnapSizeToTick,
+        trackHeight
+      )
+    );
+  }, [blockSnapSize, blockSnapSizeToTick, props.midiClips, trackHeight]);
 
   let gridLines: JSX.Element[] = [];
 
@@ -276,13 +312,15 @@ function ArrangementCanvas(props: Props) {
                   canvasWidth: canvasWidth,
                   trackOrTileHeight: trackHeight,
                 }}
-                handleSelect={() => {
+                handleSelect={(isDragging: boolean) => {
                   if (selectedMidiClipId !== item.dataKey) {
                     if (selectedMidiClipId !== -1) {
                       dispatch(deselectMidiClip());
                     }
 
                     selectMidiClipId(item.dataKey);
+                  }
+                  if (!isDragging) {
                     dispatch(
                       selectMidiClip(
                         getMidiClipFromRect(

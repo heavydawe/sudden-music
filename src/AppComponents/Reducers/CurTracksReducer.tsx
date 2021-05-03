@@ -1,4 +1,9 @@
-import { ModifyMidiClip, ModifyNote, TrackInterface, TrackProps } from "../Interfaces";
+import {
+  ModifyMidiClip,
+  ModifyNote,
+  TrackInterface,
+  TrackProps,
+} from "../Interfaces";
 
 const CurTracksReducer = (
   state: {
@@ -105,6 +110,22 @@ const CurTracksReducer = (
         throw Error("Track missing!");
       }
 
+      if (!state.tracks.length) {
+        return {
+          tracks: [
+            {
+              dataKey: 0,
+              name: action.modifyTrack.name,
+              color: action.modifyTrack.color,
+              instrument: action.modifyTrack!.instrument,
+              midiClips: [],
+            },
+          ],
+          modifiedNote: null,
+          modifiedMidiClip: null,
+        };
+      }
+
       const maxDataKey = state.tracks[state.tracks.length - 1].dataKey;
 
       return {
@@ -130,14 +151,24 @@ const CurTracksReducer = (
       return {
         tracks: [
           ...state.tracks.slice(0, trackToDeleteIndex),
-          ...state.tracks.slice(trackToDeleteIndex + 1),
+          ...state.tracks.slice(trackToDeleteIndex + 1).map((track) => {
+            return {
+              ...track,
+              dataKey: track.dataKey - 1,
+              midiClips: track.midiClips.map((midiClip) => {
+                return {
+                  ...midiClip,
+                  trackKey: midiClip.trackKey - 1,
+                };
+              }),
+            };
+          }),
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
       };
 
     case "CHANGE_TRACK_PROPS":
-
       if (action.newTrackProps === undefined) {
         throw Error("NewTrackProps is missing when editing track");
       }
@@ -160,7 +191,6 @@ const CurTracksReducer = (
         modifiedNote: null,
         modifiedMidiClip: null,
       };
-
 
     case "CLEAR_MODIFY_NOTE":
       return {

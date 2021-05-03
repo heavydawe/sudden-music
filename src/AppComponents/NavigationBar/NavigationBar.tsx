@@ -33,9 +33,11 @@ function togglePlay(buttonRef: React.RefObject<HTMLImageElement>) {
     buttonRef.current!.src = stopButton;
     Tone.start();
     Tone.Transport.start();
+    console.log("Started Transport");
   } else {
     buttonRef.current!.src = playButton;
     Tone.Transport.stop();
+    console.log("Stopped Transport");
   }
 }
 

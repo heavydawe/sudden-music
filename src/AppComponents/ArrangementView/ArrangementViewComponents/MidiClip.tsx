@@ -9,7 +9,7 @@ interface Props {
   shapeProps: ShapeProps;
   isSelected: boolean;
   canvasProps: CanvasProps;
-  handleSelect: () => void;
+  handleSelect: (isDragging: boolean) => void;
   changeSize: (newSize: number) => void;
   changePos: (newPosX: number, newPosY: number) => void;
 }
@@ -40,16 +40,19 @@ function MidiClip(props: Props) {
         y={props.shapeProps.posY}
         width={props.shapeProps.width * blockSnapSize}
         height={trackHeight}
+        stroke="black"
+        strokeWidth={0.1}
+        cornerRadius={10}
         fill="grey"
         draggable={true}
         onDragStart={(e) => {
           if (e.evt.button === 0) {
-            props.handleSelect();
+            props.handleSelect(true);
           }
         }}
         onClick={(e) => {
           if (e.evt.button === 0) {
-            props.handleSelect();
+            props.handleSelect(false);
           }
         }}
         onDragEnd={(e) => {
