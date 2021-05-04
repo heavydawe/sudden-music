@@ -6,14 +6,20 @@ import {
   MidiClip,
   ModifyMidiClip,
   ModifyNote,
-  NoteEvent,
+  // NoteEvent,
 } from "../../Interfaces";
 import { getInstrument, Instrument, updateCurEvents } from "./TrackFunctions";
 import "./Track.css";
 import deleteButton from "../../Icons/deleteButton.png";
 import editButton from "../../Icons/editButton.png";
-import ReactModal from "react-modal";
+import trackNameIcon from "../../Icons/trackName.png";
+import trackInsturmentIcon from "../../Icons/trackInstrument.png";
 import NewTrackModal from "./NewTrackModal";
+
+interface PartInterface {
+  part: Tone.Part;
+  midiDataKey: number;
+}
 
 interface Props {
   dataKey: number;
@@ -34,8 +40,11 @@ const Track = React.memo((props: Props) => {
   // console.log(curInstrument);
 
   // We need MidiClipDataKey as well, because NoteDataKeys will only differ inside one MidiClip
-  const [curEvents, setCurEvents] = useState<number[]>([]); //NoteEvent[]
-  console.log(curEvents);
+  // const [curEvents, setCurEvents] = useState<number[]>([]); //NoteEvent[]
+  // console.log(curEvents);
+
+  // TODO: INIT correctly when importing
+  const [curParts, setCurParts] = useState<PartInterface[]>([]);
 
   // Only change instrument when inited or on user change
   useEffect(() => {
@@ -84,9 +93,10 @@ const Track = React.memo((props: Props) => {
     // TODO: optimize this with modify props
     //Tone.Transport.cancel(0);
 
-    const chord1 = ["D3", "G3"];
-    const chord2 = ["F3", "Bb3"];
+    // const chord1 = ["D3", "G3"];
+    // const chord2 = ["F3", "Bb3"];
 
+    // TODO: delete this, and make sure every instr works
     if (!(curInstrument instanceof Tone.PolySynth)) {
       return;
     }
@@ -94,32 +104,65 @@ const Track = React.memo((props: Props) => {
     // TODO: use modify props to add/remove notes, or add/remove parts.
     // A part should represent a midiclip, and all the notes inside it should be grouped together
     // using the values parameter for the callback function... LETS GO!
-    const part = new Tone.Part(
-      (time, value) => {
-        // the notes given as the second element in the array
-        // will be passed in as the second argument
-        curInstrument.triggerAttackRelease(value.note, value.length, time);
-      },
-      [
-        { time: 0, note: chord1, velocity: 0.9, length: "8n" },
-        { time: "0:2", note: chord2, velocity: 0.5, length: "4n" },
-      ]
-    ).start(0);
+    // const newPart = new Tone.Part(
+    //   (time, value) => {
+    //     // the notes given as the second element in the array
+    //     // will be passed in as the second argument
+    //     curInstrument.triggerAttackRelease(value.note, value.length, time);
+    //   },
+    //   [
+    //     { time: 0, note: chord1, velocity: 0.9, length: "8n" },
+    //     { time: "0:2", note: chord2, velocity: 0.5, length: "4n" },
+    //   ]
+    // ).start(0);
 
-    props.midiClips.forEach((midiClip) => {
-      midiClip.notes.forEach((note) => {
-        // setCurEvents((prevState) => [
-        //   ...prevState,
-        //   Tone.Transport.schedule(() => {
-        //     curInstrument.triggerAttackRelease(
-        //       note.note,
-        //       `${note.length}i`,
-        //       `+${note.startTime}i`
-        //     );
-        //   }, `${midiClip.startTime}i`),
-        // ]);
-      });
+    const newPart = new Tone.Part((time, value) => {
+      curInstrument.triggerAttackRelease(value.note, value.length, time);
+      console.log("in callback");
+    }).start(`${props.midiClips[0].startTime}i`);
+
+    const firstNote = {
+      note: props.midiClips[0].notes[0].note,
+      time: `${props.midiClips[0].notes[0].startTime}i`,
+      length: `${props.midiClips[0].notes[0].length}i`,
+    };
+
+    // FONTOS: same objectnek kell lennie, hogy a törlés működjön megfelelően. Használni KELL a modify
+    // interfaceket, ahhoz hogy ez megfelelően működjön
+    // na most jó kérdés, hogy ha stateben elmentem és úgy adom hozzá mi lesz, vagy ha magát a store értéket
+    // adom neki mi lesz. Ki kéne próbálni. TODO!
+
+    newPart.add(firstNote);
+
+    // newPart.remove({
+    //   note: props.midiClips[0].notes[0].note,
+    //   time: `${props.midiClips[0].notes[0].startTime}i`,
+    //   length: `${props.midiClips[0].notes[0].length}i`,
+    // });
+
+    // ez így működik
+    newPart.remove(firstNote);
+
+    newPart.add({
+      note: props.midiClips[0].notes[0].note,
+      time: `${props.midiClips[0].notes[0].startTime + 768}i`,
+      length: `${props.midiClips[0].notes[0].length * 2}i`,
     });
+
+    // props.midiClips.forEach((midiClip) => {
+    //   midiClip.notes.forEach((note) => {
+    //     // setCurEvents((prevState) => [
+    //     //   ...prevState,
+    //     //   Tone.Transport.schedule(() => {
+    //     //     curInstrument.triggerAttackRelease(
+    //     //       note.note,
+    //     //       `${note.length}i`,
+    //     //       `+${note.startTime}i`
+    //     //     );
+    //     //   }, `${midiClip.startTime}i`),
+    //     // ]);
+    //   });
+    // });
   }, [props.midiClips, curInstrument]);
 
   // if (curInstrument !== undefined && props.midiClips[0] !== undefined) {
@@ -182,7 +225,28 @@ const Track = React.memo((props: Props) => {
 
   return (
     <div className="trackHeader">
-      <span className="trackHeaderTitle">{props.trackName}</span>
+      <div className="trackHeaderContainer">
+        <div>
+          <img
+            className="trackHeaderInstrumentNameImg"
+            src={trackNameIcon}
+            alt=""
+          />
+          <br />
+          <img
+            className="trackHeaderInstrumentNameImg"
+            src={trackInsturmentIcon}
+            alt=""
+          />
+        </div>
+        <div>
+          <span className="trackHeaderTitle">{props.trackName}</span>
+          <br />
+          <span className="trackHeaderInstrumentName">
+            {props.instrumentName}
+          </span>
+        </div>
+      </div>
       <button
         className="trackHeaderEditButton"
         onClick={() => setIsEditOpen(true)}

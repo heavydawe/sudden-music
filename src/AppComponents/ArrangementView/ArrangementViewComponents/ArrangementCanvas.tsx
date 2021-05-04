@@ -82,21 +82,34 @@ function ArrangementCanvas(props: Props) {
 
   const trackHeight = 100 + 2; // + 1 -> margins and gaps
   const numOfTracks = props.numOfTracks;
-  const numOfMeasures = 4; // How many measures long the piano roll should be
+
+  // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
+  const numOfPhrases = 4; // Phrase = 4 measures
   const gridPadding = 16; // 1 / gridPadding -> density of the grids
-  const blockSnapSizeToTick = 192 / (gridPadding / 4);
+  const blockSnapSizeToTick = 192 / (gridPadding / 16);
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
   const curPositionLayer = useRef<Konva.Layer>(null);
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
-  const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
-  // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigate
+  //const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
+  const canvasWidth =
+    numOfPhrases < 4
+      ? window.innerWidth -
+        61 +
+        (numOfPhrases * gridPadding -
+          ((window.innerWidth - 61) % (numOfPhrases * gridPadding)))
+      : (window.innerWidth -
+          61 +
+          (numOfPhrases * gridPadding -
+            ((window.innerWidth - 61) % (numOfPhrases * gridPadding)))) *
+        (numOfPhrases / 4);
+  // TODO: if numOfPhrases > 4 then we should use a vertical scrollbar to navigate
 
   const canvasHeight = trackHeight * numOfTracks; //only show the neccessary ammount of rows
 
   // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
-  const blockSnapSize = Math.round(canvasWidth / (numOfMeasures * gridPadding));
+  const blockSnapSize = Math.round(canvasWidth / (numOfPhrases * gridPadding));
 
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
@@ -125,13 +138,18 @@ function ArrangementCanvas(props: Props) {
 
   let gridLines: JSX.Element[] = [];
 
-  for (let i = 0; i <= canvasWidth; i += blockSnapSize) {
+  for (let i = 0; i <= numOfPhrases * gridPadding; i += 1) {
     gridLines.push(
       <Line
         key={"arrangeV_" + i}
         name="line"
-        points={[i + 0.5, 0, i + 0.5, canvasHeight]}
-        stroke={i % 4 ? "gray" : "black"} // TODO: If time signature can be changed, then 4 should NOT be hardcoded here
+        points={[
+          i * blockSnapSize + 0.5,
+          0,
+          i * blockSnapSize + 0.5,
+          canvasHeight,
+        ]}
+        stroke={i % (gridPadding / 4) ? "gray" : "black"} // TODO: If time signature can be changed, then 4 should NOT be hardcoded here
         strokeWidth={i % 4 ? 1 : 1.5}
       />
     );
@@ -151,15 +169,15 @@ function ArrangementCanvas(props: Props) {
 
   let darkMeasureRects: JSX.Element[] = [];
 
-  for (let i = 1; i <= numOfMeasures / 2; i++) {
+  for (let i = 1; i <= numOfPhrases / 2; i++) {
     darkMeasureRects.push(
       <Rect
         key={"d_" + i * 2}
         name="darkMeasure"
-        x={i * 2 * (canvasWidth / numOfMeasures) - canvasWidth / numOfMeasures}
+        x={i * 2 * (canvasWidth / numOfPhrases) - canvasWidth / numOfPhrases}
         y={0}
         height={canvasHeight}
-        width={canvasWidth / numOfMeasures}
+        width={canvasWidth / numOfPhrases}
         fill="#aaa"
         opacity={0.5}
       />
@@ -167,24 +185,39 @@ function ArrangementCanvas(props: Props) {
   }
 
   useEffect(() => {
+    Tone.Transport.loop = true;
+    Tone.Transport.loopEnd = `${numOfPhrases * 4}m`;
+  }, [numOfPhrases]);
+
+  useEffect(() => {
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
         curPositionRef.current!.position({
-          x: curPositionRef.current!.x() + blockSnapSize,
+          x: Math.trunc(canvasWidth * Tone.Transport.progress) - 5,
           y: 0,
         });
         curPositionLayer.current!.draw();
+        //console.log(Tone.Transport.progress, Math.trunc(canvasWidth * Tone.Transport.progress) - 5);
       }, time);
-    }, "4n");
-  }, [blockSnapSize]);
+    }, "10i");
+  }, [canvasWidth]);
 
   const curPositionRect = (
     <Rect
-      x={0}
+      x={-5}
       y={0}
-      width={blockSnapSize}
+      width={10}
       height={canvasHeight}
-      fill="orange"
+      fillLinearGradientStartPoint={{x: 0, y: 0}}
+      fillLinearGradientEndPoint={{x: 10, y: 0}}
+      fillLinearGradientColorStops={[
+        0,
+        'transparent',
+        0.5,
+        'orange',
+        1,
+        'transparent'
+      ]}
       opacity={0.7}
       ref={curPositionRef}
     />
@@ -205,6 +238,7 @@ function ArrangementCanvas(props: Props) {
             ) {
               selectMidiClipId(-1);
               dispatch(deselectMidiClip());
+              console.log("mousedown");
             }
           }
         }}
@@ -262,9 +296,6 @@ function ArrangementCanvas(props: Props) {
       >
         <Layer key="arrangementDarkMeasures">{darkMeasureRects}</Layer>
         <Layer key="arrangementGridLines">{gridLines}</Layer>
-        <Layer key="curPosition" ref={curPositionLayer}>
-          {curPositionRect}
-        </Layer>
         <Layer
           key="arrangementMidiClips"
           onClick={(e) => {
@@ -414,6 +445,9 @@ function ArrangementCanvas(props: Props) {
               />
             );
           })}
+        </Layer>
+        <Layer key="curPosition" ref={curPositionLayer}>
+          {curPositionRect}
         </Layer>
       </Stage>
     </div>

@@ -37,6 +37,7 @@ function ArrangementView() {
                     : null
                   : null
               }
+              //curMidiClipToModify
               midiClips={item.midiClips}
             />
           );

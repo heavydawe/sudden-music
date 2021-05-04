@@ -2,6 +2,7 @@ import { useRef } from "react";
 import ReactModal from "react-modal";
 import { useDispatch } from "react-redux";
 import { addNewTrack, changeTrackProps } from "../../Actions";
+import "./NewTrackModal.css";
 
 interface Props {
   showModal: boolean;
@@ -23,43 +24,47 @@ function NewTrackModal(props: Props) {
       className="newTrackModal"
       appElement={document.getElementById("App")!}
     >
-      <label htmlFor="newTrackNameInput">Név</label>
-      <input
-        key="newTrackNameInput"
-        id="newTrackNameInput"
-        type="text"
-        maxLength={20}
-        minLength={5}
-        required={true}
-        ref={newTrackNameRef}
-      />
-      <br />
-      <label htmlFor="newTrackInstrumentSelect">Hangszer</label>
-      <select
-        id="newTrackInstrumentSelect"
-        key="newTrackInstrumentSelect"
-        defaultValue="PolySynth"
-        ref={newTrackInstrumentRef}
-      >
-        <option value="AMSynth">AMSynth</option>
-        <option value="DuoSynth">DuoSynth</option>
-        <option value="FMSynth">FMSynth</option>
-        <option value="MembraneSynth">MembraneSynth</option>
-        <option value="MonoSynth">MonoSynth</option>
-        <option value="PluckSynth">PluckSynth</option>
-        <option value="PolySynth">PolySynth</option>
-        <option value="Sampler">Sampler</option>
-        <option value="Synth">Synth</option>
-      </select>
-      <br />
-      <label htmlFor="newTrackColor">Szín</label>
-      <input
-        key="newTrackColor"
-        id="newTrackColor"
-        type="color"
-        required={true}
-        ref={newTrackColorRef}
-      />
+      <div className="newTrackModalContainer">
+        <div>
+          <p>Név</p>
+          <p>Hangszer</p>
+          <p>Szín</p>
+        </div>
+        <div>
+          <input
+            key="newTrackNameInput"
+            id="newTrackNameInput"
+            type="text"
+            maxLength={20}
+            minLength={5}
+            required={true}
+            ref={newTrackNameRef}
+          /><br />
+          <select
+            id="newTrackInstrumentSelect"
+            key="newTrackInstrumentSelect"
+            defaultValue="PolySynth"
+            ref={newTrackInstrumentRef}
+          >
+            <option value="AMSynth">AMSynth</option>
+            <option value="DuoSynth">DuoSynth</option>
+            <option value="FMSynth">FMSynth</option>
+            <option value="MembraneSynth">MembraneSynth</option>
+            <option value="MonoSynth">MonoSynth</option>
+            <option value="PluckSynth">PluckSynth</option>
+            <option value="PolySynth">PolySynth</option>
+            <option value="Sampler">Sampler</option>
+            <option value="Synth">Synth</option>
+          </select><br />
+          <input
+            key="newTrackColor"
+            id="newTrackColor"
+            type="color"
+            required={true}
+            ref={newTrackColorRef}
+          />
+        </div>
+      </div>
       <button
         className="newTrackModalCancelButton"
         onClick={() => {

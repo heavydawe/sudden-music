@@ -1,0 +1,87 @@
+.newTrackModal {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+  width: 350px;
+  height: 20%;
+  border-radius: 25px;
+  margin-left: -175px;
+  animation: showPopUp 0.5s ease-in-out 1 forwards;
+  min-height: 200px;
+}
+
+@keyframes showPopUp {
+  0% {
+    transform: scale(0);
+  }
+
+  75% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.newTrackModal label {
+  padding: 40px;
+}
+
+.newTrackModal input {
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+.newTrackModal input:focus {
+  background-color: yellow;
+}
+
+.newTrackModal select {
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.newTrackModal button {
+  margin: 3px;
+  padding: 5px;
+  border-radius: 10px;
+  border: none;
+  position: absolute;
+  cursor: pointer;
+  transition: background-color 0.5s, padding 0.2s;
+}
+
+.newTrackModal button:hover {
+  background-color: yellow;
+  padding: 4px;
+}
+
+.newTrackModalAddButton {
+  bottom: 10px;
+  right: 20px;
+}
+
+.newTrackModalCancelButton {
+  bottom: 10px;
+  left: 20px;
+}
+
+.newTrackModalContainer {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.newTrackModalContainer p {
+  color: white;
+  font-weight: bolder;
+  text-align: right;
+  margin-top: 7px;
+}
+
+.newTrackModalContainer input {
+  padding: 0;
+}
