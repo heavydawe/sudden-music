@@ -1,4 +1,10 @@
-import { MidiClip, ModifyMidiClip, ModifyNote, TrackInterface, TrackProps } from "../Interfaces";
+import {
+  MidiClip,
+  ModifyMidiClip,
+  ModifyNote,
+  TrackInterface,
+  TrackProps,
+} from "../Interfaces";
 
 export const addNewTrack = (newTrack: TrackInterface) => {
   return {
@@ -11,8 +17,8 @@ export const deleteTrack = (trackToDeleteDataKey: number) => {
   return {
     type: "DELETE_TRACK",
     trackIndex: trackToDeleteDataKey,
-  }
-}
+  };
+};
 
 // export const renameTrack = (trackKey: number, newName: string) => {
 //   return {
@@ -30,7 +36,10 @@ export const deleteTrack = (trackToDeleteDataKey: number) => {
 //   };
 // };
 
-export const changeTrackProps = (trackKey: number, newTrackProps: TrackProps) => {
+export const changeTrackProps = (
+  trackKey: number,
+  newTrackProps: TrackProps
+) => {
   return {
     type: "CHANGE_TRACK_PROPS",
     trackIndex: trackKey,
@@ -40,15 +49,15 @@ export const changeTrackProps = (trackKey: number, newTrackProps: TrackProps) =>
 
 export const clearModifyNote = () => {
   return {
-    type: "CLEAR_MODIFY_NOTE"
-  }
-}
+    type: "CLEAR_MODIFY_NOTE",
+  };
+};
 
 export const clearModifyMidiclip = () => {
   return {
-    type: "CLEAR_MODIFY_MIDICLIP"
-  }
-}
+    type: "CLEAR_MODIFY_MIDICLIP",
+  };
+};
 
 export const selectMidiClip = (selectedMidiClip: MidiClip) => {
   return {
@@ -92,37 +101,37 @@ export const addNewNote = (modifyNote: ModifyNote) => {
     type: "ADD_NOTE",
     trackIndex: modifyNote.trackDataKey,
     modifyNote: modifyNote,
-  }
-}
+  };
+};
 
 export const deleteNote = (modifyNote: ModifyNote) => {
   return {
     type: "DELETE_NOTE",
     trackIndex: modifyNote.trackDataKey,
     modifyNote: modifyNote,
-  }
-}
+  };
+};
 
 export const updateNote = (modifyNote: ModifyNote) => {
   return {
     type: "UPDATE_NOTE",
     trackIndex: modifyNote.trackDataKey,
     modifyNote: modifyNote,
-  }
-}
+  };
+};
 
 export const exportProject = () => {
   return {
     type: "EXPORT_PROJECT",
-  }
-}
+  };
+};
 
 export const importProject = (inputFile: string) => {
   return {
     type: "IMPORT_PROJECT",
     payload: inputFile,
-  }
-}
+  };
+};
 
 export const signUpUser = (email: string, password: string) => {
   return {
@@ -130,6 +139,20 @@ export const signUpUser = (email: string, password: string) => {
     payload: {
       email: email,
       password: password,
-    }
-  }
-}
+    },
+  };
+};
+
+export const changeArrViewNumOfPhrases = (newNumOfPhrases: number) => {
+  return {
+    type: "CHANGE_ARR_VIEW_NUM_OF_PHRASES",
+    payload: newNumOfPhrases,
+  };
+};
+
+export const changeArrViewGridPadding = (newNumOfGridPadding: number) => {
+  return {
+    type: "CHANGE_ARR_VIEW_GRID_PADDING",
+    payload: newNumOfGridPadding,
+  };
+};

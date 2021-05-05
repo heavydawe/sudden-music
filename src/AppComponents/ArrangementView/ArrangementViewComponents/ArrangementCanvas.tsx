@@ -6,9 +6,10 @@ import {
   MidiClip as MidiClipInterface,
   MidiClipRectProps,
   MidiNote,
+  Rootstate,
 } from "../../Interfaces";
 import "./ArrangementCanvas.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addNewMidiClip,
   selectMidiClip,
@@ -84,8 +85,8 @@ function ArrangementCanvas(props: Props) {
   const numOfTracks = props.numOfTracks;
 
   // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
-  const numOfPhrases = 4; // Phrase = 4 measures
-  const gridPadding = 16; // 1 / gridPadding -> density of the grids
+  const numOfPhrases = useSelector((state: Rootstate) => state.arrCanvasProps.numOfPhrases); // Phrase = 4 measures
+  const gridPadding = useSelector((state: Rootstate) => state.arrCanvasProps.gridPadding);; // 1 / gridPadding -> how many grids in a phrase
   const blockSnapSizeToTick = 192 / (gridPadding / 16);
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
@@ -126,6 +127,7 @@ function ArrangementCanvas(props: Props) {
   );
 
   useEffect(() => {
+    // TODO: MidiClipsPosInfo
     setCurMidiClipsRect(
       initMidiClipRects(
         props.midiClips,

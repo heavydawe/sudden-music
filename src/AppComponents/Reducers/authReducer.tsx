@@ -1,5 +1,4 @@
 import { appAuth } from "../firebase";
-import firebase from "firebase";
 
 const authReducer = (
   state: string | null = null, //Not sure about string

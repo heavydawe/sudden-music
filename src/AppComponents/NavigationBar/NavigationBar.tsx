@@ -4,6 +4,8 @@ import "./NavigationBar.css";
 import playButton from "../Icons/playButton.png";
 import stopButton from "../Icons/stopButton.png";
 import pauseButton from "../Icons/pauseButton.png";
+import { useDispatch } from "react-redux";
+import { changeArrViewGridPadding, changeArrViewNumOfPhrases } from "../Actions";
 
 // function initSong() {
 //   Tone.Transport.bpm.value = 125;
@@ -69,101 +71,19 @@ function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
     return;
   }
 
+  if (newBPMValue !== Math.trunc(newBPMValue)) {
+    BPMInputRef.current!.value = Math.trunc(newBPMValue).toString();
+    alert("A BPM értéke csak egész szám lehet!");
+    Tone.Transport.bpm.value = Math.trunc(newBPMValue);
+    return;
+  }
+
   Tone.Transport.bpm.value = newBPMValue;
 }
 
 function NavigationBar() {
-  // function initSong() {
-  //   /**
-  //    * PIANO
-  //    */
-  //   Tone.Transport.bpm.value = 112;
-  //   const keys = new Tone.PolySynth(Tone.Synth, {
-  //     volume: -8,
-  //     oscillator: {
-  //       partials: [1, 2, 1],
-  //     },
-  //   }).toDestination();
 
-  //   const chord1 = ["D3", "G3"];
-  //   const chord2 = ["F3", "Bb3"];
-  //   const chord3 = ["G3", "C4"];
-  //   const chord4 = ["G#3", "C#4"];
-
-  //   const pianoPart = new Tone.Part(
-  //     (time, chord) => {
-  //       keys.triggerAttackRelease(chord, "6n", time);
-  //     },
-  //     [
-  //       ["0:0", chord1],
-  //       ["0:1", chord2],
-  //       ["0:2", chord3],
-  //       ["0:3:2", chord1],
-  //       ["1:0:2", chord2],
-  //       ["1:1:2", chord4],
-  //       ["1:2:0", chord3],
-  //       ["2:0", chord1],
-  //       ["2:1", chord2],
-  //       ["2:2", chord3],
-  //       ["2:3:2", chord2],
-  //       ["3:0:2", chord1],
-  //     ]
-  //   ).start(0);
-
-  //   pianoPart.loop = true;
-  //   pianoPart.loopEnd = "4m";
-  //   //pianoPart.humanize = true;
-
-  //   /**
-  //    * BASS
-  //    */
-  //   const bass = new Tone.MonoSynth({
-  //     volume: -10,
-  //   }).toDestination();
-  //   const bassPart = new Tone.Part(
-  //     (time, chord) => {
-  //       bass.triggerAttackRelease(chord, "32n", time);
-  //     },
-  //     [
-  //       ["0:0", "G2"],
-  //       ["0:0:2", "G2"],
-  //       ["0:1", "G2"],
-  //       ["0:1:2", "G2"],
-  //       ["0:2", "G2"],
-  //       ["0:2:2", "G2"],
-  //       ["0:3", "G2"],
-  //       ["0:3:2", "G2"],
-  //       ["1:0", "G2"],
-  //       ["1:0:2", "G2"],
-  //       ["1:1", "G2"],
-  //       ["1:1:2", "G2"],
-  //       ["1:2", "G2"],
-  //       ["1:2:2", "G2"],
-  //       ["1:3", "G2"],
-  //       ["1:3:2", "G2"],
-  //       ["2:0", "G2"],
-  //       ["2:0:2", "G2"],
-  //       ["2:1", "A#2"],
-  //       ["2:1:2", "A#2"],
-  //       ["2:2", "C3"],
-  //       ["2:2:2", "C3"],
-  //       ["2:3", "C3"],
-  //       ["2:3:2", "A#2"],
-  //       ["3:0", "A#2"],
-  //       ["3:0:2", "G2"],
-  //       ["3:1", "G2"],
-  //       ["3:1:2", "G2"],
-  //       ["3:2", "G2"],
-  //       ["3:2:2", "E2"],
-  //       ["3:3", "F2"],
-  //       ["3:3:2", "F#2"],
-  //     ]
-  //   ).start(0);
-
-  //   bassPart.loop = true;
-  //   bassPart.loopEnd = "4m";
-  //   //bassPart.humanize = true;
-  // }
+  const dispatch = useDispatch();
 
   const playStopButtonRef = useRef<HTMLImageElement>(null);
   const BPMInputRef = useRef<HTMLInputElement>(null);
@@ -193,6 +113,23 @@ function NavigationBar() {
         onKeyUp={(e) => e.key === "Enter" && changeBPM(BPMInputRef)}
         onBlur={() => changeBPM(BPMInputRef)}
       />
+      <span>Félperiódusok száma:</span>
+      <select defaultValue="4" onChange={(e) => dispatch(changeArrViewNumOfPhrases(+e.target.value))}>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+      </select>
+      <span>Vonalak sűrűsége:</span>
+      <select defaultValue="16" onChange={(e) => dispatch(changeArrViewGridPadding(+e.target.value))}>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+        <option value="64">64</option>
+      </select>
     </nav>
   );
 }

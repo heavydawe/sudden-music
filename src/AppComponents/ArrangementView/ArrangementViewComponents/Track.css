@@ -34,7 +34,8 @@
   border-bottom-right-radius: 15px;
   height: 100px;
   font-weight: bold;
-  word-wrap: break-word;
+  /* word-wrap: break-word; */
+  overflow: auto;
   position: relative;
 }
 

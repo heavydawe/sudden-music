@@ -102,7 +102,7 @@ function MidiClip(props: Props) {
           anchorStrokeWidth={0}
           resizeEnabled={true}
           boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < blockSnapSize / 2) {
+            if (newBox.width < blockSnapSize) {
               trRefMidi.current!.stopTransform();
               return oldBox;
             }

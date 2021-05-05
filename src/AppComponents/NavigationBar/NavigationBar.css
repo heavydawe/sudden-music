@@ -43,6 +43,22 @@ nav input:focus {
 
 nav span {
   color: white;
-  margin-left: 10px;
+  margin-left: 30px;
   font-weight: bolder;
+}
+
+nav select {
+  border-radius: 5px;
+  border: none;
+  padding: 2px;
+  margin-left: 10px;
+  text-align: center;
+  font-weight: 900;
+  font-size: small;
+  outline: none;
+  transition: border-radius 0.2s;
+}
+
+nav select:focus {
+  border-radius: 0;
 }

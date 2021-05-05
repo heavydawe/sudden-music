@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as Tone from "tone";
-import { clearModifyNote, deleteTrack } from "../../Actions";
 import {
-  MidiClip,
+  clearModifyMidiclip,
+  clearModifyNote,
+  deleteTrack,
+} from "../../Actions";
+import {
   ModifyMidiClip,
   ModifyNote,
   // NoteEvent,
 } from "../../Interfaces";
-import { getInstrument, Instrument, updateCurEvents } from "./TrackFunctions";
+import { getInstrument, Instrument } from "./TrackFunctions";
 import "./Track.css";
 import deleteButton from "../../Icons/deleteButton.png";
 import editButton from "../../Icons/editButton.png";
@@ -16,9 +19,25 @@ import trackNameIcon from "../../Icons/trackName.png";
 import trackInsturmentIcon from "../../Icons/trackInstrument.png";
 import NewTrackModal from "./NewTrackModal";
 
+interface NoteMap {
+  key: number;
+  value: NotePartObject;
+}
+
+interface NotePartObject {
+  time: string;
+  note: string;
+  length: string;
+}
+
 interface PartInterface {
   part: Tone.Part;
-  midiDataKey: number;
+  partNotes: NoteMap[];
+}
+
+interface MidiClipMap {
+  key: number;
+  value: PartInterface;
 }
 
 interface Props {
@@ -26,9 +45,8 @@ interface Props {
   trackName: string;
   trackColor: string;
   instrumentName: string;
-  midiClips: MidiClip[];
   curNoteToModify: ModifyNote | null;
-  //curMidiClipToModify: ModifyMidiClip | null;
+  curMidiClipToModify: ModifyMidiClip | null;
 }
 
 const Track = React.memo((props: Props) => {
@@ -37,191 +55,180 @@ const Track = React.memo((props: Props) => {
   // Instrument should be created only once, and change when the user changes it
   const [curInstrument, setCurInstrument] = useState<Instrument>();
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  // console.log(curInstrument);
-
-  // We need MidiClipDataKey as well, because NoteDataKeys will only differ inside one MidiClip
-  // const [curEvents, setCurEvents] = useState<number[]>([]); //NoteEvent[]
-  // console.log(curEvents);
 
   // TODO: INIT correctly when importing
-  const [curParts, setCurParts] = useState<PartInterface[]>([]);
+  const [curParts, setCurParts] = useState<MidiClipMap[]>([]);
 
   // Only change instrument when inited or on user change
   useEffect(() => {
     setCurInstrument(getInstrument(props.instrumentName));
   }, [props.instrumentName]);
 
-  // useEffect(() => {
-  //   if (props.curNoteToModify === null) {
-  //     //&& props.curMidiClipToModify
-  //     return;
-  //   }
-
-  //   // TODO: update curEvents here maybe?
-  //   if (props.curNoteToModify !== null) {
-  //     console.log("IN USEFFECT CURNOTE");
-  //     dispatch(clearModifyNote());
-  //     // updateCurEvents(
-  //     //   props.curNoteToModify,
-  //     //   props.midiClips,
-  //     //   curInstrument!,
-  //     //   curEvents,
-  //     //   setCurEvents
-  //     // );
-  //   }
-  // }, [
-  //   props.curNoteToModify,
-  //   props.midiClips,
-  //   curInstrument,
-  //   curEvents,
-  //   dispatch,
-  // ]);
-
-  useEffect(() => {
-    if (curInstrument === undefined) {
-      return;
-    }
-
-    if (!props.midiClips.length) {
-      return;
-    }
-
-    if (!props.midiClips[0].notes.length) {
-      return;
-    }
-
-    // TODO: optimize this with modify props
-    //Tone.Transport.cancel(0);
-
-    // const chord1 = ["D3", "G3"];
-    // const chord2 = ["F3", "Bb3"];
-
-    // TODO: delete this, and make sure every instr works
-    if (!(curInstrument instanceof Tone.PolySynth)) {
-      return;
-    }
-
-    // TODO: use modify props to add/remove notes, or add/remove parts.
-    // A part should represent a midiclip, and all the notes inside it should be grouped together
-    // using the values parameter for the callback function... LETS GO!
-    // const newPart = new Tone.Part(
-    //   (time, value) => {
-    //     // the notes given as the second element in the array
-    //     // will be passed in as the second argument
-    //     curInstrument.triggerAttackRelease(value.note, value.length, time);
-    //   },
-    //   [
-    //     { time: 0, note: chord1, velocity: 0.9, length: "8n" },
-    //     { time: "0:2", note: chord2, velocity: 0.5, length: "4n" },
-    //   ]
-    // ).start(0);
-
-    const newPart = new Tone.Part((time, value) => {
-      curInstrument.triggerAttackRelease(value.note, value.length, time);
-      console.log("in callback");
-    }).start(`${props.midiClips[0].startTime}i`);
-
-    const firstNote = {
-      note: props.midiClips[0].notes[0].note,
-      time: `${props.midiClips[0].notes[0].startTime}i`,
-      length: `${props.midiClips[0].notes[0].length}i`,
-    };
-
-    // FONTOS: same objectnek kell lennie, hogy a törlés működjön megfelelően. Használni KELL a modify
-    // interfaceket, ahhoz hogy ez megfelelően működjön
-    // na most jó kérdés, hogy ha stateben elmentem és úgy adom hozzá mi lesz, vagy ha magát a store értéket
-    // adom neki mi lesz. Ki kéne próbálni. TODO!
-
-    newPart.add(firstNote);
-
-    // newPart.remove({
-    //   note: props.midiClips[0].notes[0].note,
-    //   time: `${props.midiClips[0].notes[0].startTime}i`,
-    //   length: `${props.midiClips[0].notes[0].length}i`,
-    // });
-
-    // ez így működik
-    newPart.remove(firstNote);
-
-    newPart.add({
-      note: props.midiClips[0].notes[0].note,
-      time: `${props.midiClips[0].notes[0].startTime + 768}i`,
-      length: `${props.midiClips[0].notes[0].length * 2}i`,
-    });
-
-    // props.midiClips.forEach((midiClip) => {
-    //   midiClip.notes.forEach((note) => {
-    //     // setCurEvents((prevState) => [
-    //     //   ...prevState,
-    //     //   Tone.Transport.schedule(() => {
-    //     //     curInstrument.triggerAttackRelease(
-    //     //       note.note,
-    //     //       `${note.length}i`,
-    //     //       `+${note.startTime}i`
-    //     //     );
-    //     //   }, `${midiClip.startTime}i`),
-    //     // ]);
-    //   });
-    // });
-  }, [props.midiClips, curInstrument]);
-
-  // if (curInstrument !== undefined && props.midiClips[0] !== undefined) {
-  //   const tempArr = props.midiClips[0].notes.map((note) => {
-  //     return {
-  //       note: note.note,
-  //       duration: `${note.length}i`,
-  //       startTime: 000`+${note.startTime}i`,
-  //     };
-  //   });
-
-  //   if (Tone.Transport.state === "started") {
-  //     Tone.Transport.stop();
-  //   }
-
-  //   Tone.Transport.cancel(0);
-  //   Tone.Transport.scheduleRepeat(() => {
-  //     tempArr.forEach((item) => {
-  //       const eventID = curInstrument.triggerAttackRelease(
-  //         item.note,
-  //         item.duration,
-  //         item.startTime
-  //       );
-  //       console.log(eventID);
-  //     });
-  //   }, "1m");
-
-  //   Tone.Transport.start();
-  // }
-
   console.log("RENDERING IN TRACK, KEY:", props.dataKey);
 
-  // const chord1 = ["D3", "G3"];
-  // const chord2 = ["F3", "Bb3"];
-  // const chord3 = ["G3", "C4"];
-  // const chord4 = ["G#3", "C#4"];
+  useEffect(() => {
+    if (props.curNoteToModify === null) {
+      return;
+    }
 
-  // const pianoPart = new Tone.Part(
-  //   (time, chord) => {
-  //     instrument.triggerAttackRelease(chord, "6n", time);
-  //   },
-  //   [
-  //     ["0:0", chord1],
-  //     ["0:1", chord2],
-  //     ["0:2", chord3],
-  //     ["0:3:2", chord1],
-  //     ["1:0:2", chord2],
-  //     ["1:1:2", chord4],
-  //     ["1:2:0", chord3],
-  //     ["2:0", chord1],
-  //     ["2:1", chord2],
-  //     ["2:2", chord3],
-  //     ["2:3:2", chord2],
-  //     ["3:0:2", chord1],
-  //   ]
-  // ).start(0);
+    console.log("IN CURNOTEMODIFY", props.curNoteToModify);
 
-  // pianoPart.loop = true;
-  // pianoPart.loopEnd = "4m";
+    const stateIndex = curParts.findIndex(
+      (part) => part.key === props.curNoteToModify!.midiClipDataKey
+    );
+
+    switch (props.curNoteToModify.type) {
+      case "ADD":
+        console.log("ADDING NEW NOTE");
+        const newNote: NotePartObject = {
+          time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
+          note: props.curNoteToModify.newNoteProps!.note,
+          length: `${props.curNoteToModify.newNoteProps!.length}i`,
+        };
+
+        // THIS COULD BE PROBLEMATIC... or not..
+        curParts[stateIndex].value.part.add(newNote);
+
+        setCurParts((prevState) => [
+          ...prevState.slice(0, stateIndex),
+          {
+            ...prevState[stateIndex],
+            value: {
+              ...prevState[stateIndex].value,
+              partNotes: [
+                ...prevState[stateIndex].value.partNotes,
+                {
+                  key: props.curNoteToModify!.newNoteProps!.dataKey,
+                  value: newNote,
+                },
+              ],
+            },
+          },
+          ...prevState.slice(stateIndex + 1),
+        ]);
+        break;
+
+      case "DELETE":
+        console.log("DELETING NOTE");
+
+        const noteToDeleteIndex = curParts[
+          stateIndex
+        ].value.partNotes.findIndex(
+          (note) => note.key === props.curNoteToModify!.noteDataKey
+        );
+
+        // THIS COULD BE PROBLEMATIC.... or not...
+        curParts[stateIndex].value.part.remove(
+          curParts[stateIndex].value.partNotes[noteToDeleteIndex].value
+        );
+
+        setCurParts((prevState) => [
+          ...prevState.slice(0, stateIndex),
+          {
+            ...prevState[stateIndex],
+            value: {
+              ...prevState[stateIndex].value,
+              partNotes: [
+                ...prevState[stateIndex].value.partNotes.slice(
+                  0,
+                  noteToDeleteIndex
+                ),
+                ...prevState[stateIndex].value.partNotes.slice(
+                  noteToDeleteIndex + 1
+                ),
+              ],
+            },
+          },
+          ...prevState.slice(stateIndex + 1),
+        ]);
+
+        break;
+
+      case "UPDATE":
+        console.log("UPDATING NOTE");
+
+        const noteToUpdateIndex = curParts[
+          stateIndex
+        ].value.partNotes.findIndex(
+          (note) => note.key === props.curNoteToModify!.noteDataKey
+        );
+
+        // THIS COULD BE PROBLEMATIC.... or not...
+        curParts[stateIndex].value.part.remove(
+          curParts[stateIndex].value.partNotes[noteToUpdateIndex].value
+        );
+
+        const updatedNote: NotePartObject = {
+          time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
+          note: props.curNoteToModify.newNoteProps!.note,
+          length: `${props.curNoteToModify.newNoteProps!.length}i`,
+        };
+
+        curParts[stateIndex].value.part.add(updatedNote);
+
+        setCurParts((prevState) => [
+          ...prevState.slice(0, stateIndex),
+          {
+            ...prevState[stateIndex],
+            value: {
+              ...prevState[stateIndex].value,
+              partNotes: [
+                ...prevState[stateIndex].value.partNotes.slice(
+                  0,
+                  noteToUpdateIndex
+                ),
+                {
+                  ...prevState[stateIndex].value.partNotes[noteToUpdateIndex],
+                  value: updatedNote,
+                },
+              ],
+            },
+          },
+          ...prevState.slice(stateIndex + 1),
+        ]);
+
+        break;
+
+      default:
+        throw Error("Unknown curNoteToModify type!");
+    }
+
+    dispatch(clearModifyNote());
+  }, [props.curNoteToModify, curParts, dispatch]);
+
+  useEffect(() => {
+    if (props.curMidiClipToModify === null) {
+      return;
+    }
+
+    console.log("IN CURMIDICLIPTOMODIFY", props.curMidiClipToModify);
+
+    switch (props.curMidiClipToModify.type) {
+      case "ADD":
+        console.log("ADDING NEW MIDICLIP");
+        const newPart = new Tone.Part((time, value) => {
+          curInstrument!.triggerAttackRelease(value.note, value.length, time);
+          console.log("in callback");
+        }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
+
+        setCurParts((prevState) => [
+          ...prevState,
+          {
+            key: props.curMidiClipToModify!.newMidiClipProps!.dataKey,
+            value: {
+              part: newPart,
+              partNotes: [],
+            },
+          },
+        ]);
+        break;
+
+      default:
+        throw Error("Unknown curMidiClipToModify type!");
+    }
+
+    dispatch(clearModifyMidiclip());
+  }, [props.curMidiClipToModify, curInstrument, dispatch]);
 
   return (
     <div className="trackHeader">

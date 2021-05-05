@@ -12,6 +12,14 @@ function ArrangementView() {
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
   const [showModal, setShowModal] = useState<boolean>(false);
 
+  // function getNotesForMidiClip(trackKey: number, dataKey: number) {
+
+  //   const midiClipIndex = curTrackInfos.tracks[trackKey].midiClips
+  //     .findIndex((midiclip) => midiclip.dataKey === dataKey);
+
+  //   return curTrackInfos.tracks[trackKey].midiClips[midiClipIndex].notes;
+  // }
+
   // const curNoteToModify = useSelector((state: Rootstate) => state.modifyNote);
   // const [keyGenerator, setKeyGenerator] = useState<number>(curTrackInfos.length);
 
@@ -37,8 +45,18 @@ function ArrangementView() {
                     : null
                   : null
               }
-              //curMidiClipToModify
-              midiClips={item.midiClips}
+              curMidiClipToModify={
+                curTrackInfos.modifiedMidiClip !== null
+                ? curTrackInfos.modifiedMidiClip.trackDataKey === item.dataKey
+                  ? curTrackInfos.modifiedMidiClip
+                  : curTrackInfos.modifiedMidiClip.newMidiClipProps !== undefined
+                    ? curTrackInfos.modifiedMidiClip.newMidiClipProps.trackKey === item.dataKey
+                      ? curTrackInfos.modifiedMidiClip
+                      : null
+                    : null
+                : null
+              }
+              //midiClips={item.midiClips}
             />
           );
         })}
@@ -52,6 +70,8 @@ function ArrangementView() {
         </button>
       </div>
       <ArrangementCanvas
+        // TODO: elég ha a midiclip azon paramétereit adjuk át, ami elég az elhelyezéséhez.
+        // A piano roll tudni fogja, hogy miylen noteok lesznek benne, ezért az arr canvasnak nem kell ezt tudnia
         midiClips={curTrackInfos.tracks
           .map((track) => {
             return track.midiClips;

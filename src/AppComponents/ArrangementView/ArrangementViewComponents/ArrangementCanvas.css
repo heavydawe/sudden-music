@@ -2,13 +2,13 @@
   overflow: auto;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #555;
+  background: brown;
   border-radius: 10px;
 }
 
@@ -23,4 +23,4 @@
 
 ::-webkit-scrollbar-corner {
   opacity: 0;
-}
+} */

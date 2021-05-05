@@ -186,30 +186,30 @@ function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   console.log("new MIDI IN CANV", props.midiClip);
   const tileHeight = 25 + 1; // + 1 -> margins and gaps
-  const numOfMeasures = 4; // How many measures long the piano roll should be
-  const gridPadding = 16; // 1 / gridPadding -> density of the grids in a measure
+  const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
+  const gridPadding = 16; // 1 / gridPadding -> density of the grids in a beat
   const blockSnapSizeToTick = 192 / (gridPadding / 4);
   const dispatch = useDispatch();
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   const canvasWidth =
-    numOfMeasures < 4
+    numOfBeats < 4
       ? window.innerWidth -
         61 +
-        (numOfMeasures * gridPadding -
-          ((window.innerWidth - 61) % (numOfMeasures * gridPadding)))
+        (numOfBeats * gridPadding -
+          ((window.innerWidth - 61) % (numOfBeats * gridPadding)))
       : (window.innerWidth -
           61 +
-          (numOfMeasures * gridPadding -
-            ((window.innerWidth - 61) % (numOfMeasures * gridPadding)))) *
-        (numOfMeasures / 4);
-  // TODO: if numOfMeasures > 4 then we should use a vertical scrollbar to navigates
+          (numOfBeats * gridPadding -
+            ((window.innerWidth - 61) % (numOfBeats * gridPadding)))) *
+        (numOfBeats / 4);
+  // TODO: if numOfBeats > 4 then we should use a vertical scrollbar to navigates
 
   const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
 
   // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
-  //console.log(canvasWidth / (numOfMeasures * gridPadding));
-  const blockSnapSize = Math.round(canvasWidth / (numOfMeasures * gridPadding));
+  //console.log(canvasWidth / (numOfBeats * gridPadding));
+  const blockSnapSize = Math.round(canvasWidth / (numOfBeats * gridPadding));
 
   // only saves starting position and sizes, as the canvas will do the rerendering, no need for state change here
   // only needed for tracking existing notes' keys
@@ -231,7 +231,7 @@ function PianoRollCanvas(props: Props) {
 
   let gridLayerComponents: JSX.Element[] = [];
 
-  for (let i = 0; i <= numOfMeasures * gridPadding; i += 1) {
+  for (let i = 0; i <= numOfBeats * gridPadding; i += 1) {
     gridLayerComponents.push(
       <Line
         key={"v_" + i}
@@ -262,15 +262,15 @@ function PianoRollCanvas(props: Props) {
 
   let darkMeasureRects: JSX.Element[] = [];
 
-  for (let i = 1; i <= numOfMeasures / 2; i++) {
+  for (let i = 1; i <= numOfBeats / 2; i++) {
     darkMeasureRects.push(
       <Rect
         key={"d_" + i * 2}
         name="darkMeasure"
-        x={i * 2 * (canvasWidth / numOfMeasures) - canvasWidth / numOfMeasures}
+        x={i * 2 * (canvasWidth / numOfBeats) - canvasWidth / numOfBeats}
         y={0}
         height={canvasHeight}
-        width={canvasWidth / numOfMeasures}
+        width={canvasWidth / numOfBeats}
         fill="#aaa"
         opacity={0.5}
       />

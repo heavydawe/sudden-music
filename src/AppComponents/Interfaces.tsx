@@ -55,10 +55,18 @@ export interface TrackInterface {
 }
 
 export interface Rootstate {
-  curTracks: {tracks: TrackInterface[], modifiedNote: ModifyNote};
+  curTracks: {
+    tracks: TrackInterface[];
+    modifiedNote: ModifyNote | null;
+    modifiedMidiClip: ModifyMidiClip | null;
+  };
   selectedMidiClip: MidiClip;
   modifyNote: ModifyNote;
   curUser: string;
+  arrCanvasProps: {
+    numOfPhrases: number;
+    gridPadding: number;
+  };
 }
 
 export interface CanvasProps {
@@ -93,4 +101,11 @@ export interface TrackProps {
   name: string;
   instrument: string;
   color: string;
+}
+
+export interface MidiClipPosInfo {
+  dataKey: number;
+  startTime: number;
+  trackKey: number;
+  length: number;
 }
