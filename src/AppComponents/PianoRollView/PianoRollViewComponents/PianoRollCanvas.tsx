@@ -4,8 +4,8 @@ import { Layer, Stage, Rect, Line } from "react-konva";
 import Note from "./Note";
 import { getPositionX, getPositionY } from "../../GetPositionFunctions";
 import "./PianoRollCanvas.css";
-import { MidiClip, MidiNote, NoteRectProps } from "../../Interfaces";
-import { useDispatch } from "react-redux";
+import { MidiClip, MidiNote, NoteRectProps, Rootstate } from "../../Interfaces";
+import { useDispatch, useSelector } from "react-redux";
 import { addNewNote, deleteNote, updateNote } from "../../Actions";
 
 function checkDeselect(
@@ -186,8 +186,11 @@ function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   console.log("new MIDI IN CANV", props.midiClip);
   const tileHeight = 25 + 1; // + 1 -> margins and gaps
+  
   const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
-  const gridPadding = 16; // 1 / gridPadding -> density of the grids in a beat
+  const gridPadding = useSelector((state: Rootstate) => state.pianoRollCanvasProps.gridPadding); // 1 / gridPadding -> density of the grids in a beat
+  const midiNoteColor = useSelector((state: Rootstate) => state.pianoRollCanvasProps.midiNoteColor);
+  
   const blockSnapSizeToTick = 192 / (gridPadding / 4);
   const dispatch = useDispatch();
 
@@ -420,6 +423,7 @@ function PianoRollCanvas(props: Props) {
                   width: item.width,
                   posX: item.posX,
                   posY: item.posY,
+                  color: midiNoteColor,
                 }}
                 canvasProps={{
                   canvasWidth: canvasWidth,

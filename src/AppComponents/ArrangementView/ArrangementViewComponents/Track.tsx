@@ -153,7 +153,7 @@ const Track = React.memo((props: Props) => {
           (note) => note.key === props.curNoteToModify!.noteDataKey
         );
 
-        // THIS COULD BE PROBLEMATIC.... or not...
+        // THIS COULD BE PROBLEMATIC.... TODO: IT SEEMS TO BE, CHECK IT!
         curParts[stateIndex].value.part.remove(
           curParts[stateIndex].value.partNotes[noteToUpdateIndex].value
         );

@@ -133,16 +133,6 @@ export const importProject = (inputFile: string) => {
   };
 };
 
-export const signUpUser = (email: string, password: string) => {
-  return {
-    type: "SIGN_UP",
-    payload: {
-      email: email,
-      password: password,
-    },
-  };
-};
-
 export const changeArrViewNumOfPhrases = (newNumOfPhrases: number) => {
   return {
     type: "CHANGE_ARR_VIEW_NUM_OF_PHRASES",
@@ -154,5 +144,26 @@ export const changeArrViewGridPadding = (newNumOfGridPadding: number) => {
   return {
     type: "CHANGE_ARR_VIEW_GRID_PADDING",
     payload: newNumOfGridPadding,
+  };
+};
+
+export const changeMidiClipColor = (newColor: string) => {
+  return {
+    type: "CHANGE_MIDI_CLIP_COLOR",
+    payload: newColor,
+  };
+};
+
+export const changePianoRollViewGridPadding = (newNumOfGridPadding: number) => {
+  return {
+    type: "CHANGE_PIANO_ROLL_VIEW_GRID_PADDING",
+    payload: newNumOfGridPadding,
+  };
+};
+
+export const changeMidiNoteColor = (newColor: string) => {
+  return {
+    type: "CHANGE_MIDI_NOTE_COLOR",
+    payload: newColor,
   };
 };

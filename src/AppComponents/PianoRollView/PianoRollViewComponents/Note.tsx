@@ -39,7 +39,7 @@ function Note(props: Props) {
         y={props.shapeProps.posY}
         width={props.shapeProps.width * blockSnapSize}
         height={tileHeight}
-        fill="#6fff00"
+        fill={props.shapeProps.color}
         strokeWidth={0}
         stroke="black"
         draggable={true}
@@ -60,9 +60,7 @@ function Note(props: Props) {
           e.currentTarget.draw();
         }}
         onMouseLeave={(e) => {
-          e.target.setAttrs({
-            fill: "#6fff00",
-          });
+          e.target.setAttrs({ fill: props.shapeProps.color });
           e.currentTarget.draw();
         }}
         onDragEnd={(e) => {
@@ -73,9 +71,14 @@ function Note(props: Props) {
             blockSnapSize,
             false
           );
-          const posY = getPositionY(e.target.y(), canvasHeight, tileHeight, false);
+          const posY = getPositionY(
+            e.target.y(),
+            canvasHeight,
+            tileHeight,
+            false
+          );
 
-          e.target.position({x: posX, y: posY});
+          e.target.position({ x: posX, y: posY });
           props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {

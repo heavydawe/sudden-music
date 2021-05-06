@@ -122,7 +122,7 @@ function NavigationBar() {
         <option value="16">16</option>
         <option value="32">32</option>
       </select>
-      <span>Vonalak sűrűsége:</span>
+      <span>Rácsok sűrűsége:</span>
       <select defaultValue="16" onChange={(e) => dispatch(changeArrViewGridPadding(+e.target.value))}>
         <option value="4">4</option>
         <option value="8">8</option>

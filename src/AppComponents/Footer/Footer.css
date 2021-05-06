@@ -1,7 +1,7 @@
 footer {
     background:
-        linear-gradient(180deg, rgb(0, 0, 0, 0), black),
-        linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 8%, rgb(180, 33, 62) 100%);
+        linear-gradient(180deg, rgb(0, 0, 0, 0), black);
+        /* linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 8%, rgb(180, 33, 62) 100%); */
     height: 7vh;
 }
 
@@ -32,7 +32,7 @@ footer button:hover {
     position: absolute;
     top: 40%;
     left: 50%;
-    background-color: gray;
+    background-color: var(--modal-bg-color);
     width: 350px;
     height: 20%;
     border-radius: 25px;
@@ -41,7 +41,7 @@ footer button:hover {
     min-height: 200px;
 }
 
-@keyframes showPopUp {
+/* @keyframes showPopUp {
     0% {
         transform: scale(0);
     }
@@ -53,20 +53,32 @@ footer button:hover {
     100% {
         transform: scale(1);
     }
+} */
+
+.prefModalContainer {
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
 
-.prefModal label {
-    padding: 40px;
+.prefModalContainer p {
+    color: white;
+    text-align: right;
+    font-weight: bolder;
+    margin: 0;
+    padding: 7px 3px 0 0;
 }
 
 .prefModal input {
-    margin: 10px;
+    margin-bottom: 25px;
+    margin-left: 10px;
     border-radius: 10px;
     border: none;
 }
 
 .prefModal select {
-    margin: 10px;
+    margin-top: 10px;
+    margin-bottom: 27px;
+    margin-left: 10px;
     border-radius: 10px;
 }
 
@@ -85,14 +97,14 @@ footer button:hover {
     padding: 4px;
 }
 
-.prefModalCancelButton {
-    bottom: 10px;
-    left: 20px;
-}
-
 .prefModalSaveButton {
     bottom: 10px;
     right: 20px;
+}
+
+.prefModalCancelButton {
+    bottom: 10px;
+    left: 20px;
 }
 
 .signUpContainer {
@@ -106,7 +118,7 @@ footer button:hover {
     position: absolute;
     top: 35%;
     left: 50%;
-    background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+    background: var(--modal-bg-color);
     width: 500px;
     height: 30%;
     border-radius: 25px;
@@ -172,7 +184,7 @@ footer button:hover {
     position: absolute;
     top: 40%;
     left: 50%;
-    background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+    background: var(--modal-bg-color);
     width: 500px;
     height: 20%;
     border-radius: 25px;

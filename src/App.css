@@ -1,6 +1,6 @@
 .App {
   overflow: auto;
-  background-color: rgb(40, 40, 40);
+  background: var(--main-bg-color);
   width: 100vw;
   height: 100vh;
   padding: 0px;

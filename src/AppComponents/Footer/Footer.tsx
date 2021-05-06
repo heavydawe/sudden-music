@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
 import ReactModal from "react-modal";
 import { useDispatch } from "react-redux";
-import { exportProject, importProject, signUpUser } from "../Actions";
+import {
+  changeMidiClipColor,
+  changeMidiNoteColor,
+  exportProject,
+  importProject,
+} from "../Actions";
 import { appStore, appAuth } from "../firebase";
 import "./Footer.css";
 
@@ -77,13 +82,27 @@ function Footer() {
   const signInEmailRef = useRef<HTMLInputElement>(null);
   const signInPasswordRef = useRef<HTMLInputElement>(null);
 
+  const prefThemeRef = useRef<HTMLSelectElement>(null);
+  const prefMidiClipColor = useRef<HTMLInputElement>(null);
+  const prefMidiNoteColor = useRef<HTMLInputElement>(null);
+
   return (
     <footer>
       {isLoggedIn ? (
         <>
           <button
             onClick={() => {
-              appAuth.signOut();
+              appAuth.signOut().catch((error) => {
+                alert("Hiba történt kijelentkezéskor!");
+                console.log(error);
+              });
+
+              const root = document.documentElement;
+              root.style.setProperty("--modal-bg-color", "rgb(40, 40, 40)");
+              root.style.setProperty("--main-bg-color", "rgb(40, 40, 40)");
+
+              dispatch(changeMidiNoteColor("#6fff00"));
+              dispatch(changeMidiClipColor("grey"));
               setIsLoggedIn(false);
             }}
           >
@@ -95,15 +114,84 @@ function Footer() {
             className="prefModal"
             appElement={document.getElementById("App")!}
           >
-            <label htmlFor="name">Név</label>
-            <input id="name" type="text" />
+            <div className="prefModalContainer">
+              <div>
+                <p>Témaválasztás:</p>
+                <br />
+                <p>MIDI Clip színe:</p>
+                <br />
+                <p>MIDI jel színe:</p>
+              </div>
+              <div>
+                <select defaultValue="darkMode" ref={prefThemeRef}>
+                  <option value="darkMode">Dark Mode</option>
+                  <option value="darkModeBlue">Dark Mode Blue</option>
+                  <option value="fade">Fade</option>
+                </select>
+                <br />
+                <input type="color" ref={prefMidiClipColor} />
+                <br />
+                <input type="color" ref={prefMidiNoteColor} />
+              </div>
+            </div>
             <button
               className="prefModalCancelButton"
               onClick={() => setIsPrefOpen(false)}
             >
               Mégsem
             </button>
-            <button className="prefModalSaveButton">Mentés</button>
+            <button
+              className="prefModalSaveButton"
+              onClick={() => {
+                const root = document.documentElement;
+                switch (prefThemeRef.current!.value) {
+                  case "darkMode":
+                    root.style.setProperty(
+                      "--main-bg-color",
+                      "rgb(40, 40, 40)"
+                    );
+                    root.style.setProperty(
+                      "--modal-bg-color",
+                      "rgb(40, 40, 40)"
+                    );
+                    break;
+                  case "darkModeBlue":
+                    root.style.setProperty("--main-bg-color", "blue");
+                    root.style.setProperty("--modal-bg-color", "blue");
+                    break;
+                  case "fade":
+                    root.style.setProperty("--main-bg-color", "blue");
+                    root.style.setProperty("--modal-bg-color", "blue");
+                    break;
+
+                  default:
+                    throw Error("Unknown theme!");
+                }
+
+                appStore
+                  .collection("users")
+                  .doc(appAuth.currentUser!.uid)
+                  .set({
+                    theme: prefThemeRef.current!.value,
+                    midiClipColor: prefMidiClipColor.current!.value,
+                    midiNoteColor: prefMidiNoteColor.current!.value,
+                  })
+                  .catch((error) => {
+                    alert(
+                      "Beállítások elmentésekor valamilyen hiba lépett fel!"
+                    );
+                    console.log(error);
+                  });
+
+                dispatch(changeMidiClipColor(prefMidiClipColor.current!.value));
+                dispatch(changeMidiNoteColor(prefMidiNoteColor.current!.value));
+
+                // TODO: firestorera elmentés
+                setIsPrefOpen(false);
+              }}
+            >
+              Mentés
+            </button>
           </ReactModal>
         </>
       ) : (
@@ -133,14 +221,62 @@ function Footer() {
             <button
               className="signUpModalSignUpButton"
               onClick={() => {
-                appAuth
-                  .signInWithEmailAndPassword("dfgsdfg@sdfasdf.asdf", "123456") //TODO: use refs here
+                appAuth //("dfgsdfg@sdfasdf.asdf", "123456")
+                  .signInWithEmailAndPassword(
+                    signInEmailRef.current!.value,
+                    signInPasswordRef.current!.value
+                  )
                   .then((cred) => {
                     setIsLoggedIn(true);
                     setIsSignInOpen(false);
-                    appStore.collection("users").doc(cred.user!.uid).set({
-                      backGroundColor: "fade",
-                    });
+                    appStore
+                      .collection("users")
+                      .doc(cred.user!.uid)
+                      .get()
+                      .then((doc) => {
+                        const root = document.documentElement;
+                        switch (doc.data()!.theme) {
+                          case "darkMode":
+                            root.style.setProperty(
+                              "--main-bg-color",
+                              "rgb(40, 40, 40)"
+                            );
+                            root.style.setProperty(
+                              "--modal-bg-color",
+                              "rgb(40, 40, 40)"
+                            );
+                            break;
+                          case "darkModeBlue":
+                            root.style.setProperty("--main-bg-color", "blue");
+                            root.style.setProperty("--modal-bg-color", "blue");
+                            break;
+                          case "fade":
+                            root.style.setProperty(
+                              "--main-bg-color",
+                              "linear-gradient(90deg, rgb(12, 38, 167) 0%, rgb(180, 33, 62) 100%)"
+                            );
+                            root.style.setProperty(
+                              "--modal-bg-color",
+                              "linear-gradient(90deg, rgb(12, 38, 167) 0%, rgb(180, 33, 62) 100%)"
+                            );
+                            break;
+
+                          default:
+                            alert("Hiba történt a háttér betöltésekor!");
+                            break;
+                        }
+
+                        dispatch(
+                          changeMidiClipColor(doc.data()!.midiClipColor)
+                        );
+                        dispatch(
+                          changeMidiNoteColor(doc.data()!.midiNoteColor)
+                        );
+                      })
+                      .catch((error) => {
+                        alert("Hiba történt a beállítások betöltésekor!");
+                        console.log(error);
+                      });
                   })
                   .catch((error) => {
                     if (error.code === "auth/user-not-found") {
@@ -224,12 +360,25 @@ function Footer() {
                     passwordConfirmRef
                   )
                 ) {
-                  dispatch(
-                    signUpUser(
+                  appAuth
+                    .createUserWithEmailAndPassword(
                       emailRef.current!.value,
                       passwordRef.current!.value
                     )
-                  );
+                    .then((cred) => {
+                      appStore.collection("users").doc(cred.user!.uid).set({
+                        theme: "darkMode",
+                        midiClipColor: "grey",
+                        midiNoteColor: "#6fff00",
+                      });
+                    })
+                    .catch((error) => {
+                      if (error.code === "auth/email-already-in-use") {
+                        alert("Az email címhez már tartozik egy fiók!");
+                      } else {
+                        alert(error.message);
+                      }
+                    });
                   setIsSignUpOpen(false);
                 }
               }}
@@ -242,7 +391,7 @@ function Footer() {
 
       {/* <button>Sign up</button> */}
       <div className="footerRightButtons">
-        <button onClick={() => dispatch(exportProject())}>Export...</button>
+        <button onClick={() => dispatch(exportProject())}>Exportálás...</button>
         <button
           onClick={() => {
             const fileSelector = document.createElement("input");
@@ -282,7 +431,7 @@ function Footer() {
             fileSelector.click();
           }}
         >
-          Import...
+          Importálás...
         </button>
       </div>
     </footer>

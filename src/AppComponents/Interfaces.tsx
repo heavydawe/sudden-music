@@ -43,6 +43,7 @@ export interface ShapeProps {
   posX: number;
   posY: number;
   width: number;
+  color: string;
 }
 
 export interface TrackInterface {
@@ -62,11 +63,19 @@ export interface Rootstate {
   };
   selectedMidiClip: MidiClip;
   modifyNote: ModifyNote;
-  curUser: string;
-  arrCanvasProps: {
-    numOfPhrases: number;
-    gridPadding: number;
-  };
+  arrCanvasProps: ArrCanvasProps;
+  pianoRollCanvasProps: PianoRollCanvasProps;
+}
+
+export interface ArrCanvasProps {
+  numOfPhrases: number;
+  gridPadding: number;
+  midiClipColor: string;
+}
+
+export interface PianoRollCanvasProps {
+  gridPadding: number;
+  midiNoteColor: string;
 }
 
 export interface CanvasProps {

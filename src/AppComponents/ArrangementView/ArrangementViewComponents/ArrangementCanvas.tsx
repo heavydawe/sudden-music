@@ -86,7 +86,9 @@ function ArrangementCanvas(props: Props) {
 
   // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
   const numOfPhrases = useSelector((state: Rootstate) => state.arrCanvasProps.numOfPhrases); // Phrase = 4 measures
-  const gridPadding = useSelector((state: Rootstate) => state.arrCanvasProps.gridPadding);; // 1 / gridPadding -> how many grids in a phrase
+  const gridPadding = useSelector((state: Rootstate) => state.arrCanvasProps.gridPadding); // 1 / gridPadding -> how many grids in a phrase
+  const midiClipColor = useSelector((state: Rootstate) => state.arrCanvasProps.midiClipColor);
+  
   const blockSnapSizeToTick = 192 / (gridPadding / 16);
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
@@ -337,6 +339,7 @@ function ArrangementCanvas(props: Props) {
                   posX: item.posX,
                   posY: item.posY,
                   width: item.width,
+                  color: midiClipColor,
                 }}
                 isSelected={item.dataKey === selectedMidiClipId}
                 canvasProps={{

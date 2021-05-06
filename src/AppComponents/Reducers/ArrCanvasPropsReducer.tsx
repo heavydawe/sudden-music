@@ -1,14 +1,14 @@
+import { ArrCanvasProps } from "../Interfaces";
+
 const ArrCanvasPropsReducer = (
-  state: {
-    numOfPhrases: number;
-    gridPadding: number;
-  } = {
+  state: ArrCanvasProps = {
     numOfPhrases: 4,
     gridPadding: 16,
+    midiClipColor: "grey",
   },
   action: {
     type: string;
-    payload: number;
+    payload: number | string;
   }
 ) => {
   switch (action.type) {
@@ -17,11 +17,17 @@ const ArrCanvasPropsReducer = (
         ...state,
         numOfPhrases: action.payload,
       };
-    
+
     case "CHANGE_ARR_VIEW_GRID_PADDING":
       return {
         ...state,
         gridPadding: action.payload,
+      };
+
+    case "CHANGE_MIDI_CLIP_COLOR":
+      return {
+        ...state,
+        midiClipColor: action.payload,
       };
 
     default:

@@ -1,3 +1,8 @@
+:root {
+  --modal-bg-color: rgb(40, 40, 40);
+  --main-bg-color: rgb(40, 40, 40);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

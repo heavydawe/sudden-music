@@ -22,6 +22,7 @@ function App() {
       <Footer />
       <button
         onClick={() => {
+          appAuth.currentUser &&
           appStore
             .collection("users")
             .doc(appAuth.currentUser!.uid)
@@ -35,7 +36,7 @@ function App() {
       </button>
       <button onClick={() => console.log(appAuth.currentUser)}>CUR USER</button>
       <button onClick={() => console.log(Tone.Transport.state)}>Transport state</button>
-      <button onClick={() => document.getElementById("header")!.style.setProperty("background-color", "red")}>CSS change</button>
+      <button onClick={() => document.documentElement.style.setProperty("--modal-bg-color", "blue")}>CSS change</button>
     </div>
   );
 }

@@ -43,7 +43,7 @@ function MidiClip(props: Props) {
         stroke="black"
         strokeWidth={0.1}
         cornerRadius={10}
-        fill="grey"
+        fill={props.shapeProps.color}
         draggable={true}
         onDragStart={(e) => {
           if (e.evt.button === 0) {

@@ -2,7 +2,7 @@
   position: absolute;
   top: 40%;
   left: 50%;
-  background: linear-gradient(90deg, rgba(12, 38, 167, 0.8) 0%, rgba(180, 33, 62, 0.8) 100%);
+  background: var(--modal-bg-color);
   width: 350px;
   height: 20%;
   border-radius: 25px;
