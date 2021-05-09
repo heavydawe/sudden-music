@@ -1,5 +1,5 @@
 import { KonvaEventObject } from "konva/types/Node";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layer, Stage, Rect, Line } from "react-konva";
 import Note from "./Note";
 import { getPositionX, getPositionY } from "../../GetPositionFunctions";
@@ -146,12 +146,6 @@ function initNotes(
   let initedNotes: NoteRectProps[] = [];
 
   notes.forEach((note) => {
-    console.log(
-      getNotePosX(note.startTime, blockSnapSizeToTick) * blockSnapSize,
-      getNotePosY(note.note, tileHeight),
-      getNoteWidth(note.length, blockSnapSizeToTick)
-    );
-
     initedNotes.push({
       dataKey: note.dataKey,
       posX: getNotePosX(note.startTime, blockSnapSizeToTick) * blockSnapSize,
@@ -159,6 +153,8 @@ function initNotes(
       width: getNoteWidth(note.length, blockSnapSizeToTick),
     });
   });
+
+  console.log("INITED NOTES", initedNotes);
 
   return initedNotes;
 }
@@ -180,18 +176,21 @@ function initDataKey(notes: MidiNote[]) {
 
 interface Props {
   midiClip: MidiClip;
+  gridPadding: number;
 }
 
 function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   console.log("new MIDI IN CANV", props.midiClip);
   const tileHeight = 25 + 1; // + 1 -> margins and gaps
-  
+
   const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
-  const gridPadding = useSelector((state: Rootstate) => state.pianoRollCanvasProps.gridPadding); // 1 / gridPadding -> density of the grids in a beat
-  const midiNoteColor = useSelector((state: Rootstate) => state.pianoRollCanvasProps.midiNoteColor);
-  
-  const blockSnapSizeToTick = 192 / (gridPadding / 4);
+  const gridPadding = props.gridPadding / 4; // 1 / gridPadding -> density of the grids in a beat
+  const midiNoteColor = useSelector(
+    (state: Rootstate) => state.pianoRollCanvasProps.midiNoteColor
+  );
+
+  const blockSnapSizeToTick = 192 / gridPadding;
   const dispatch = useDispatch();
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
@@ -206,7 +205,7 @@ function PianoRollCanvas(props: Props) {
           (numOfBeats * gridPadding -
             ((window.innerWidth - 61) % (numOfBeats * gridPadding)))) *
         (numOfBeats / 4);
-  // TODO: if numOfBeats > 4 then we should use a vertical scrollbar to navigates
+  // TODO: if numOfBeats > 4 then we should use a vertical scrollbar to navigate
 
   const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
 
@@ -224,6 +223,18 @@ function PianoRollCanvas(props: Props) {
       blockSnapSizeToTick
     )
   );
+
+  useEffect(() => {
+    console.log("!!!!IN USEEFFECT INITNOTES");
+    setCurNotesRect(
+      initNotes(
+        props.midiClip.notes,
+        tileHeight,
+        blockSnapSize,
+        blockSnapSizeToTick
+      )
+    );
+  }, [blockSnapSize, blockSnapSizeToTick, props.midiClip, tileHeight, gridPadding]);
 
   console.log("PIANO CANVAS RENDER", curNotesRect);
 
@@ -245,12 +256,13 @@ function PianoRollCanvas(props: Props) {
           i * blockSnapSize + 0.5,
           canvasHeight,
         ]}
-        stroke={i % (gridPadding / 4) ? "gray" : "black"} // TODO: If time signature can be changed, then 4 should NOT be hardcoded here
-        strokeWidth={i % 4 ? 1 : 1.5}
+        stroke={i % (gridPadding / 4) ? "gray" : "black"}
+        strokeWidth={i % (gridPadding / 4) ? 1 : 1.5}
       />
     );
   }
 
+  // TODO: put this whole thing in a const variable
   for (let i = 0; i < canvasHeight; i += tileHeight) {
     gridLayerComponents.push(
       <Line
@@ -301,7 +313,7 @@ function PianoRollCanvas(props: Props) {
 
             const posX = getPositionX(
               transform.point(pos).x,
-              4 * blockSnapSize,
+              4 * blockSnapSize, // TODO: ez biztos nincs hardcodeolva?
               canvasWidth,
               blockSnapSize,
               true
@@ -323,25 +335,6 @@ function PianoRollCanvas(props: Props) {
                 width: 4,
               },
             ]);
-            // getNoteInfo(
-            //   getPositionX(
-            //     transform.point(pos).x,
-            //     4 * blockSnapSize,
-            //     canvasWidth,
-            //     blockSnapSize,
-            //     true
-            //   ),
-            //   getPositionY(
-            //     transform.point(pos).y,
-            //     canvasHeight,
-            //     tileHeight,
-            //     true
-            //   ),
-            //   4,
-            //   tileHeight,
-            //   blockSnapSize,
-            //   blockSnapSizeToTick
-            // );
 
             const newNoteInfo = getNoteInfo(
               posX,
@@ -378,7 +371,6 @@ function PianoRollCanvas(props: Props) {
           key="notesLayer"
           onClick={(e) => {
             if (e.evt.button === 2) {
-
               const curDataKey = e.target.getAttr("dataKey");
 
               const noteToDeleteInfo = getNoteInfo(
@@ -406,9 +398,7 @@ function PianoRollCanvas(props: Props) {
               );
 
               setCurNotesRect(
-                curNotesRect.filter(
-                  (item) => item.dataKey !== curDataKey
-                )
+                curNotesRect.filter((item) => item.dataKey !== curDataKey)
               );
             }
           }}
@@ -429,6 +419,7 @@ function PianoRollCanvas(props: Props) {
                   canvasHeight: canvasHeight,
                   blockSnapSize: blockSnapSize,
                   trackOrTileHeight: tileHeight,
+                  gridPadding: gridPadding,
                 }}
                 isSelected={item.dataKey === selectedNoteId}
                 handleSelect={() => {

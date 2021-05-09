@@ -1,10 +1,13 @@
 import { MidiClip } from "../Interfaces";
 
 const SelectedMidiClipReducer = (
-  state: MidiClip | null = null,
+  state: {
+    trackKey: number;
+    midiClipDataKey: number;
+  } | null = null,
   action: {
     type: string;
-    payload: MidiClip;
+    payload: { trackKey: number; midiClipDataKey: number };
   }
 ) => {
   switch (action.type) {

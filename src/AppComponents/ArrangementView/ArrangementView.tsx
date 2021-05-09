@@ -4,7 +4,7 @@ import ArrangementCanvas from "./ArrangementViewComponents/ArrangementCanvas";
 import { Rootstate } from "../Interfaces";
 import { useSelector } from "react-redux";
 import addButton from "../Icons/addButton.png";
-import {  useState } from "react";
+import { useState } from "react";
 import NewTrackModal from "./ArrangementViewComponents/NewTrackModal";
 // import { useState } from "react";
 
@@ -47,20 +47,26 @@ function ArrangementView() {
               }
               curMidiClipToModify={
                 curTrackInfos.modifiedMidiClip !== null
-                ? curTrackInfos.modifiedMidiClip.trackDataKey === item.dataKey
-                  ? curTrackInfos.modifiedMidiClip
-                  : curTrackInfos.modifiedMidiClip.newMidiClipProps !== undefined
-                    ? curTrackInfos.modifiedMidiClip.newMidiClipProps.trackKey === item.dataKey
+                  ? curTrackInfos.modifiedMidiClip.trackDataKey === item.dataKey
+                    ? curTrackInfos.modifiedMidiClip
+                    : curTrackInfos.modifiedMidiClip.newMidiClipProps !==
+                      undefined
+                    ? curTrackInfos.modifiedMidiClip.newMidiClipProps
+                        .trackKey === item.dataKey
                       ? curTrackInfos.modifiedMidiClip
                       : null
                     : null
-                : null
+                  : null
               }
               //midiClips={item.midiClips}
             />
           );
         })}
-        <NewTrackModal showModal={showModal} setShowModal={setShowModal} mode="add" />
+        <NewTrackModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          mode="add"
+        />
         <button
           className="addNewTrackButton"
           onClick={() => setShowModal(true)}
@@ -72,11 +78,21 @@ function ArrangementView() {
       <ArrangementCanvas
         // TODO: elég ha a midiclip azon paramétereit adjuk át, ami elég az elhelyezéséhez.
         // A piano roll tudni fogja, hogy miylen noteok lesznek benne, ezért az arr canvasnak nem kell ezt tudnia
-        midiClips={curTrackInfos.tracks
-          .map((track) => {
-            return track.midiClips;
-          })
-          .flat()}
+        // midiClips={curTrackInfos.tracks
+        //   .map((track) => {
+        //     return track.midiClips;
+        //   })
+        //   .flat()}
+        midiClipsPos={curTrackInfos.tracks.flatMap((track) => {
+          return track.midiClips.map((midiClip) => {
+            return {
+              dataKey: midiClip.dataKey,
+              trackKey: midiClip.trackKey,
+              startTime: midiClip.startTime,
+              length: midiClip.length,
+            };
+          });
+        })}
         numOfTracks={curTrackInfos.tracks.length}
       />
     </div>

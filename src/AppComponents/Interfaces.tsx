@@ -61,7 +61,7 @@ export interface Rootstate {
     modifiedNote: ModifyNote | null;
     modifiedMidiClip: ModifyMidiClip | null;
   };
-  selectedMidiClip: MidiClip;
+  selectedMidiClip: { trackKey: number; midiClipDataKey: number };
   modifyNote: ModifyNote;
   arrCanvasProps: ArrCanvasProps;
   pianoRollCanvasProps: PianoRollCanvasProps;
@@ -84,6 +84,7 @@ export interface CanvasProps {
   canvasHeight: number;
   blockSnapSize: number;
   trackOrTileHeight: number;
+  gridPadding: number;
 }
 
 export interface ModifyNote {

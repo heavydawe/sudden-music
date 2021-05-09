@@ -20,6 +20,7 @@ import {
 } from "../../Actions";
 import Konva from "konva";
 import * as Tone from "tone";
+import React from "react";
 
 function getMidiClipStartTime(
   posX: number,
@@ -54,12 +55,13 @@ function getMidiClipFromRect(
 }
 
 function initMidiClipRects(
-  midiClips: MidiClipInterface[],
+  midiClips: MidiClipPos[],
   blockSnapSize: number,
   blockSnapSizeToTick: number,
-  trackHeight: number
+  trackHeight: number,
+  gridPadding: number
 ) {
-  const asd = midiClips.map((midiClip) => {
+  const initedMidiClips = midiClips.map((midiClip) => {
     return {
       dataKey: midiClip.dataKey,
       posX: (midiClip.startTime / blockSnapSizeToTick) * blockSnapSize,
@@ -68,21 +70,29 @@ function initMidiClipRects(
     };
   });
 
-  console.log("initMidi", asd);
-  return asd;
+  console.log("initMidi", initedMidiClips);
+  return initedMidiClips;
+}
+
+interface MidiClipPos {
+  dataKey: number;
+  trackKey: number;
+  length: number;
+  startTime: number;
 }
 
 interface Props {
-  midiClips: MidiClipInterface[];
+  //midiClips: MidiClipInterface[];
+  midiClipsPos: MidiClipPos[];
   numOfTracks: number;
 }
 
-function ArrangementCanvas(props: Props) {
+const ArrangementCanvas = React.memo((props: Props) => {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
 
-  console.log("IN ARR CANVAS", props.midiClips);
+  console.log("IN ARR CANVAS", props.midiClipsPos);
 
-  const trackHeight = 100 + 2; // + 1 -> margins and gaps
+  const trackHeight = 100 + 2; // + 2 -> margins and gaps
   const numOfTracks = props.numOfTracks;
 
   // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
@@ -128,10 +138,11 @@ function ArrangementCanvas(props: Props) {
   // TODO: this state MIGHT be unneeded as we update the props after each action.
   const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>(
     initMidiClipRects(
-      props.midiClips,
+      props.midiClipsPos,
       blockSnapSize,
       blockSnapSizeToTick,
-      trackHeight
+      trackHeight,
+      gridPadding
     )
   );
 
@@ -139,13 +150,14 @@ function ArrangementCanvas(props: Props) {
     // TODO: MidiClipsPosInfo
     setCurMidiClipsRect(
       initMidiClipRects(
-        props.midiClips,
+        props.midiClipsPos,
         blockSnapSize,
         blockSnapSizeToTick,
-        trackHeight
+        trackHeight,
+        gridPadding
       )
     );
-  }, [blockSnapSize, blockSnapSizeToTick, props.midiClips, trackHeight]);
+  }, [blockSnapSize, blockSnapSizeToTick, props.midiClipsPos, trackHeight, gridPadding]);
 
   let gridLines: JSX.Element[] = [];
 
@@ -161,7 +173,7 @@ function ArrangementCanvas(props: Props) {
           canvasHeight,
         ]}
         stroke={i % (gridPadding / 4) ? "gray" : "black"} // TODO: If time signature can be changed, then 4 should NOT be hardcoded here
-        strokeWidth={i % 4 ? 1 : 1.5}
+        strokeWidth={i % (gridPadding / 4) ? 1 : 1.5}
       />
     );
   }
@@ -391,6 +403,7 @@ function ArrangementCanvas(props: Props) {
                   blockSnapSize: blockSnapSize,
                   canvasWidth: canvasWidth,
                   trackOrTileHeight: trackHeight,
+                  gridPadding: gridPadding,
                 }}
                 handleSelect={(isDragging: boolean) => {
                   if (selectedMidiClipId !== item.dataKey) {
@@ -403,27 +416,17 @@ function ArrangementCanvas(props: Props) {
                   if (!isDragging) {
                     dispatch(
                       selectMidiClip(
-                        getMidiClipFromRect(
-                          {
-                            dataKey: item.dataKey,
-                            posX: item.posX,
-                            posY: item.posY,
-                            width: item.width,
-                          },
-                          props.midiClips.find(
-                            (midiClip) => midiClip.dataKey === item.dataKey
-                          )!.notes,
-                          trackHeight,
-                          blockSnapSize,
-                          blockSnapSizeToTick
-                        )
+                        getMidiClipTrackKey(
+                          item.posY, trackHeight
+                        ),
+                        item.dataKey
                       )
                     );
                   }
                 }}
                 changeSize={(newSize) => {
-                  const newCurNotes = curMidiClipsRect.slice();
-                  newCurNotes[i].width = newSize;
+                  const newCurMidiClips = curMidiClipsRect.slice();
+                  newCurMidiClips[i].width = newSize;
 
                   const newMidiClip = getMidiClipFromRect(
                     {
@@ -432,7 +435,7 @@ function ArrangementCanvas(props: Props) {
                       posY: curMidiClipsRect[i].posY,
                       width: curMidiClipsRect[i].width,
                     },
-                    [],
+                    [], // no need for notes, they won't be changed
                     trackHeight,
                     blockSnapSize,
                     blockSnapSizeToTick
@@ -449,7 +452,7 @@ function ArrangementCanvas(props: Props) {
                       newMidiClipProps: newMidiClip,
                     })
                   );
-                  setCurMidiClipsRect(newCurNotes);
+                  setCurMidiClipsRect(newCurMidiClips);
                 }}
                 changePos={(newPosX: number, newPosY: number) => {
                   if (
@@ -501,6 +504,6 @@ function ArrangementCanvas(props: Props) {
       </Stage>
     </div>
   );
-}
+});
 
 export default ArrangementCanvas;

@@ -7,6 +7,29 @@
   height: 700px;
   width: 100vw;
   overflow: scroll;
+  margin-top: 10px;
+}
+
+.pianoRollView span {
+  color: white;
+  margin-left: 50px;
+  font-weight: bolder;
+}
+
+.pianoRollView select {
+  border-radius: 5px;
+  border: none;
+  padding: 2px;
+  margin-left: 10px;
+  text-align: center;
+  font-weight: 900;
+  font-size: small;
+  outline: none;
+  transition: border-radius 0.2s;
+}
+
+.pianoRollView select:focus {
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar {

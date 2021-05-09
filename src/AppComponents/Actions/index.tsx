@@ -59,10 +59,13 @@ export const clearModifyMidiclip = () => {
   };
 };
 
-export const selectMidiClip = (selectedMidiClip: MidiClip) => {
+export const selectMidiClip = (trackKey: number, midiClipDataKey: number) => {
   return {
     type: "SELECT_MIDI_CLIP",
-    payload: selectedMidiClip,
+    payload: {
+      trackKey: trackKey,
+      midiClipDataKey: midiClipDataKey,
+    },
   };
 };
 

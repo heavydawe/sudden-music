@@ -20,6 +20,7 @@ function MidiClip(props: Props) {
   const canvasHeight = props.canvasProps.canvasHeight;
   const blockSnapSize = props.canvasProps.blockSnapSize;
   const trackHeight = props.canvasProps.trackOrTileHeight;
+  const gridPadding = props.canvasProps.gridPadding;
 
   const midiClipRef = useRef<Konva.Rect>(null);
   const trRefMidi = useRef<Konva.Transformer>(null);
@@ -38,7 +39,7 @@ function MidiClip(props: Props) {
         ref={midiClipRef}
         x={props.shapeProps.posX}
         y={props.shapeProps.posY}
-        width={props.shapeProps.width * blockSnapSize}
+        width={props.shapeProps.width * blockSnapSize * (gridPadding / 16)}
         height={trackHeight}
         stroke="black"
         strokeWidth={0.1}
@@ -102,7 +103,7 @@ function MidiClip(props: Props) {
           anchorStrokeWidth={0}
           resizeEnabled={true}
           boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < blockSnapSize) {
+            if (newBox.width < blockSnapSize * (gridPadding / 16)) {
               trRefMidi.current!.stopTransform();
               return oldBox;
             }
