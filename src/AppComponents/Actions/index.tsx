@@ -167,3 +167,10 @@ export const changeMidiNoteColor = (newColor: string) => {
     payload: newColor,
   };
 };
+
+export const changeTransportPosition = (newPosition: number) => {
+  return {
+    type: "SET_CUR_TRANSPORT_POSITION",
+    payload: newPosition,
+  };
+};

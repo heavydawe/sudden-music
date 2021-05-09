@@ -124,9 +124,9 @@ function Footer() {
               </div>
               <div>
                 <select defaultValue="darkMode" ref={prefThemeRef}>
-                  <option value="darkMode">Dark Mode</option>
-                  <option value="darkModeBlue">Dark Mode Blue</option>
-                  <option value="fade">Fade</option>
+                  <option value="darkMode">Sötét</option>
+                  <option value="darkModeBlue">Sötét kék</option>
+                  <option value="fade">Átmenetes</option>
                 </select>
                 <br />
                 <input type="color" ref={prefMidiClipColor} />
@@ -160,8 +160,14 @@ function Footer() {
                     root.style.setProperty("--modal-bg-color", "blue");
                     break;
                   case "fade":
-                    root.style.setProperty("--main-bg-color", "blue");
-                    root.style.setProperty("--modal-bg-color", "blue");
+                    root.style.setProperty(
+                      "--main-bg-color",
+                      "linear-gradient(90deg, rgb(12, 38, 167) 0%, rgb(180, 33, 62) 100%)"
+                    );
+                    root.style.setProperty(
+                      "--modal-bg-color",
+                      "linear-gradient(90deg, rgb(12, 38, 167) 0%, rgb(180, 33, 62) 100%)"
+                    );
                     break;
 
                   default:

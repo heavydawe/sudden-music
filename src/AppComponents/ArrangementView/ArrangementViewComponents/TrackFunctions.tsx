@@ -1,5 +1,5 @@
 import * as Tone from "tone";
-import { MidiClip, ModifyNote, NoteEvent } from "../../Interfaces";
+// import { MidiClip, ModifyNote, NoteEvent } from "../../Interfaces";
 
 export type Instrument =
   | Tone.AMSynth
@@ -41,52 +41,52 @@ function getInstrument(instrumentName: string) {
   }
 }
 
-function updateCurEvents(
-  modifiedNote: ModifyNote,
-  midiClips: MidiClip[],
-  instrument: Instrument,
-  curEvents: NoteEvent[],
-  setCurEvents: React.Dispatch<React.SetStateAction<NoteEvent[]>>
-) {
-  switch (modifiedNote.type) {
-    case "ADD":
-      const eventID = Tone.Transport.schedule(() => {
-        console.log("ADDING NOTE");
-        instrument.triggerAttackRelease(
-          modifiedNote.newNoteProps!.note,
-          `${modifiedNote.newNoteProps!.length}i`,
-          `+${modifiedNote.newNoteProps!.startTime}i`
-        );
-      }, `${midiClips[modifiedNote.midiClipDataKey].startTime}i`);
+// function updateCurEvents(
+//   modifiedNote: ModifyNote,
+//   midiClips: MidiClip[],
+//   instrument: Instrument,
+//   curEvents: NoteEvent[],
+//   setCurEvents: React.Dispatch<React.SetStateAction<NoteEvent[]>>
+// ) {
+//   switch (modifiedNote.type) {
+//     case "ADD":
+//       const eventID = Tone.Transport.schedule(() => {
+//         console.log("ADDING NOTE");
+//         instrument.triggerAttackRelease(
+//           modifiedNote.newNoteProps!.note,
+//           `${modifiedNote.newNoteProps!.length}i`,
+//           `+${modifiedNote.newNoteProps!.startTime}i`
+//         );
+//       }, `${midiClips[modifiedNote.midiClipDataKey].startTime}i`);
 
-      setCurEvents([
-        ...curEvents,
-        {
-          eventID: eventID,
-          midiClipDataKey: modifiedNote.midiClipDataKey,
-          noteDataKey: modifiedNote.noteDataKey,
-        },
-      ]);
-      return;
+//       setCurEvents([
+//         ...curEvents,
+//         {
+//           eventID: eventID,
+//           midiClipDataKey: modifiedNote.midiClipDataKey,
+//           noteDataKey: modifiedNote.noteDataKey,
+//         },
+//       ]);
+//       return;
 
-    case "DELETE":
-      const noteEventToDeleteIndex = curEvents.findIndex(
-        (noteEvent) => noteEvent.noteDataKey === modifiedNote.noteDataKey
-      )!;
+//     case "DELETE":
+//       const noteEventToDeleteIndex = curEvents.findIndex(
+//         (noteEvent) => noteEvent.noteDataKey === modifiedNote.noteDataKey
+//       )!;
 
-      Tone.Transport.clear(curEvents[noteEventToDeleteIndex].eventID);
-      setCurEvents([
-        ...curEvents.slice(0, noteEventToDeleteIndex),
-        ...curEvents.slice(noteEventToDeleteIndex + 1),
-      ]);
-      return;
+//       Tone.Transport.clear(curEvents[noteEventToDeleteIndex].eventID);
+//       setCurEvents([
+//         ...curEvents.slice(0, noteEventToDeleteIndex),
+//         ...curEvents.slice(noteEventToDeleteIndex + 1),
+//       ]);
+//       return;
 
-    case "UPDATE":
-      return;
+//     case "UPDATE":
+//       return;
 
-    default:
-      throw new Error("Update type unknown");
-  }
-}
+//     default:
+//       throw new Error("Update type unknown");
+//   }
+// }
 
-export { getInstrument, updateCurEvents };
+export { getInstrument };

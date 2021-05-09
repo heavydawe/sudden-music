@@ -1,39 +1,24 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Tone from "tone";
 import "./NavigationBar.css";
 import playButton from "../Icons/playButton.png";
 import stopButton from "../Icons/stopButton.png";
 import pauseButton from "../Icons/pauseButton.png";
-import { useDispatch } from "react-redux";
-import { changeArrViewGridPadding, changeArrViewNumOfPhrases } from "../Actions";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  changeArrViewGridPadding,
+  changeArrViewNumOfPhrases,
+} from "../Actions";
+import { Rootstate } from "../Interfaces";
 
-// function initSong() {
-//   Tone.Transport.bpm.value = 125;
-// Tone.Transport.swing = 0;
-// Tone.Transport.PPQ = 192;
-// const keys = new Tone.MonoSynth().toDestination();
-
-// // Repeated 8th notes every 8th note; IMPORTANT: 192i = 4n!! (so 96i = 8n)
-// Tone.Transport.scheduleRepeat(() => {
-//   keys.triggerAttackRelease("C4", 0.05);
-// }, "8n");
-
-// const osc = new Tone.Oscillator().toDestination();
-// // repeated event every 8th note
-// Tone.Transport.scheduleRepeat((time) => {
-//   // use the callback time to schedule events
-// }, "96i");
-// }
-
-// function pauseSong() {
-//   Tone.Transport.pause();
-// }
-
-function togglePlay(buttonRef: React.RefObject<HTMLImageElement>) {
+function togglePlay(
+  buttonRef: React.RefObject<HTMLImageElement>,
+  curTransportPosition: number
+) {
   if (Tone.Transport.state === "stopped") {
     buttonRef.current!.src = stopButton;
     Tone.start();
-    Tone.Transport.start();
+    Tone.Transport.start("+0.1", `${curTransportPosition}i`);
     console.log("Started Transport");
   } else {
     buttonRef.current!.src = playButton;
@@ -82,22 +67,30 @@ function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
 }
 
 function NavigationBar() {
-
   const dispatch = useDispatch();
+
+  const curTransportPosition = useSelector(
+    (state: Rootstate) => state.curTransportPosition
+  );
 
   const playStopButtonRef = useRef<HTMLImageElement>(null);
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
-  document.onkeypress = (e) => {
-    if (e.key === " ") {
-      e.preventDefault();
-      togglePlay(playStopButtonRef);
-    }
-  };
+  useEffect(() => {
+    document.onkeypress = (e) => {
+      if (e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePlay(playStopButtonRef, curTransportPosition);
+      }
+    };
+  }, [curTransportPosition]);
 
   return (
     <nav>
-      <button onClick={() => togglePlay(playStopButtonRef)}>
+      <button
+        onClick={() => togglePlay(playStopButtonRef, curTransportPosition)}
+      >
         <img src={playButton} alt="Play" width="10px" ref={playStopButtonRef} />
       </button>
       <button onClick={() => togglePause()}>
@@ -114,7 +107,10 @@ function NavigationBar() {
         onBlur={() => changeBPM(BPMInputRef)}
       />
       <span>Félperiódusok száma:</span>
-      <select defaultValue="4" onChange={(e) => dispatch(changeArrViewNumOfPhrases(+e.target.value))}>
+      <select
+        defaultValue="4"
+        onChange={(e) => dispatch(changeArrViewNumOfPhrases(+e.target.value))}
+      >
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="4">4</option>
@@ -123,7 +119,10 @@ function NavigationBar() {
         <option value="32">32</option>
       </select>
       <span>Rácsok sűrűsége:</span>
-      <select defaultValue="16" onChange={(e) => dispatch(changeArrViewGridPadding(+e.target.value))}>
+      <select
+        defaultValue="16"
+        onChange={(e) => dispatch(changeArrViewGridPadding(+e.target.value))}
+      >
         <option value="4">4</option>
         <option value="8">8</option>
         <option value="16">16</option>

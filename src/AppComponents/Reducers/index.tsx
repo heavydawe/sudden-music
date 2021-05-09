@@ -4,6 +4,7 @@ import ModifyNoteReducer from './ModifyNoteReducer';
 import SelectedMidiClipReducer from './SelectedMidiClipReducer';
 import ArrCanvasPropsReducer from './ArrCanvasPropsReducer';
 import PianoRollCanvasPropsReducer from './PianoRollCanvasPropsReducer';
+import CurTransportPositionReducer from './CurTransportPositionReducer';
 
 const allReducers = combineReducers({
   curTracks: CurTracksReducer,
@@ -11,6 +12,7 @@ const allReducers = combineReducers({
   modifyNote: ModifyNoteReducer,
   arrCanvasProps: ArrCanvasPropsReducer,
   pianoRollCanvasProps: PianoRollCanvasPropsReducer,
+  curTransportPosition: CurTransportPositionReducer,
 });
 
 export default allReducers;

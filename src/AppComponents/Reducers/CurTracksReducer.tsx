@@ -322,7 +322,7 @@ const CurTracksReducer = (
             ...state.tracks.slice(action.trackIndex + 1),
           ],
           modifiedNote: null,
-          modifiedMidiClip: action.modifyMidiClip,
+          modifiedMidiClip: action.modifyMidiClip, //notes will be empty here, no need them to be passed
         };
       } else {
         const newTracks = state.tracks.slice();
@@ -360,7 +360,14 @@ const CurTracksReducer = (
         return {
           tracks: newTracks,
           modifiedNote: null,
-          modifiedMidiClip: action.modifyMidiClip,
+          modifiedMidiClip: {
+            ...action.modifyMidiClip!,
+            newMidiClipProps: {
+              ...action.modifyMidiClip!.newMidiClipProps,
+              notes: midiClipToCopy.notes, 
+              // Here we need to pass the notes, so the new track can create the new part
+            }
+          },
         };
       }
 
@@ -372,10 +379,6 @@ const CurTracksReducer = (
       if (action.modifyNote.newNoteProps === undefined) {
         throw Error("NewNoteProps is missing");
       }
-
-      /* Ha csak ezt használom akkor faszán fogja érzékelni, hogy melyik tracknek kell frissülnie,
-         Viszont ha a modifyos cuccot is használnám, akkor meg tudnám mondani a tracknek, hogy pontosan
-         milyen note-ot kéne hogy változtatni, emiatt egy csomót optimalizálva, mert nem kéne az összeset levenni majd vissza */
 
       const midiClipIndexAdd = state.tracks[
         action.trackIndex

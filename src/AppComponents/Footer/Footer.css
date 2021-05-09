@@ -32,7 +32,7 @@ footer button:hover {
     position: absolute;
     top: 40%;
     left: 50%;
-    background-color: var(--modal-bg-color);
+    background: var(--modal-bg-color);
     width: 350px;
     height: 20%;
     border-radius: 25px;

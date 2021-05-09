@@ -65,6 +65,7 @@ export interface Rootstate {
   modifyNote: ModifyNote;
   arrCanvasProps: ArrCanvasProps;
   pianoRollCanvasProps: PianoRollCanvasProps;
+  curTransportPosition: number;
 }
 
 export interface ArrCanvasProps {

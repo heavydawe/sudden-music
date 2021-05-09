@@ -16,6 +16,7 @@ import {
   deselectMidiClip,
   deleteMidiClip,
   updateMidiClip,
+  changeTransportPosition,
 } from "../../Actions";
 import Konva from "konva";
 import * as Tone from "tone";
@@ -85,10 +86,16 @@ function ArrangementCanvas(props: Props) {
   const numOfTracks = props.numOfTracks;
 
   // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
-  const numOfPhrases = useSelector((state: Rootstate) => state.arrCanvasProps.numOfPhrases); // Phrase = 4 measures
-  const gridPadding = useSelector((state: Rootstate) => state.arrCanvasProps.gridPadding); // 1 / gridPadding -> how many grids in a phrase
-  const midiClipColor = useSelector((state: Rootstate) => state.arrCanvasProps.midiClipColor);
-  
+  const numOfPhrases = useSelector(
+    (state: Rootstate) => state.arrCanvasProps.numOfPhrases
+  ); // Phrase = 4 measures
+  const gridPadding = useSelector(
+    (state: Rootstate) => state.arrCanvasProps.gridPadding
+  ); // 1 / gridPadding -> how many grids in a phrase
+  const midiClipColor = useSelector(
+    (state: Rootstate) => state.arrCanvasProps.midiClipColor
+  );
+
   const blockSnapSizeToTick = 192 / (gridPadding / 16);
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
@@ -196,6 +203,11 @@ function ArrangementCanvas(props: Props) {
   useEffect(() => {
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
+
+        if (Tone.Transport.state === "stopped") {
+          return;
+        }
+
         curPositionRef.current!.position({
           x: Math.trunc(canvasWidth * Tone.Transport.progress) - 5,
           y: 0,
@@ -212,15 +224,15 @@ function ArrangementCanvas(props: Props) {
       y={0}
       width={10}
       height={canvasHeight}
-      fillLinearGradientStartPoint={{x: 0, y: 0}}
-      fillLinearGradientEndPoint={{x: 10, y: 0}}
+      fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+      fillLinearGradientEndPoint={{ x: 10, y: 0 }}
       fillLinearGradientColorStops={[
         0,
-        'transparent',
+        "transparent",
         0.5,
-        'orange',
+        "orange",
         1,
-        'transparent'
+        "transparent",
       ]}
       opacity={0.7}
       ref={curPositionRef}
@@ -231,23 +243,55 @@ function ArrangementCanvas(props: Props) {
     <div key="arrangementCanvas" className="stageClass">
       <Stage
         key="arrangementStage"
-        width={canvasWidth + 2} // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
+        width={canvasWidth + 2}
+        // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
         onMouseDown={(e) => {
-          if (selectedMidiClipId !== -1) {
-            if (
-              e.target === e.target.getStage() ||
-              e.target.getAttr("name") === "darkMeasure" ||
-              e.target.getAttr("name") === "line"
-            ) {
-              selectMidiClipId(-1);
-              dispatch(deselectMidiClip());
-              console.log("mousedown");
+          e.evt.preventDefault();
+
+          if (e.evt.button === 0) {
+            // left mouse button
+            if (selectedMidiClipId !== -1) {
+              if (
+                e.target === e.target.getStage() ||
+                e.target.getAttr("name") === "darkMeasure" ||
+                e.target.getAttr("name") === "line"
+              ) {
+                selectMidiClipId(-1);
+                dispatch(deselectMidiClip());
+              }
             }
-          }
+          } else if (e.evt.button === 1 && Tone.Transport.state === "stopped") {
+            // middle mouse button
+
+            const transform = e.currentTarget
+              .getAbsoluteTransform()
+              .copy()
+              .invert();
+            const pos = e.currentTarget.getStage()!.getPointerPosition()!;
+
+            const posX = getPositionX(
+              transform.point(pos).x,
+              4 * blockSnapSize,
+              canvasWidth,
+              blockSnapSize,
+              false
+            );
+
+            console.log(posX);
+            dispatch(changeTransportPosition(posX / blockSnapSize * blockSnapSizeToTick));
+            curPositionRef.current!.position({
+              x: posX - 5,
+              y: 0,
+            })
+            curPositionRef.current!.getLayer()!.draw();
+          } 
         }}
-        //onTouchStart={checkDeselect}
         onDblClick={(e) => {
+          if (e.evt.button !== 0) {
+            return;
+          }
+
           // Adding new MIDI clip
           if (e.target.getAttr("dataKey") === undefined) {
             const transform = e.currentTarget

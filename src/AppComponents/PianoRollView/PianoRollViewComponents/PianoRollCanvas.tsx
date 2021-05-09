@@ -291,7 +291,6 @@ function PianoRollCanvas(props: Props) {
             checkDeselect(e, selectNoteId);
           }
         }}
-        //onTouchStart={checkDeselect}
         onDblClick={(e) => {
           if (e.target.getAttr("dataKey") === undefined) {
             const transform = e.currentTarget

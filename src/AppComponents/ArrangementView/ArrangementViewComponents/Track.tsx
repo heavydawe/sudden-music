@@ -58,13 +58,14 @@ const Track = React.memo((props: Props) => {
 
   // TODO: INIT correctly when importing
   const [curParts, setCurParts] = useState<MidiClipMap[]>([]);
+  console.log(`IN TRACK ${props.dataKey}`, curParts);
 
   // Only change instrument when inited or on user change
   useEffect(() => {
     setCurInstrument(getInstrument(props.instrumentName));
   }, [props.instrumentName]);
 
-  console.log("RENDERING IN TRACK, KEY:", props.dataKey);
+  //console.log("RENDERING IN TRACK, KEY:", props.dataKey);
 
   useEffect(() => {
     if (props.curNoteToModify === null) {
@@ -153,7 +154,8 @@ const Track = React.memo((props: Props) => {
           (note) => note.key === props.curNoteToModify!.noteDataKey
         );
 
-        // THIS COULD BE PROBLEMATIC.... TODO: IT SEEMS TO BE, CHECK IT!
+        // THIS COULD BE PROBLEMATIC....WORKS FINE!
+
         curParts[stateIndex].value.part.remove(
           curParts[stateIndex].value.partNotes[noteToUpdateIndex].value
         );
@@ -181,6 +183,9 @@ const Track = React.memo((props: Props) => {
                   ...prevState[stateIndex].value.partNotes[noteToUpdateIndex],
                   value: updatedNote,
                 },
+                ...prevState[stateIndex].value.partNotes.slice(
+                  noteToUpdateIndex + 1
+                ),
               ],
             },
           },
@@ -208,7 +213,6 @@ const Track = React.memo((props: Props) => {
         console.log("ADDING NEW MIDICLIP");
         const newPart = new Tone.Part((time, value) => {
           curInstrument!.triggerAttackRelease(value.note, value.length, time);
-          console.log("in callback");
         }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
 
         setCurParts((prevState) => [
@@ -223,12 +227,133 @@ const Track = React.memo((props: Props) => {
         ]);
         break;
 
+      case "DELETE":
+        console.log("DELETING MIDICLIP");
+
+        // Find the index in state
+        const midiClipToDeleteIndex = curParts.findIndex(
+          (midiClip) =>
+            midiClip.key === props.curMidiClipToModify!.midiClipDataKey
+        );
+
+        // Remove all event from the Part (MIDI clip) and clear up
+        curParts[midiClipToDeleteIndex].value.part.dispose();
+
+        // Update state
+        setCurParts((prevState) => [
+          ...prevState.slice(0, midiClipToDeleteIndex),
+          ...prevState.slice(midiClipToDeleteIndex + 1),
+        ]);
+        break;
+
+      case "UPDATE":
+        console.log("UPDATING MIDICLIP");
+
+        // Find the index in state
+        const midiClipToUpdateIndex = curParts.findIndex(
+          (midiClip) =>
+            midiClip.key === props.curMidiClipToModify!.midiClipDataKey
+        );
+
+        if (
+          props.curMidiClipToModify.trackDataKey ===
+          props.curMidiClipToModify.newMidiClipProps!.trackKey
+        ) {
+          // MIDI clip did NOT switch track
+
+          console.log("NEW START");
+
+          // We have to create a new Part, as the start point cannot be changed
+          curParts[midiClipToUpdateIndex].value.part.dispose();
+
+          const newPart = new Tone.Part((time, value) => {
+            curInstrument!.triggerAttackRelease(value.note, value.length, time);
+          }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
+
+          // Add each note to newPart
+          curParts[midiClipToUpdateIndex].value.partNotes.forEach((note) =>
+            newPart.add(note.value)
+          );
+
+          // Update state
+          setCurParts((prevState) => [
+            ...prevState.slice(0, midiClipToUpdateIndex),
+            {
+              ...prevState[midiClipToUpdateIndex],
+              value: {
+                ...prevState[midiClipToUpdateIndex].value,
+                part: newPart,
+              },
+            },
+            ...prevState.slice(midiClipToUpdateIndex + 1),
+          ]);
+        } else {
+          // MIDI clip switched track
+          if (props.curMidiClipToModify.trackDataKey === props.dataKey) {
+            // This is the previous track, so we need to delete part from here
+            curParts[midiClipToUpdateIndex].value.part.dispose();
+
+            setCurParts((prevState) => [
+              ...prevState.slice(0, midiClipToUpdateIndex),
+              ...prevState.slice(midiClipToUpdateIndex + 1),
+            ]);
+          } else {
+            // This is the new track, so we need to insert it here
+            const newPart = new Tone.Part((time, value) => {
+              curInstrument!.triggerAttackRelease(
+                value.note,
+                value.length,
+                time
+              );
+            }).start(
+              `${props.curMidiClipToModify.newMidiClipProps!.startTime}i`
+            );
+
+            // Get all notes from props
+            const newNotes = props.curMidiClipToModify.newMidiClipProps!.notes.map(
+              (note) => {
+                return {
+                  key: note.dataKey,
+                  value: {
+                    time: `${note.startTime}i`,
+                    note: note.note,
+                    length: `${note.length}i`,
+                  },
+                };
+              }
+            );
+
+            // Add notes to part
+            newNotes.forEach((note) => newPart.add(note.value));
+
+            // Update state, add everything
+            setCurParts((prevState) => [
+              ...prevState,
+              {
+                key: props.curMidiClipToModify!.newMidiClipProps!.dataKey,
+                value: {
+                  part: newPart,
+                  partNotes: newNotes,
+                },
+              },
+            ]);
+          }
+        }
+
+        break;
+
       default:
         throw Error("Unknown curMidiClipToModify type!");
     }
 
     dispatch(clearModifyMidiclip());
-  }, [props.curMidiClipToModify, curInstrument, dispatch]);
+  }, [
+    props.curMidiClipToModify,
+    curInstrument,
+    dispatch,
+    curParts,
+    props.dataKey,
+  ]);
 
   return (
     <div className="trackHeader">
