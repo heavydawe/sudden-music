@@ -14,35 +14,35 @@ const CurTracksReducer = (
     tracks: [
       {
         dataKey: 0,
-        color: "blue",
+        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
         name: "test_a",
       },
       {
         dataKey: 1,
-        color: "blue",
+        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
         name: "test_b",
       },
       {
         dataKey: 2,
-        color: "blue",
+        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
         name: "test_0",
       },
       {
         dataKey: 3,
-        color: "blue",
+        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
         name: "test_1",
       },
       {
         dataKey: 4,
-        color: "red",
+        // color: "red",
         instrument: "PolySynth",
         midiClips: [],
         name: "test_2",
@@ -116,7 +116,7 @@ const CurTracksReducer = (
             {
               dataKey: 0,
               name: action.modifyTrack.name,
-              color: action.modifyTrack.color,
+              // color: action.modifyTrack.color,
               instrument: action.modifyTrack!.instrument,
               midiClips: [],
             },
@@ -134,7 +134,7 @@ const CurTracksReducer = (
           {
             dataKey: maxDataKey + 1,
             name: action.modifyTrack.name,
-            color: action.modifyTrack.color,
+            // color: action.modifyTrack.color,
             instrument: action.modifyTrack!.instrument,
             midiClips: [],
           },
@@ -183,7 +183,7 @@ const CurTracksReducer = (
           {
             ...state.tracks[trackToChangeIndex],
             name: action.newTrackProps.name,
-            color: action.newTrackProps.color,
+            // color: action.newTrackProps.color,
             instrument: action.newTrackProps.instrument,
           },
           ...state.tracks.slice(trackToChangeIndex + 1),

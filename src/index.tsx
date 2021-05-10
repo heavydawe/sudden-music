@@ -13,7 +13,7 @@ const store = createStore(allReducer);
 //Tone.setContext(new Tone.Context({ latencyHint : "balanced" }))
 
 document.onkeydown = (e) => {e.stopPropagation()}
-document.onkeyup = (e) => {e.stopPropagation()}
+// document.onkeypress  = (e) => {e.stopPropagation()} 
 
 ReactDOM.render(
     <Provider store={store}>

@@ -14,7 +14,7 @@ interface Props {
 function NewTrackModal(props: Props) {
   const newTrackNameRef = useRef<HTMLInputElement>(null);
   const newTrackInstrumentRef = useRef<HTMLSelectElement>(null);
-  const newTrackColorRef = useRef<HTMLInputElement>(null);
+  // const newTrackColorRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
 
@@ -28,7 +28,7 @@ function NewTrackModal(props: Props) {
         <div>
           <p>Név</p>
           <p>Hangszer</p>
-          <p>Szín</p>
+          {/* <p>Szín</p> */}
         </div>
         <div>
           <input
@@ -56,13 +56,13 @@ function NewTrackModal(props: Props) {
             <option value="Sampler">Sampler</option>
             <option value="Synth">Synth</option>
           </select><br />
-          <input
+          {/* <input
             key="newTrackColor"
             id="newTrackColor"
             type="color"
             required={true}
             ref={newTrackColorRef}
-          />
+          /> */}
         </div>
       </div>
       <button
@@ -91,7 +91,7 @@ function NewTrackModal(props: Props) {
               addNewTrack({
                 dataKey: -1,
                 midiClips: [],
-                color: "red", // newTrackColorRef.current!.value
+                // color: "red", // newTrackColorRef.current!.value 
                 instrument: newTrackInstrumentRef.current!.value,
                 name: newTrackNameRef.current!.value,
               })
@@ -100,7 +100,7 @@ function NewTrackModal(props: Props) {
             dispatch(
               changeTrackProps(props.trackKey!, {
                 name: newTrackNameRef.current!.value,
-                color: newTrackColorRef.current!.value,
+                // color: newTrackColorRef.current!.value,
                 instrument: newTrackInstrumentRef.current!.value,
               })
             );

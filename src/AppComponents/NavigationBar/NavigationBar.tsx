@@ -77,7 +77,7 @@ function NavigationBar() {
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    document.onkeypress = (e) => {
+    document.onkeydown  = (e) => {
       if (e.key === " ") {
         e.preventDefault();
         e.stopPropagation();

@@ -49,7 +49,7 @@ export interface ShapeProps {
 export interface TrackInterface {
   dataKey: number;
   name: string;
-  color: string;
+  // color: string;
   instrument: string;
   midiClips: MidiClip[];
   // Instrument props here as well (for example: attack or release)?
@@ -111,7 +111,7 @@ export interface NoteEvent {
 export interface TrackProps {
   name: string;
   instrument: string;
-  color: string;
+  // color: string;
 }
 
 export interface MidiClipPosInfo {

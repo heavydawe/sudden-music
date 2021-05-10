@@ -43,7 +43,7 @@ interface MidiClipMap {
 interface Props {
   dataKey: number;
   trackName: string;
-  trackColor: string;
+  // trackColor: string;
   instrumentName: string;
   curNoteToModify: ModifyNote | null;
   curMidiClipToModify: ModifyMidiClip | null;
