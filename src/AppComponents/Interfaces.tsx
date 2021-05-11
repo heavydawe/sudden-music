@@ -52,6 +52,7 @@ export interface TrackInterface {
   // color: string;
   instrument: string;
   midiClips: MidiClip[];
+  isMuted: boolean,
   // Instrument props here as well (for example: attack or release)?
 }
 
@@ -100,12 +101,6 @@ export interface ModifyMidiClip {
   midiClipDataKey: number;
   type: "ADD" | "DELETE" | "UPDATE";
   newMidiClipProps?: MidiClip;
-}
-
-export interface NoteEvent {
-  eventID: number;
-  midiClipDataKey: number;
-  noteDataKey: number;
 }
 
 export interface TrackProps {

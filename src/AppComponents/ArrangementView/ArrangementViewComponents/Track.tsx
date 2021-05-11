@@ -9,7 +9,6 @@ import {
 import {
   ModifyMidiClip,
   ModifyNote,
-  // NoteEvent,
 } from "../../Interfaces";
 import { getInstrument, Instrument } from "./TrackFunctions";
 import "./Track.css";
@@ -28,6 +27,7 @@ interface NotePartObject {
   time: string;
   note: string;
   length: string;
+  instrument: Instrument;
 }
 
 interface PartInterface {
@@ -43,6 +43,7 @@ interface MidiClipMap {
 interface Props {
   dataKey: number;
   trackName: string;
+  isMuted: boolean;
   // trackColor: string;
   instrumentName: string;
   curNoteToModify: ModifyNote | null;
@@ -65,6 +66,53 @@ const Track = React.memo((props: Props) => {
     setCurInstrument(getInstrument(props.instrumentName));
   }, [props.instrumentName]);
 
+  // Update every Parts, when the instrument has changed
+  useEffect(() => {
+
+    let newPartNotes: MidiClipMap[] = []; 
+
+    curParts.forEach((midiClipMap) => {
+
+      let newNoteMap: NoteMap[] = [];
+      midiClipMap.value.part.clear();
+
+      midiClipMap.value.partNotes.forEach((noteMap) =>
+        newNoteMap.push({
+          key: noteMap.key,
+          value: {
+            time: noteMap.value.time,
+            length: noteMap.value.length,
+            note: noteMap.value.note,
+            instrument: curInstrument!,
+          }
+        })
+      )
+
+      newNoteMap.forEach((notePartObject) => midiClipMap.value.part.add(notePartObject.value));
+
+      newPartNotes.push({
+        key: midiClipMap.key,
+        value: {
+          part: midiClipMap.value.part,
+          partNotes: newNoteMap,
+        }
+      })
+
+    });
+
+    setCurParts(newPartNotes);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curInstrument]);
+
+  // Mute all parts if track is muted
+  // TODO if midiclip switches track reducers needs to set mute correctly
+  // useEffect(() => {
+  //   curParts.forEach((midiClipMap) => {
+  //     midiClipMap.value.part.mute = props.isMuted;
+  //   })
+  // }, [props.isMuted])
+
   //console.log("RENDERING IN TRACK, KEY:", props.dataKey);
 
   useEffect(() => {
@@ -85,6 +133,7 @@ const Track = React.memo((props: Props) => {
           time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
           note: props.curNoteToModify.newNoteProps!.note,
           length: `${props.curNoteToModify.newNoteProps!.length}i`,
+          instrument: curInstrument!,
         };
 
         // THIS COULD BE PROBLEMATIC... or not..
@@ -164,6 +213,7 @@ const Track = React.memo((props: Props) => {
           time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
           note: props.curNoteToModify.newNoteProps!.note,
           length: `${props.curNoteToModify.newNoteProps!.length}i`,
+          instrument: curInstrument!,
         };
 
         curParts[stateIndex].value.part.add(updatedNote);
@@ -199,7 +249,7 @@ const Track = React.memo((props: Props) => {
     }
 
     dispatch(clearModifyNote());
-  }, [props.curNoteToModify, curParts, dispatch]);
+  }, [props.curNoteToModify, curParts, dispatch, curInstrument]);
 
   useEffect(() => {
     if (props.curMidiClipToModify === null) {
@@ -212,7 +262,7 @@ const Track = React.memo((props: Props) => {
       case "ADD":
         console.log("ADDING NEW MIDICLIP");
         const newPart = new Tone.Part((time, value) => {
-          curInstrument!.triggerAttackRelease(value.note, value.length, time);
+          value.instrument.triggerAttackRelease(value.note, value.length, time);
         }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
 
         setCurParts((prevState) => [
@@ -267,7 +317,11 @@ const Track = React.memo((props: Props) => {
           curParts[midiClipToUpdateIndex].value.part.dispose();
 
           const newPart = new Tone.Part((time, value) => {
-            curInstrument!.triggerAttackRelease(value.note, value.length, time);
+            value.instrument.triggerAttackRelease(
+              value.note,
+              value.length,
+              time
+            );
           }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
 
           // Add each note to newPart
@@ -300,7 +354,7 @@ const Track = React.memo((props: Props) => {
           } else {
             // This is the new track, so we need to insert it here
             const newPart = new Tone.Part((time, value) => {
-              curInstrument!.triggerAttackRelease(
+              value.instrument.triggerAttackRelease(
                 value.note,
                 value.length,
                 time
@@ -310,18 +364,18 @@ const Track = React.memo((props: Props) => {
             );
 
             // Get all notes from props
-            const newNotes = props.curMidiClipToModify.newMidiClipProps!.notes.map(
-              (note) => {
+            const newNotes =
+              props.curMidiClipToModify.newMidiClipProps!.notes.map((note) => {
                 return {
                   key: note.dataKey,
                   value: {
                     time: `${note.startTime}i`,
                     note: note.note,
                     length: `${note.length}i`,
+                    instrument: curInstrument!,
                   },
                 };
-              }
-            );
+              });
 
             // Add notes to part
             newNotes.forEach((note) => newPart.add(note.value));

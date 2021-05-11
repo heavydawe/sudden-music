@@ -1,5 +1,3 @@
-import { MidiClip } from "../Interfaces";
-
 const SelectedMidiClipReducer = (
   state: {
     trackKey: number;

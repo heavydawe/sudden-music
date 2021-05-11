@@ -41,6 +41,7 @@ function ArrangementView() {
                 trackName={item.name}
                 // trackColor={item.color}
                 instrumentName={item.instrument}
+                isMuted={item.isMuted}
                 curNoteToModify={
                   curTrackInfos.modifiedNote !== null
                     ? curTrackInfos.modifiedNote.trackDataKey === item.dataKey

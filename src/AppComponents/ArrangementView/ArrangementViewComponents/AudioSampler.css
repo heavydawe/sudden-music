@@ -8,4 +8,13 @@
   border-radius: 50px;
   font-weight: bolder;
   opacity: 0.9;
+  position: relative;
+}
+
+.audioSampler img {
+  cursor: pointer;
+  width: 20px;
+  right: 20px;
+  top: 20px;
+  position: absolute;
 }

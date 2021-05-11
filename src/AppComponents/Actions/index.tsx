@@ -1,5 +1,4 @@
 import {
-  MidiClip,
   ModifyMidiClip,
   ModifyNote,
   TrackInterface,

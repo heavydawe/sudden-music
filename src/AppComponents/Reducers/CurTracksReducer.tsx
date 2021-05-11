@@ -18,6 +18,7 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "test_a",
+        isMuted: false,
       },
       {
         dataKey: 1,
@@ -25,6 +26,7 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "test_b",
+        isMuted: false,
       },
       {
         dataKey: 2,
@@ -32,6 +34,7 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "test_0",
+        isMuted: false,
       },
       {
         dataKey: 3,
@@ -39,6 +42,7 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "test_1",
+        isMuted: false,
       },
       {
         dataKey: 4,
@@ -46,6 +50,7 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "test_2",
+        isMuted: false,
       },
     ],
     modifiedNote: null,

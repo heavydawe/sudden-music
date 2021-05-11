@@ -94,6 +94,7 @@ function NewTrackModal(props: Props) {
                 // color: "red", // newTrackColorRef.current!.value 
                 instrument: newTrackInstrumentRef.current!.value,
                 name: newTrackNameRef.current!.value,
+                isMuted: false,
               })
             );
           } else {
