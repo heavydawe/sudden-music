@@ -7,6 +7,7 @@ import addButton from "../Icons/addButton.png";
 import { useState } from "react";
 import NewTrackModal from "./ArrangementViewComponents/NewTrackModal";
 import AudioSampler from "./ArrangementViewComponents/AudioSampler";
+import { sampleName, samplePaths, sampleRepeatTime, sampleStartTime } from "./ArrangementViewComponents/AudioSampleImport";
 // import { useState } from "react";
 
 function ArrangementView() {
@@ -104,8 +105,18 @@ function ArrangementView() {
           numOfTracks={curTrackInfos.tracks.length}
         />
       </div>
-      <div>
-        <AudioSampler />
+      <div className="audioSamplerContainer">
+        {samplePaths.map((path, i) => {
+          return (
+          <AudioSampler key={i} 
+            sampleProps={{
+              samplePath: path, 
+              sampleName: sampleName[i],
+              sampleStartTime: sampleStartTime[i],
+              sampleRepeatTime: sampleRepeatTime[i],
+            }} 
+          />);
+        })}
       </div>
     </>
   );

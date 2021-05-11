@@ -8,6 +8,11 @@
   overflow: hidden;
 }
 
+.audioSamplerContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 20%);
+}
+
 /* .trackHeaderColumn {
   border-right: 2px dashed black;
   background: linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 100%);

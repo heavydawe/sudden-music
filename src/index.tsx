@@ -6,9 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import allReducer from "./AppComponents/Reducers";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-//import * as Tone from "tone";
+import * as Tone from "tone";
 
 const store = createStore(allReducer);
+Tone.Transport.PPQ = 192;
 
 //Tone.setContext(new Tone.Context({ latencyHint : "balanced" }))
 

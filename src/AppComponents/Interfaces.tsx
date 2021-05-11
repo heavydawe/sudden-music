@@ -120,3 +120,10 @@ export interface MidiClipPosInfo {
   trackKey: number;
   length: number;
 }
+
+export interface SampleProps {
+  sampleName: string;
+  samplePath: string;
+  sampleStartTime: number;
+  sampleRepeatTime: number;
+}

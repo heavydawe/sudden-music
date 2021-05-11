@@ -1,0 +1,11 @@
+.audioSampler {
+  padding: 50px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-bottom: 100px;
+  background-color: black;
+  color: white;
+  border-radius: 50px;
+  font-weight: bolder;
+  opacity: 0.9;
+}

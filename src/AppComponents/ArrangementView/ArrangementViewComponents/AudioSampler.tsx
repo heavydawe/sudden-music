@@ -1,26 +1,38 @@
+import { useEffect } from "react";
 import * as Tone from "tone";
+import { SampleProps } from "../../Interfaces";
+import "./AudioSampler.css"
 
-//https://drive.google.com/file/d/1XbiYyh1VDyFv5smAhMPMiq9SNN3njlkS/view?usp=sharing
+interface Props {
+  sampleProps: SampleProps;
+}
 
-function AudioSampler() {
+function AudioSampler(props: Props) {
+  
+  useEffect(() => {
+    const context = new AudioContext();
 
-  const URL = "https://tonejs.github.io/audio/casio/A1.mp3";
-
-  const sampler = new Tone.Sampler({
-    urls: {
-      A1: "https://drive.google.com/uc?export=download&id=1XbiYyh1VDyFv5smAhMPMiq9SNN3njlkS",
-    },
-    onload: () => {
-      //sampler.triggerAttackRelease(["C1"], 0.5);
-      Tone.Transport.scheduleRepeat((time) => {
-        sampler.triggerAttackRelease("C1", "8n", time)
-      }, "4n")
-    }
-  }).toDestination();
+    fetch(props.sampleProps.samplePath)
+      .then((response) => response.arrayBuffer())
+      .then((arrayBuffer) => context.decodeAudioData(arrayBuffer))
+      .then((audioBuffer) => {
+        const sampler = new Tone.Sampler({
+          urls: {
+            C4: audioBuffer,
+          },
+          onload: () => {
+            Tone.Transport.scheduleRepeat((time) => {
+              sampler.triggerAttackRelease("C4", "8n", time);
+            }, `${props.sampleProps.sampleRepeatTime}i`, `${props.sampleProps.sampleStartTime}i`);
+          },
+        }).toDestination();
+      })
+      .catch((error) => console.log(error));
+  }, [props.sampleProps]);
 
   return (
-    <div>
-      <p>SAMPLE</p>
+    <div className="audioSampler">
+      <span>{props.sampleProps.sampleName}</span>
     </div>
   );
 }

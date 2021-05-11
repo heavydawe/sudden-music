@@ -221,7 +221,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
         }
 
         curPositionRef.current!.position({
-          x: Math.trunc(canvasWidth * Tone.Transport.progress) - 5,
+          x: Math.trunc(canvasWidth * Tone.Transport.progress) - 20,
           y: 0,
         });
         curPositionLayer.current!.draw();
@@ -232,7 +232,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
 
   const curPositionRect = (
     <Rect
-      x={-5}
+      x={-20}
       y={0}
       width={10}
       height={canvasHeight}
