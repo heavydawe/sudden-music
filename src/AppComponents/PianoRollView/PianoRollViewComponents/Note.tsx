@@ -78,7 +78,10 @@ function Note(props: Props) {
             false
           );
 
-          e.target.position({ x: posX, y: posY });
+          e.target.position({
+            x: props.shapeProps.posX,
+            y: props.shapeProps.posY,
+          });
           props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {

@@ -1,6 +1,4 @@
 .stageClass {
   color: white;
-  /* overflow-y: hidden;
-  overflow-x: auto; */
-  overflow: scroll;
+  overflow: hidden;
 }

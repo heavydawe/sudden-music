@@ -3,13 +3,13 @@
   grid-template-columns: 50px auto;
   /* background: linear-gradient(90deg, rgb(12, 38, 167) 10%, rgb(180, 33, 62) 100%); */
   padding: 0px;
-  gap: 1px;
-  height: 80vh;
+  height: 65vh;
   width: 99vw;
   overflow: scroll;
   margin-top: 10px;
-  /* border: white 3px solid; */
-  /* border-radius: 5px; */
+  gap: 0;
+  border: white 3px solid;
+  border-radius: 5px;
 }
 
 .pianoRollView {

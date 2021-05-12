@@ -35,6 +35,7 @@ interface PartInterface {
 
 interface MidiClipMap {
   key: number;
+  length: number;
   value: PartInterface;
 }
 
@@ -96,6 +97,7 @@ const Track = React.memo((props: Props) => {
           part: midiClipMap.value.part,
           partNotes: newNoteMap,
         },
+        length: midiClipMap.length,
       });
     });
 
@@ -296,6 +298,7 @@ const Track = React.memo((props: Props) => {
               part: newPart,
               partNotes: [],
             },
+            length: props.curMidiClipToModify!.newMidiClipProps!.length,
           },
         ]);
         break;
@@ -327,6 +330,22 @@ const Track = React.memo((props: Props) => {
           (midiClip) =>
             midiClip.key === props.curMidiClipToModify!.midiClipDataKey
         );
+
+        // If size have changed, then we only need to update the length
+        if (
+          props.curMidiClipToModify!.newMidiClipProps!.length !==
+          curParts[midiClipToUpdateIndex].length
+        ) {
+          setCurParts((prevState) => [
+            ...prevState.slice(0, midiClipToUpdateIndex),
+            {
+              ...prevState[midiClipToUpdateIndex],
+              length: props.curMidiClipToModify!.newMidiClipProps!.length,
+            },
+            ...prevState.slice(midiClipToUpdateIndex + 1),
+          ]);
+          break;
+        }
 
         if (
           props.curMidiClipToModify.trackDataKey ===
@@ -367,7 +386,6 @@ const Track = React.memo((props: Props) => {
         } else {
           // MIDI clip switched track
           if (props.curMidiClipToModify.trackDataKey === props.dataKey) {
-
             // This is the previous track, so we need to delete part from here
             curParts[midiClipToUpdateIndex].value.part.dispose();
 
@@ -413,6 +431,7 @@ const Track = React.memo((props: Props) => {
                   part: newPart,
                   partNotes: newNotes,
                 },
+                length: props.curMidiClipToModify!.newMidiClipProps!.length,
               },
             ]);
           }

@@ -1,47 +1,51 @@
 import {
   MidiClip,
+  MidiNote,
   ModifyMidiClip,
   ModifyNote,
   TrackInterface,
   TrackProps,
 } from "../Interfaces";
 
-function collideScenarioOne(
-  newMidiClipStartTime: number,
-  otherMidiClipStartTime: number,
-  otherMidiClipEndTime: number
+function midiClipOrNoteCollideScenarioOne(
+  newMidiClipOrNoteStartTime: number,
+  otherMidiClipOrNoteStartTime: number,
+  otherMidiClipOrNoteEndTime: number
 ) {
   return (
-    newMidiClipStartTime >= otherMidiClipStartTime &&
-    newMidiClipStartTime < otherMidiClipEndTime
+    newMidiClipOrNoteStartTime >= otherMidiClipOrNoteStartTime &&
+    newMidiClipOrNoteStartTime < otherMidiClipOrNoteEndTime
   );
 }
 
-function collideScenarioTwo(
-  newMidiClipEndTime: number,
-  otherMidiClipStartTime: number,
-  otherMidiClipEndTime: number
+function midiClipOrNoteCollideScenarioTwo(
+  newMidiClipOrNoteEndTime: number,
+  otherMidiClipOrNoteStartTime: number,
+  otherMidiClipOrNoteEndTime: number
 ) {
   return (
-    newMidiClipEndTime > otherMidiClipStartTime &&
-    newMidiClipEndTime <= otherMidiClipEndTime
+    newMidiClipOrNoteEndTime > otherMidiClipOrNoteStartTime &&
+    newMidiClipOrNoteEndTime <= otherMidiClipOrNoteEndTime
   );
 }
 
-function collideScenarioThree(
-  newMidiClipStartTime: number,
-  newMidiClipEndTime: number,
-  otherMidiClipStartTime: number,
-  otherMidiClipEndTime: number
+function midiClipOrNoteCollideScenarioThree(
+  newMidiClipOrNoteStartTime: number,
+  newMidiClipOrNoteEndTime: number,
+  otherMidiClipOrNoteStartTime: number,
+  otherMidiClipOrNoteEndTime: number
 ) {
   return (
-    newMidiClipStartTime <= otherMidiClipStartTime &&
-    newMidiClipEndTime >= otherMidiClipEndTime
+    newMidiClipOrNoteStartTime <= otherMidiClipOrNoteStartTime &&
+    newMidiClipOrNoteEndTime >= otherMidiClipOrNoteEndTime
   );
 }
 
-function isColliding(newMidiClip: MidiClip, otherMidiClips: MidiClip[]) {
-  // 3 collide scenarios:
+function isMidiClipColliding(
+  newMidiClip: MidiClip,
+  otherMidiClips: MidiClip[]
+) {
+  // 3 midiClipCollide scenarios:
   //    1. newMidiClip's startTime is between (inclusive) the starTime and startTime + length of an other one
   //    2. newMidiClip's startTime + length is between the starTime and startTime + length of an other one
   //    3. newMidiClip's startTime is equal or less AND startTime + length is greater or equal compared to an other one
@@ -49,7 +53,6 @@ function isColliding(newMidiClip: MidiClip, otherMidiClips: MidiClip[]) {
   const newMidiClipEndTime = newMidiClipStartTime + newMidiClip.length * 192;
 
   return otherMidiClips.some((otherMidiClip) => {
-
     // This is important when changing size of MIDI clip
     if (newMidiClip.dataKey === otherMidiClip.dataKey) {
       return false;
@@ -60,21 +63,66 @@ function isColliding(newMidiClip: MidiClip, otherMidiClips: MidiClip[]) {
       otherMidiClipStartTime + otherMidiClip.length * 192;
 
     return (
-      collideScenarioOne(
+      midiClipOrNoteCollideScenarioOne(
         newMidiClipStartTime,
         otherMidiClipStartTime,
         otherMidiClipEndTime
       ) ||
-      collideScenarioTwo(
+      midiClipOrNoteCollideScenarioTwo(
         newMidiClipEndTime,
         otherMidiClipStartTime,
         otherMidiClipEndTime
       ) ||
-      collideScenarioThree(
+      midiClipOrNoteCollideScenarioThree(
         newMidiClipStartTime,
         newMidiClipEndTime,
         otherMidiClipStartTime,
         otherMidiClipEndTime
+      )
+    );
+  });
+}
+
+function isMidiNoteColliding(
+  newMidiNote: MidiNote,
+  otherMidiNotes: MidiNote[]
+) {
+  // 3 midiNoteCollide scenarios IF notes are the same:
+  //    same as midiClip, just with midiNotes
+
+  const newMidiNoteStartTime = newMidiNote.startTime;
+  const newMidiNoteEndTime = newMidiNoteStartTime + newMidiNote.length;
+
+  return otherMidiNotes.some((otherMidiNote) => {
+    // This is important when changing size of MIDI clip
+    if (newMidiNote.dataKey === otherMidiNote.dataKey) {
+      return false;
+    }
+
+    // If we have 2 different notes, they cannot collide
+    if (newMidiNote.note !== otherMidiNote.note) {
+      return false;
+    }
+
+    const otherMidiNoteStartTime = otherMidiNote.startTime;
+    const otherMidiNoteEndTime = otherMidiNoteStartTime + otherMidiNote.length;
+
+    return (
+      midiClipOrNoteCollideScenarioOne(
+        newMidiNoteStartTime,
+        otherMidiNoteStartTime,
+        otherMidiNoteEndTime
+      ) ||
+      midiClipOrNoteCollideScenarioTwo(
+        newMidiNoteEndTime,
+        otherMidiNoteStartTime,
+        otherMidiNoteEndTime
+      ) ||
+      midiClipOrNoteCollideScenarioThree(
+        newMidiNoteStartTime,
+        newMidiNoteEndTime,
+        otherMidiNoteStartTime,
+        otherMidiNoteEndTime
       )
     );
   });
@@ -315,7 +363,7 @@ const CurTracksReducer = (
 
       // If the new MIDI clip collides with an other existing one, cancel the action
       if (
-        isColliding(
+        isMidiClipColliding(
           action.modifyMidiClip!.newMidiClipProps!,
           state.tracks[action.trackIndex].midiClips
         )
@@ -398,7 +446,7 @@ const CurTracksReducer = (
 
         // If the new MIDI clip collides with an other existing one, cancel the action
         if (
-          isColliding(
+          isMidiClipColliding(
             action.modifyMidiClip!.newMidiClipProps!,
             state.tracks[action.trackIndex].midiClips
           )
@@ -440,9 +488,10 @@ const CurTracksReducer = (
 
         // If the new MIDI clip collides with an other existing one, cancel the action
         if (
-          isColliding(
+          isMidiClipColliding(
             action.modifyMidiClip!.newMidiClipProps!,
-            state.tracks[action.modifyMidiClip!.newMidiClipProps!.trackKey].midiClips
+            state.tracks[action.modifyMidiClip!.newMidiClipProps!.trackKey]
+              .midiClips
           )
         ) {
           //alert("!!!!COLLIDING_UPDATE_DIFFERENT");
@@ -538,6 +587,16 @@ const CurTracksReducer = (
       ].midiClips.findIndex(
         (item) => item.dataKey === action.modifyNote!.midiClipDataKey
       );
+
+      if (
+        isMidiNoteColliding(
+          action.modifyNote.newNoteProps,
+          state.tracks[action.trackIndex].midiClips[midiClipIndexAdd].notes
+        )
+      ) {
+        // alert("MIDI_NOTE_COLLISION_ADD");
+        return state;
+      }
 
       const addedNotesMidiClip = [
         ...state.tracks[action.trackIndex].midiClips.slice(0, midiClipIndexAdd),
@@ -643,6 +702,16 @@ const CurTracksReducer = (
       ].notes.findIndex(
         (item) => item.dataKey === action.modifyNote!.noteDataKey
       );
+
+      if (
+        isMidiNoteColliding(
+          action.modifyNote.newNoteProps,
+          state.tracks[action.trackIndex].midiClips[midiClipIndexUpdate].notes
+        )
+      ) {
+        // alert("MIDI_NOTE_COLLISION_UPDATE");
+        return state;
+      }
 
       const updatedNotesMidiClip = [
         ...state.tracks[action.trackIndex].midiClips.slice(
