@@ -20,8 +20,12 @@ function App() {
         <PianoRollView />
       </div>
       <Footer />
-      <button onClick={() => console.log(appAuth.currentUser)}>CUR USER</button>
-      <button onClick={() => console.log(Tone.Transport.progress)}>Transport progress</button>
+      <button onClick={() => console.log(appAuth.currentUser)}>
+        CUR USER
+      </button>
+      <button onClick={() => console.log(Tone.Transport.progress)}>
+        Transport progress
+      </button>
     </div>
   );
 }

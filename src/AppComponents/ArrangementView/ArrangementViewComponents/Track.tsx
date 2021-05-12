@@ -4,12 +4,10 @@ import * as Tone from "tone";
 import {
   clearModifyMidiclip,
   clearModifyNote,
+  deleteNote,
   deleteTrack,
 } from "../../Actions";
-import {
-  ModifyMidiClip,
-  ModifyNote,
-} from "../../Interfaces";
+import { ModifyMidiClip, ModifyNote } from "../../Interfaces";
 import { getInstrument, Instrument } from "./TrackFunctions";
 import "./Track.css";
 import deleteButton from "../../Icons/deleteButton.png";
@@ -68,11 +66,11 @@ const Track = React.memo((props: Props) => {
 
   // Update every Parts, when the instrument has changed
   useEffect(() => {
+    let newPartNotes: MidiClipMap[] = [];
 
-    let newPartNotes: MidiClipMap[] = []; 
+    console.log("!!!!NEWINSTR");
 
     curParts.forEach((midiClipMap) => {
-
       let newNoteMap: NoteMap[] = [];
       midiClipMap.value.part.clear();
 
@@ -84,25 +82,26 @@ const Track = React.memo((props: Props) => {
             length: noteMap.value.length,
             note: noteMap.value.note,
             instrument: curInstrument!,
-          }
+          },
         })
-      )
+      );
 
-      newNoteMap.forEach((notePartObject) => midiClipMap.value.part.add(notePartObject.value));
+      newNoteMap.forEach((notePartObject) =>
+        midiClipMap.value.part.add(notePartObject.value)
+      );
 
       newPartNotes.push({
         key: midiClipMap.key,
         value: {
           part: midiClipMap.value.part,
           partNotes: newNoteMap,
-        }
-      })
-
+        },
+      });
     });
 
     setCurParts(newPartNotes);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curInstrument]);
 
   // Mute all parts if track is muted
@@ -128,6 +127,30 @@ const Track = React.memo((props: Props) => {
 
     switch (props.curNoteToModify.type) {
       case "ADD":
+        // If instrument is not PolySynth, we need to check, if there is
+        // a note already in Part with the same startTime
+        if (curInstrument!.name !== "PolySynth") {
+          const isAllowed = !curParts[stateIndex].value.partNotes.some(
+            (noteMap) =>
+              noteMap.value.time ===
+              `${props.curNoteToModify!.newNoteProps!.startTime}i`
+          );
+
+          if (!isAllowed) {
+            alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
+            dispatch(
+              deleteNote({
+                midiClipDataKey: props.curNoteToModify!.midiClipDataKey,
+                noteDataKey: props.curNoteToModify!.newNoteProps!.dataKey,
+                trackDataKey: props.dataKey,
+                type: "DELETE",
+              })
+            );
+            dispatch(clearModifyNote());
+            return;
+          }
+        }
+
         console.log("ADDING NEW NOTE");
         const newNote: NotePartObject = {
           time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
@@ -249,7 +272,7 @@ const Track = React.memo((props: Props) => {
     }
 
     dispatch(clearModifyNote());
-  }, [props.curNoteToModify, curParts, dispatch, curInstrument]);
+  }, [props.curNoteToModify, curParts, dispatch, curInstrument, props.dataKey]);
 
   useEffect(() => {
     if (props.curMidiClipToModify === null) {
@@ -344,6 +367,7 @@ const Track = React.memo((props: Props) => {
         } else {
           // MIDI clip switched track
           if (props.curMidiClipToModify.trackDataKey === props.dataKey) {
+
             // This is the previous track, so we need to delete part from here
             curParts[midiClipToUpdateIndex].value.part.dispose();
 
@@ -450,6 +474,7 @@ const Track = React.memo((props: Props) => {
         setShowModal={setIsEditOpen}
         mode="edit"
         trackKey={props.dataKey}
+        instrument={curInstrument && curInstrument!.name}
       />
     </div>
   );

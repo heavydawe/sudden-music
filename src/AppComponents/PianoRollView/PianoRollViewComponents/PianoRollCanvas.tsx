@@ -179,11 +179,13 @@ interface Props {
   gridPadding: number;
 }
 
+const tileHeight = 25 + 1; // + 1 -> margins and gaps
+const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
+
 function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   console.log("new MIDI IN CANV", props.midiClip);
-  const tileHeight = 25 + 1; // + 1 -> margins and gaps
-
+  
   const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
   const gridPadding = props.gridPadding / 4; // 1 / gridPadding -> density of the grids in a beat
   const midiNoteColor = useSelector(
@@ -206,8 +208,6 @@ function PianoRollCanvas(props: Props) {
             ((window.innerWidth - 61) % (numOfBeats * gridPadding)))) *
         (numOfBeats / 4);
   // TODO: if numOfBeats > 4 then we should use a vertical scrollbar to navigate
-
-  const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
 
   // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
   //console.log(canvasWidth / (numOfBeats * gridPadding));
@@ -234,7 +234,7 @@ function PianoRollCanvas(props: Props) {
         blockSnapSizeToTick
       )
     );
-  }, [blockSnapSize, blockSnapSizeToTick, props.midiClip, tileHeight, gridPadding]);
+  }, [blockSnapSize, blockSnapSizeToTick, props.midiClip, gridPadding]);
 
   console.log("PIANO CANVAS RENDER", curNotesRect);
 
@@ -262,7 +262,6 @@ function PianoRollCanvas(props: Props) {
     );
   }
 
-  // TODO: put this whole thing in a const variable
   for (let i = 0; i < canvasHeight; i += tileHeight) {
     gridLayerComponents.push(
       <Line
@@ -371,29 +370,15 @@ function PianoRollCanvas(props: Props) {
           key="notesLayer"
           onClick={(e) => {
             if (e.evt.button === 2) {
+              
               const curDataKey = e.target.getAttr("dataKey");
-
-              const noteToDeleteInfo = getNoteInfo(
-                e.target.x(),
-                e.target.y(),
-                4,
-                tileHeight,
-                blockSnapSize,
-                blockSnapSizeToTick
-              );
 
               dispatch(
                 deleteNote({
                   midiClipDataKey: props.midiClip.dataKey,
                   noteDataKey: curDataKey,
                   trackDataKey: props.midiClip.trackKey,
-                  type: "DELETE",
-                  newNoteProps: {
-                    dataKey: curDataKey,
-                    length: noteToDeleteInfo.noteDuration,
-                    note: noteToDeleteInfo.noteName,
-                    startTime: noteToDeleteInfo.startTime,
-                  },
+                  type: "DELETE"
                 })
               );
 

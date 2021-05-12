@@ -58,8 +58,7 @@ function initMidiClipRects(
   midiClips: MidiClipPos[],
   blockSnapSize: number,
   blockSnapSizeToTick: number,
-  trackHeight: number,
-  gridPadding: number
+  trackHeight: number
 ) {
   const initedMidiClips = midiClips.map((midiClip) => {
     return {
@@ -82,7 +81,6 @@ interface MidiClipPos {
 }
 
 interface Props {
-  //midiClips: MidiClipInterface[];
   midiClipsPos: MidiClipPos[];
   numOfTracks: number;
 }
@@ -134,30 +132,18 @@ const ArrangementCanvas = React.memo((props: Props) => {
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
 
-  // Init correctly when a project is imported
-  // TODO: this state MIGHT be unneeded as we update the props after each action.
-  const [curMidiClipsRect, setCurMidiClipsRect] = useState<MidiClipRectProps[]>(
-    initMidiClipRects(
-      props.midiClipsPos,
-      blockSnapSize,
-      blockSnapSizeToTick,
-      trackHeight,
-      gridPadding
-    )
+  const curMidiClipsRect: MidiClipRectProps[] = initMidiClipRects(
+    props.midiClipsPos,
+    blockSnapSize,
+    blockSnapSizeToTick,
+    trackHeight
   );
 
-  useEffect(() => {
-    // TODO: MidiClipsPosInfo
-    setCurMidiClipsRect(
-      initMidiClipRects(
-        props.midiClipsPos,
-        blockSnapSize,
-        blockSnapSizeToTick,
-        trackHeight,
-        gridPadding
-      )
-    );
-  }, [blockSnapSize, blockSnapSizeToTick, props.midiClipsPos, trackHeight, gridPadding]);
+  // useEffect(() => {
+  //   midiClipLayerRef.current!.draw();
+  // }, [props.midiClipsPos])
+
+  console.log("AFTER INITED MIDIS", curMidiClipsRect);
 
   let gridLines: JSX.Element[] = [];
 
@@ -215,7 +201,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
   useEffect(() => {
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
-
         if (Tone.Transport.state === "stopped") {
           return;
         }
@@ -291,13 +276,17 @@ const ArrangementCanvas = React.memo((props: Props) => {
             );
 
             console.log(posX);
-            dispatch(changeTransportPosition(posX / blockSnapSize * blockSnapSizeToTick));
+            dispatch(
+              changeTransportPosition(
+                (posX / blockSnapSize) * blockSnapSizeToTick
+              )
+            );
             curPositionRef.current!.position({
               x: posX - 5,
               y: 0,
-            })
+            });
             curPositionRef.current!.getLayer()!.draw();
-          } 
+          }
         }}
         onDblClick={(e) => {
           if (e.evt.button !== 0) {
@@ -338,7 +327,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
               blockSnapSizeToTick
             );
 
-            setCurMidiClipsRect([...curMidiClipsRect, newMidiClipRect]);
             setMidiKeyGenerator(midiKeyGenerator + 1);
             dispatch(
               addNewMidiClip({
@@ -377,12 +365,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
                   type: "DELETE",
                 })
               );
-
-              setCurMidiClipsRect(
-                curMidiClipsRect.filter(
-                  (item) => item.dataKey !== midiClipToDeleteDataKey
-                )
-              );
             }
           }}
         >
@@ -416,24 +398,24 @@ const ArrangementCanvas = React.memo((props: Props) => {
                   if (!isDragging) {
                     dispatch(
                       selectMidiClip(
-                        getMidiClipTrackKey(
-                          item.posY, trackHeight
-                        ),
+                        getMidiClipTrackKey(item.posY, trackHeight),
                         item.dataKey
                       )
                     );
                   }
                 }}
                 changeSize={(newSize) => {
-                  const newCurMidiClips = curMidiClipsRect.slice();
-                  newCurMidiClips[i].width = newSize;
+
+                  if (newSize === curMidiClipsRect[i].width) {
+                    return;
+                  }
 
                   const newMidiClip = getMidiClipFromRect(
                     {
                       dataKey: curMidiClipsRect[i].dataKey,
                       posX: curMidiClipsRect[i].posX,
                       posY: curMidiClipsRect[i].posY,
-                      width: curMidiClipsRect[i].width,
+                      width: newSize,
                     },
                     [], // no need for notes, they won't be changed
                     trackHeight,
@@ -452,7 +434,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
                       newMidiClipProps: newMidiClip,
                     })
                   );
-                  setCurMidiClipsRect(newCurMidiClips);
                 }}
                 changePos={(newPosX: number, newPosY: number) => {
                   if (
@@ -467,16 +448,12 @@ const ArrangementCanvas = React.memo((props: Props) => {
                     trackHeight
                   );
 
-                  const newCurMidiClipsRect = curMidiClipsRect.slice();
-                  newCurMidiClipsRect[i].posX = newPosX;
-                  newCurMidiClipsRect[i].posY = newPosY;
-
                   const newMidiClip = getMidiClipFromRect(
                     {
-                      dataKey: newCurMidiClipsRect[i].dataKey,
-                      posX: newCurMidiClipsRect[i].posX,
-                      posY: newCurMidiClipsRect[i].posY,
-                      width: newCurMidiClipsRect[i].width,
+                      dataKey: curMidiClipsRect[i].dataKey,
+                      posX: newPosX,
+                      posY: newPosY,
+                      width: curMidiClipsRect[i].width,
                     },
                     [],
                     trackHeight,
@@ -492,7 +469,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
                       newMidiClipProps: newMidiClip,
                     })
                   );
-                  setCurMidiClipsRect(newCurMidiClipsRect);
                 }}
               />
             );

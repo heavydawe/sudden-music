@@ -11,10 +11,8 @@ const app = firebase.initializeApp({
 
 const appStore = app.firestore();
 const appAuth = app.auth();
-const appStorage = app.storage();
 
 export {
   appAuth,
   appStore,
-  appStorage,
 };

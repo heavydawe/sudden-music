@@ -1,5 +1,3 @@
-import { Dispatch } from "react";
-
 export interface MidiNote {
   dataKey: number;
   startTime: number;
@@ -13,16 +11,6 @@ export interface MidiClip {
   startTime: number;
   length: number;
   notes: MidiNote[];
-}
-
-export interface MidiNoteState {
-  state: MidiNote[];
-  setState: Dispatch<React.SetStateAction<MidiNote[]>>;
-}
-
-export interface MidiClipState {
-  state: MidiClip[];
-  setState: Dispatch<React.SetStateAction<MidiClip[]>>;
 }
 
 export interface NoteRectProps {
@@ -52,7 +40,7 @@ export interface TrackInterface {
   // color: string;
   instrument: string;
   midiClips: MidiClip[];
-  isMuted: boolean,
+  isMuted: boolean;
   // Instrument props here as well (for example: attack or release)?
 }
 
@@ -63,7 +51,6 @@ export interface Rootstate {
     modifiedMidiClip: ModifyMidiClip | null;
   };
   selectedMidiClip: { trackKey: number; midiClipDataKey: number };
-  modifyNote: ModifyNote;
   arrCanvasProps: ArrCanvasProps;
   pianoRollCanvasProps: PianoRollCanvasProps;
   curTransportPosition: number;
@@ -101,6 +88,7 @@ export interface ModifyMidiClip {
   midiClipDataKey: number;
   type: "ADD" | "DELETE" | "UPDATE";
   newMidiClipProps?: MidiClip;
+  oldTrackInstrumentName?: string;
 }
 
 export interface TrackProps {

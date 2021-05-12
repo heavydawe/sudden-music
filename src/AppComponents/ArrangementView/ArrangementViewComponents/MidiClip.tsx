@@ -1,7 +1,7 @@
 import Konva from "konva";
 import { Rect, Transformer } from "react-konva";
 import { useRef, useEffect } from "react";
-import { getPositionX, getPositionY } from '../../GetPositionFunctions';
+import { getPositionX, getPositionY } from "../../GetPositionFunctions";
 import { ShapeProps, CanvasProps } from "../../Interfaces";
 
 interface Props {
@@ -15,7 +15,6 @@ interface Props {
 }
 
 function MidiClip(props: Props) {
-
   const canvasWidth = props.canvasProps.canvasWidth;
   const canvasHeight = props.canvasProps.canvasHeight;
   const blockSnapSize = props.canvasProps.blockSnapSize;
@@ -25,12 +24,24 @@ function MidiClip(props: Props) {
   const midiClipRef = useRef<Konva.Rect>(null);
   const trRefMidi = useRef<Konva.Transformer>(null);
 
+  console.log("!!IN MIDI ", props.dataKey, " shapeProps: ", props.shapeProps);
+
   useEffect(() => {
     if (props.isSelected) {
       trRefMidi.current!.nodes([midiClipRef.current!]);
       trRefMidi.current!.getLayer()!.batchDraw();
     }
   }, [props.isSelected]);
+
+  // useEffect(() => {
+  //   midiClipRef.current!.position({
+  //     x: props.shapeProps.posX,
+  //     y: props.shapeProps.posY,
+  //   });
+  //   midiClipRef.current!.draw();
+  //   midiClipRef.current!.getParent().draw();
+  //   console.log("REDRAW MIDI", midiClipRef.current!.getPosition());
+  // }, [props.shapeProps]);
 
   return (
     <>
@@ -70,11 +81,12 @@ function MidiClip(props: Props) {
             trackHeight,
             false
           );
-          
+
           e.target.position({
-            x: posX,
-            y: posY,
+            x: props.shapeProps.posX,
+            y: props.shapeProps.posY,
           });
+          
           props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {

@@ -126,7 +126,9 @@ function Footer() {
                 <select defaultValue="darkMode" ref={prefThemeRef}>
                   <option value="darkMode">Sötét</option>
                   <option value="darkModeBlue">Sötét kék</option>
-                  <option value="fade">Átmenetes</option>
+                  <option value="fade">Átmenetes 1</option>
+                  <option value="fadeFire">Átmenetes 2</option>
+                  <option value="warm">Narancs</option>
                 </select>
                 <br />
                 <input type="color" ref={prefMidiClipColor} />
@@ -156,8 +158,28 @@ function Footer() {
                     );
                     break;
                   case "darkModeBlue":
-                    root.style.setProperty("--main-bg-color", "blue");
-                    root.style.setProperty("--modal-bg-color", "blue");
+                    root.style.setProperty("--main-bg-color", "rgb(0, 0, 26)");
+                    root.style.setProperty("--modal-bg-color", "rgb(0, 0, 26)");
+                    break;
+                  case "warm":
+                    root.style.setProperty(
+                      "--main-bg-color",
+                      "rgb(255, 102, 0)"
+                    );
+                    root.style.setProperty(
+                      "--modal-bg-color",
+                      "rgb(255, 102, 0)"
+                    );
+                    break;
+                  case "fadeFire":
+                    root.style.setProperty(
+                      "--main-bg-color",
+                      "linear-gradient(90deg, rgb(255, 102, 0) 0%, rgb(204, 0, 0) 100%)"
+                    );
+                    root.style.setProperty(
+                      "--modal-bg-color",
+                      "linear-gradient(90deg, rgb(255, 102, 0) 0%, rgb(204, 0, 0) 100%)"
+                    );
                     break;
                   case "fade":
                     root.style.setProperty(
@@ -252,10 +274,6 @@ function Footer() {
                               "rgb(40, 40, 40)"
                             );
                             break;
-                          case "darkModeBlue":
-                            root.style.setProperty("--main-bg-color", "blue");
-                            root.style.setProperty("--modal-bg-color", "blue");
-                            break;
                           case "fade":
                             root.style.setProperty(
                               "--main-bg-color",
@@ -264,6 +282,36 @@ function Footer() {
                             root.style.setProperty(
                               "--modal-bg-color",
                               "linear-gradient(90deg, rgb(12, 38, 167) 0%, rgb(180, 33, 62) 100%)"
+                            );
+                            break;
+                          case "darkModeBlue":
+                            root.style.setProperty(
+                              "--main-bg-color",
+                              "rgb(0, 0, 26)"
+                            );
+                            root.style.setProperty(
+                              "--modal-bg-color",
+                              "rgb(0, 0, 26)"
+                            );
+                            break;
+                          case "warm":
+                            root.style.setProperty(
+                              "--main-bg-color",
+                              "rgb(255, 102, 0)"
+                            );
+                            root.style.setProperty(
+                              "--modal-bg-color",
+                              "rgb(255, 102, 0)"
+                            );
+                            break;
+                          case "fadeFire":
+                            root.style.setProperty(
+                              "--main-bg-color",
+                              "linear-gradient(90deg, rgb(255, 102, 0) 0%, rgb(204, 0, 0) 100%)"
+                            );
+                            root.style.setProperty(
+                              "--modal-bg-color",
+                              "linear-gradient(90deg, rgb(255, 102, 0) 0%, rgb(204, 0, 0) 100%)"
                             );
                             break;
 

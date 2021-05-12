@@ -9,6 +9,7 @@ interface Props {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   mode: string;
   trackKey?: number;
+  instrument?: string;
 }
 
 function NewTrackModal(props: Props) {
@@ -43,8 +44,9 @@ function NewTrackModal(props: Props) {
           <select
             id="newTrackInstrumentSelect"
             key="newTrackInstrumentSelect"
-            defaultValue="PolySynth"
+            defaultValue={props.instrument ? props.instrument : "PolySynth"}
             ref={newTrackInstrumentRef}
+            disabled={props.instrument ? props.instrument === "PolySynth" : false}
           >
             <option value="AMSynth">AMSynth</option>
             <option value="DuoSynth">DuoSynth</option>

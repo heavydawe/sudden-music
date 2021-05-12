@@ -1,9 +1,84 @@
 import {
+  MidiClip,
   ModifyMidiClip,
   ModifyNote,
   TrackInterface,
   TrackProps,
 } from "../Interfaces";
+
+function collideScenarioOne(
+  newMidiClipStartTime: number,
+  otherMidiClipStartTime: number,
+  otherMidiClipEndTime: number
+) {
+  return (
+    newMidiClipStartTime >= otherMidiClipStartTime &&
+    newMidiClipStartTime < otherMidiClipEndTime
+  );
+}
+
+function collideScenarioTwo(
+  newMidiClipEndTime: number,
+  otherMidiClipStartTime: number,
+  otherMidiClipEndTime: number
+) {
+  return (
+    newMidiClipEndTime > otherMidiClipStartTime &&
+    newMidiClipEndTime <= otherMidiClipEndTime
+  );
+}
+
+function collideScenarioThree(
+  newMidiClipStartTime: number,
+  newMidiClipEndTime: number,
+  otherMidiClipStartTime: number,
+  otherMidiClipEndTime: number
+) {
+  return (
+    newMidiClipStartTime <= otherMidiClipStartTime &&
+    newMidiClipEndTime >= otherMidiClipEndTime
+  );
+}
+
+function isColliding(newMidiClip: MidiClip, otherMidiClips: MidiClip[]) {
+  // 3 collide scenarios:
+  //    1. newMidiClip's startTime is between (inclusive) the starTime and startTime + length of an other one
+  //    2. newMidiClip's startTime + length is between the starTime and startTime + length of an other one
+  //    3. newMidiClip's startTime is equal or less AND startTime + length is greater or equal compared to an other one
+  const newMidiClipStartTime = newMidiClip.startTime;
+  const newMidiClipEndTime = newMidiClipStartTime + newMidiClip.length * 192;
+
+  return otherMidiClips.some((otherMidiClip) => {
+
+    // This is important when changing size of MIDI clip
+    if (newMidiClip.dataKey === otherMidiClip.dataKey) {
+      return false;
+    }
+
+    const otherMidiClipStartTime = otherMidiClip.startTime;
+    const otherMidiClipEndTime =
+      otherMidiClipStartTime + otherMidiClip.length * 192;
+
+    return (
+      collideScenarioOne(
+        newMidiClipStartTime,
+        otherMidiClipStartTime,
+        otherMidiClipEndTime
+      ) ||
+      collideScenarioTwo(
+        newMidiClipEndTime,
+        otherMidiClipStartTime,
+        otherMidiClipEndTime
+      ) ||
+      collideScenarioThree(
+        newMidiClipStartTime,
+        newMidiClipEndTime,
+        otherMidiClipStartTime,
+        otherMidiClipEndTime
+      )
+    );
+  });
+}
 
 const CurTracksReducer = (
   state: {
@@ -39,7 +114,7 @@ const CurTracksReducer = (
       {
         dataKey: 3,
         // color: "blue",
-        instrument: "PolySynth",
+        instrument: "MembraneSynth",
         midiClips: [],
         name: "test_1",
         isMuted: false,
@@ -47,7 +122,7 @@ const CurTracksReducer = (
       {
         dataKey: 4,
         // color: "red",
-        instrument: "PolySynth",
+        instrument: "MonoSynth",
         midiClips: [],
         name: "test_2",
         isMuted: false,
@@ -182,6 +257,10 @@ const CurTracksReducer = (
         (track) => track.dataKey === action.trackIndex
       );
 
+      const hasInstrumentChanged =
+        state.tracks[trackToChangeIndex].instrument !==
+        action.newTrackProps.instrument;
+
       return {
         tracks: [
           ...state.tracks.slice(0, trackToChangeIndex),
@@ -189,7 +268,9 @@ const CurTracksReducer = (
             ...state.tracks[trackToChangeIndex],
             name: action.newTrackProps.name,
             // color: action.newTrackProps.color,
-            instrument: action.newTrackProps.instrument,
+            instrument: hasInstrumentChanged
+              ? action.newTrackProps.instrument
+              : state.tracks[trackToChangeIndex].instrument,
           },
           ...state.tracks.slice(trackToChangeIndex + 1),
         ],
@@ -230,6 +311,17 @@ const CurTracksReducer = (
 
       if (action.modifyMidiClip!.newMidiClipProps === null) {
         throw Error("NewMidiClipProps is missing");
+      }
+
+      // If the new MIDI clip collides with an other existing one, cancel the action
+      if (
+        isColliding(
+          action.modifyMidiClip!.newMidiClipProps!,
+          state.tracks[action.trackIndex].midiClips
+        )
+      ) {
+        alert("!!!!COLLIDING_ADD");
+        return state;
       }
 
       const addedMidis = [
@@ -297,10 +389,24 @@ const CurTracksReducer = (
         (item) => item.dataKey === action.modifyMidiClip!.midiClipDataKey
       );
 
+      // Check if trackKey has changed
       if (
         action.modifyMidiClip!.trackDataKey ===
         action.modifyMidiClip!.newMidiClipProps!.trackKey
       ) {
+        // In this case it has NOT
+
+        // If the new MIDI clip collides with an other existing one, cancel the action
+        if (
+          isColliding(
+            action.modifyMidiClip!.newMidiClipProps!,
+            state.tracks[action.trackIndex].midiClips
+          )
+        ) {
+          alert("!!!!COLLIDING_UPDATE_SAME");
+          return state;
+        }
+
         const updatedMidiClip = [
           ...state.tracks[action.trackIndex].midiClips.slice(
             0,
@@ -330,13 +436,53 @@ const CurTracksReducer = (
           modifiedMidiClip: action.modifyMidiClip, //notes will be empty here, no need them to be passed
         };
       } else {
+        // TrackKey has changed in this case
+
+        // If the new MIDI clip collides with an other existing one, cancel the action
+        if (
+          isColliding(
+            action.modifyMidiClip!.newMidiClipProps!,
+            state.tracks[action.modifyMidiClip!.newMidiClipProps!.trackKey].midiClips
+          )
+        ) {
+          alert("!!!!COLLIDING_UPDATE_DIFFERENT");
+          return state;
+        }
+
+        // First, we need to check, if the old track's instrument was PolySynth, and the new
+        // one is not. This is forbidden, because only PolySynth can play multiple notes at
+        // the same time. Therefore to prevent any errors, we have to enforce this rule.
+        const prevInstrument =
+          state.tracks[action.modifyMidiClip!.trackDataKey].instrument;
+        const newInstrument =
+          state.tracks[action.modifyMidiClip!.newMidiClipProps!.trackKey]
+            .instrument;
+
+        if (prevInstrument === "PolySynth" && newInstrument !== "PolySynth") {
+          window.alert(
+            "Nem húzható át MIDI clip olyan sávról, amin PolySynth van, csak egy másik PolySynth-es sávra!"
+          );
+
+          return state;
+        }
+
+        if (prevInstrument !== "PolySynth" && newInstrument === "PolySynth") {
+          if (
+            !window.confirm(
+              "Biztosan át szeretnéd húzni ezt a MIDI clippet egy PolySynthes sávra? Utána már csak PolySynthes sávokra lesz húzható a MIDI clip!"
+            )
+          ) {
+            return state;
+          }
+        }
+
         const newTracks = state.tracks.slice();
 
         // Make a copy of the midiClip that needs to be moved
         const midiClipToCopy =
           state.tracks[action.trackIndex].midiClips[midiClipToUpdateIndex];
 
-        // TrackKey changed, so delete midiClip from old track
+        // TrackKey has changed, so delete midiClip from old track
         newTracks[action.trackIndex].midiClips = [
           ...newTracks[action.trackIndex].midiClips.slice(
             0,
@@ -348,19 +494,18 @@ const CurTracksReducer = (
         ];
 
         // And insert it in the new track
-        newTracks[
-          action.modifyMidiClip!.newMidiClipProps!.trackKey
-        ].midiClips = [
-          ...newTracks[action.modifyMidiClip!.newMidiClipProps!.trackKey]
-            .midiClips,
-          {
-            dataKey: midiClipToCopy.dataKey,
-            notes: midiClipToCopy.notes,
-            length: midiClipToCopy.length,
-            startTime: action.modifyMidiClip!.newMidiClipProps!.startTime,
-            trackKey: action.modifyMidiClip!.newMidiClipProps!.trackKey,
-          },
-        ];
+        newTracks[action.modifyMidiClip!.newMidiClipProps!.trackKey].midiClips =
+          [
+            ...newTracks[action.modifyMidiClip!.newMidiClipProps!.trackKey]
+              .midiClips,
+            {
+              dataKey: midiClipToCopy.dataKey,
+              notes: midiClipToCopy.notes,
+              length: midiClipToCopy.length,
+              startTime: action.modifyMidiClip!.newMidiClipProps!.startTime,
+              trackKey: action.modifyMidiClip!.newMidiClipProps!.trackKey,
+            },
+          ];
 
         return {
           tracks: newTracks,
@@ -369,10 +514,13 @@ const CurTracksReducer = (
             ...action.modifyMidiClip!,
             newMidiClipProps: {
               ...action.modifyMidiClip!.newMidiClipProps,
-              notes: midiClipToCopy.notes, 
+              notes: midiClipToCopy.notes,
               // Here we need to pass the notes, so the new track can create the new part
-            }
-          },
+            },
+            oldTrackInstrumentName:
+              newTracks[midiClipToCopy.trackKey].instrument,
+          }, // Pass the prev track's instrument name, so we can enforce the no PolySynth
+          // to not PolySynth rule
         };
       }
 
@@ -427,10 +575,6 @@ const CurTracksReducer = (
     case "DELETE_NOTE":
       if (action.modifyNote === undefined) {
         throw Error("ModifyNote is missing");
-      }
-
-      if (action.modifyNote.newNoteProps === undefined) {
-        throw Error("NewNoteProps is missing");
       }
 
       const midiClipIndexDelete = state.tracks[
