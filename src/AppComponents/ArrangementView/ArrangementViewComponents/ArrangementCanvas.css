@@ -1,5 +1,5 @@
 .stageClass {
-  overflow: auto;
+  overflow: scroll;
 }
 
 /* ::-webkit-scrollbar {

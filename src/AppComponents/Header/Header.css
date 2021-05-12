@@ -5,4 +5,8 @@ header {
     text-align: center;
     background-color: black;
     height: 7vh;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 1;
 }

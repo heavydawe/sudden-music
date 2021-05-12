@@ -3,14 +3,15 @@
   grid-template-columns: 150px auto;
   /* background: linear-gradient(90deg, rgb(12, 38, 167) 10%, rgb(180, 33, 62) 100%); */
   padding: 0px;
-  height: 80vh;
-  width: 100vw;
-  overflow: hidden;
+  height: 60vh;
+  width: 100%;
+  overflow: scroll;
 }
 
 .audioSamplerContainer {
   display: grid;
   grid-template-columns: repeat(5, 20%);
+  height: 25vh;
 }
 
 /* .trackHeaderColumn {

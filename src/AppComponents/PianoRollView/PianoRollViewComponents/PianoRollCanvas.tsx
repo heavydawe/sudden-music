@@ -185,9 +185,9 @@ const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
 function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
   console.log("new MIDI IN CANV", props.midiClip);
-  
+
   const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
-  const gridPadding = props.gridPadding / 4; // 1 / gridPadding -> density of the grids in a beat
+  const gridPadding = props.gridPadding / 4; // density of the grids in a beat
   const midiNoteColor = useSelector(
     (state: Rootstate) => state.pianoRollCanvasProps.midiNoteColor
   );
@@ -195,18 +195,29 @@ function PianoRollCanvas(props: Props) {
   const blockSnapSizeToTick = 192 / gridPadding;
   const dispatch = useDispatch();
 
-  // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
+  // // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
+  // const canvasWidth =
+  //   numOfBeats < 4
+  //     ? window.innerWidth -
+  //       61 +
+  //       (numOfBeats * gridPadding -
+  //         ((window.innerWidth - 61) % (numOfBeats * gridPadding)))
+  //     : (window.innerWidth -
+  //         61 +
+  //         (numOfBeats * gridPadding -
+  //           ((window.innerWidth - 61) % (numOfBeats * gridPadding)))) *
+  //       (numOfBeats / 4);
   const canvasWidth =
-    numOfBeats < 4
+    numOfBeats <= 8
       ? window.innerWidth -
         61 +
         (numOfBeats * gridPadding -
           ((window.innerWidth - 61) % (numOfBeats * gridPadding)))
       : (window.innerWidth -
           61 +
-          (numOfBeats * gridPadding -
-            ((window.innerWidth - 61) % (numOfBeats * gridPadding)))) *
-        (numOfBeats / 4);
+          (8 * gridPadding -
+            ((window.innerWidth - 61) % (8 * gridPadding)))) / 8 *
+        numOfBeats;
   // TODO: if numOfBeats > 4 then we should use a vertical scrollbar to navigate
 
   // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
@@ -292,9 +303,10 @@ function PianoRollCanvas(props: Props) {
   }
 
   return (
-    <div id="PianoRollCanvas" className="stageClass" key="PianoRollCanvas">
+    <div id="PianoRollCanvas" key="PianoRollCanvas">
       <Stage
         key="pianoRollBody"
+        className="stageClass"
         width={canvasWidth + 2} // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
         onMouseDown={(e) => {
@@ -370,7 +382,6 @@ function PianoRollCanvas(props: Props) {
           key="notesLayer"
           onClick={(e) => {
             if (e.evt.button === 2) {
-              
               const curDataKey = e.target.getAttr("dataKey");
 
               dispatch(
@@ -378,7 +389,7 @@ function PianoRollCanvas(props: Props) {
                   midiClipDataKey: props.midiClip.dataKey,
                   noteDataKey: curDataKey,
                   trackDataKey: props.midiClip.trackKey,
-                  type: "DELETE"
+                  type: "DELETE",
                 })
               );
 

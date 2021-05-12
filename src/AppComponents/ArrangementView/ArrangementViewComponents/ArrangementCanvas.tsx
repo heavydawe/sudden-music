@@ -237,9 +237,10 @@ const ArrangementCanvas = React.memo((props: Props) => {
   );
 
   return (
-    <div key="arrangementCanvas" className="stageClass">
+    <div key="arrangementCanvas">
       <Stage
         key="arrangementStage"
+        className="stageClass"
         width={canvasWidth + 2}
         // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}

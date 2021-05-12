@@ -35,6 +35,7 @@ function NewTrackModal(props: Props) {
           <input
             key="newTrackNameInput"
             id="newTrackNameInput"
+            autoComplete="off"
             type="text"
             maxLength={20}
             minLength={5}
@@ -83,7 +84,7 @@ function NewTrackModal(props: Props) {
             return;
           }
 
-          if (newTrackNameRef.current!.validity.tooShort) {
+          if (newTrackNameRef.current!.value.length < 5) {
             alert("Kérlek az új sávnak a neve legalább 5 karakter legyen!");
             return;
           }

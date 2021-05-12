@@ -13,3 +13,9 @@
   margin: 0px;
   border-radius: 100px;
 } */
+
+.mainPart {
+  position: relative;
+  top: 15vh;
+  z-index: 0;
+}

@@ -119,6 +119,11 @@ function MidiClip(props: Props) {
               trRefMidi.current!.stopTransform();
               return oldBox;
             }
+
+            if (newBox.width > blockSnapSize * gridPadding) {
+              return oldBox;
+            }
+            
             return newBox;
           }}
         />

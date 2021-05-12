@@ -69,6 +69,8 @@ function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
 function NavigationBar() {
   const dispatch = useDispatch();
 
+  console.log("IN NAV")
+
   const curTransportPosition = useSelector(
     (state: Rootstate) => state.curTransportPosition
   );
@@ -77,7 +79,7 @@ function NavigationBar() {
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    document.onkeydown  = (e) => {
+    document.onkeydown = (e) => {
       if (e.key === " ") {
         e.preventDefault();
         e.stopPropagation();

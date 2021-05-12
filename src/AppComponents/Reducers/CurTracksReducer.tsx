@@ -320,7 +320,7 @@ const CurTracksReducer = (
           state.tracks[action.trackIndex].midiClips
         )
       ) {
-        alert("!!!!COLLIDING_ADD");
+        //alert("!!!!COLLIDING_ADD");
         return state;
       }
 
@@ -403,7 +403,7 @@ const CurTracksReducer = (
             state.tracks[action.trackIndex].midiClips
           )
         ) {
-          alert("!!!!COLLIDING_UPDATE_SAME");
+          //alert("!!!!COLLIDING_UPDATE_SAME");
           return state;
         }
 
@@ -445,7 +445,7 @@ const CurTracksReducer = (
             state.tracks[action.modifyMidiClip!.newMidiClipProps!.trackKey].midiClips
           )
         ) {
-          alert("!!!!COLLIDING_UPDATE_DIFFERENT");
+          //alert("!!!!COLLIDING_UPDATE_DIFFERENT");
           return state;
         }
 
