@@ -128,6 +128,14 @@ function isMidiNoteColliding(
   });
 }
 
+function isAllowed(newMidiNote: MidiNote, otherMidiNotes: MidiNote[]) {
+  return otherMidiNotes.some(
+    (otherMidiNote) =>
+      newMidiNote.dataKey !== otherMidiNote.dataKey &&
+      newMidiNote.startTime === otherMidiNote.startTime
+  );
+}
+
 const CurTracksReducer = (
   state: {
     tracks: TrackInterface[];
@@ -589,6 +597,17 @@ const CurTracksReducer = (
       );
 
       if (
+        state.tracks[action.trackIndex].instrument !== "PolySynth" &&
+        isAllowed(
+          action.modifyNote!.newNoteProps!,
+          state.tracks[action.trackIndex].midiClips[midiClipIndexAdd].notes
+        )
+      ) {
+        alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
+        return state;
+      }
+
+      if (
         isMidiNoteColliding(
           action.modifyNote.newNoteProps,
           state.tracks[action.trackIndex].midiClips[midiClipIndexAdd].notes
@@ -696,6 +715,17 @@ const CurTracksReducer = (
       ].midiClips.findIndex(
         (item) => item.dataKey === action.modifyNote!.midiClipDataKey
       );
+
+      if (
+        state.tracks[action.trackIndex].instrument !== "PolySynth" &&
+        isAllowed(
+          action.modifyNote!.newNoteProps!,
+          state.tracks[action.trackIndex].midiClips[midiClipIndexUpdate].notes
+        )
+      ) {
+        alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
+        return state;
+      }
 
       const noteToUpdateIndex = state.tracks[action.trackIndex].midiClips[
         midiClipIndexUpdate

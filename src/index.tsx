@@ -13,8 +13,7 @@ Tone.Transport.PPQ = 192;
 
 //Tone.setContext(new Tone.Context({ latencyHint : "balanced" }))
 
-document.onkeydown = (e) => {e.stopPropagation()}
-// document.onkeypress  = (e) => {e.stopPropagation()} 
+// document.onkeydown = (e) => {e.stopPropagation()}
 
 ReactDOM.render(
     <Provider store={store}>

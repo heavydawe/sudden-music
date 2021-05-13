@@ -8,6 +8,10 @@ const CurTransportPositionReducer = (
   switch (action.type) {
     case "SET_CUR_TRANSPORT_POSITION":
       return action.payload;
+
+    case "CLEAR_SPACE_EVENT":
+      document.onkeydown = null;
+      return state;
   
     default:
       return state;

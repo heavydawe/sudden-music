@@ -4,8 +4,8 @@ import * as Tone from "tone";
 import {
   clearModifyMidiclip,
   clearModifyNote,
-  deleteNote,
   deleteTrack,
+  deselectMidiClip,
 } from "../../Actions";
 import { ModifyMidiClip, ModifyNote } from "../../Interfaces";
 import { getInstrument, Instrument } from "./TrackFunctions";
@@ -131,27 +131,27 @@ const Track = React.memo((props: Props) => {
       case "ADD":
         // If instrument is not PolySynth, we need to check, if there is
         // a note already in Part with the same startTime
-        if (curInstrument!.name !== "PolySynth") {
-          const isAllowed = !curParts[stateIndex].value.partNotes.some(
-            (noteMap) =>
-              noteMap.value.time ===
-              `${props.curNoteToModify!.newNoteProps!.startTime}i`
-          );
+        // if (curInstrument!.name !== "PolySynth") {
+        //   const isAllowed = !curParts[stateIndex].value.partNotes.some(
+        //     (noteMap) =>
+        //       noteMap.value.time ===
+        //       `${props.curNoteToModify!.newNoteProps!.startTime}i`
+        //   );
 
-          if (!isAllowed) {
-            alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
-            dispatch(
-              deleteNote({
-                midiClipDataKey: props.curNoteToModify!.midiClipDataKey,
-                noteDataKey: props.curNoteToModify!.newNoteProps!.dataKey,
-                trackDataKey: props.dataKey,
-                type: "DELETE",
-              })
-            );
-            dispatch(clearModifyNote());
-            return;
-          }
-        }
+        //   if (!isAllowed) {
+        //     alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
+        //     dispatch(
+        //       deleteNote({
+        //         midiClipDataKey: props.curNoteToModify!.midiClipDataKey,
+        //         noteDataKey: props.curNoteToModify!.newNoteProps!.dataKey,
+        //         trackDataKey: props.dataKey,
+        //         type: "DELETE",
+        //       })
+        //     );
+        //     dispatch(clearModifyNote());
+        //     return;
+        //   }
+        // }
 
         console.log("ADDING NEW NOTE");
         const newNote: NotePartObject = {
@@ -331,27 +331,28 @@ const Track = React.memo((props: Props) => {
             midiClip.key === props.curMidiClipToModify!.midiClipDataKey
         );
 
-        // If size have changed, then we only need to update the length
-        if (
-          props.curMidiClipToModify!.newMidiClipProps!.length !==
-          curParts[midiClipToUpdateIndex].length
-        ) {
-          setCurParts((prevState) => [
-            ...prevState.slice(0, midiClipToUpdateIndex),
-            {
-              ...prevState[midiClipToUpdateIndex],
-              length: props.curMidiClipToModify!.newMidiClipProps!.length,
-            },
-            ...prevState.slice(midiClipToUpdateIndex + 1),
-          ]);
-          break;
-        }
-
         if (
           props.curMidiClipToModify.trackDataKey ===
           props.curMidiClipToModify.newMidiClipProps!.trackKey
         ) {
           // MIDI clip did NOT switch track
+
+          // If size have changed, then we only need to update the length
+          console.log(curParts[midiClipToUpdateIndex]);
+          if (
+            props.curMidiClipToModify!.newMidiClipProps!.length !==
+            curParts[midiClipToUpdateIndex].length
+          ) {
+            setCurParts((prevState) => [
+              ...prevState.slice(0, midiClipToUpdateIndex),
+              {
+                ...prevState[midiClipToUpdateIndex],
+                length: props.curMidiClipToModify!.newMidiClipProps!.length,
+              },
+              ...prevState.slice(midiClipToUpdateIndex + 1),
+            ]);
+            break;
+          }
 
           console.log("NEW START");
 
@@ -484,7 +485,11 @@ const Track = React.memo((props: Props) => {
       </button>
       <button
         className="trackHeaderDeleteButton"
-        onClick={() => dispatch(deleteTrack(props.dataKey))}
+        onClick={() => {
+          curParts.forEach((part) => part.value.part.dispose());
+          dispatch(deselectMidiClip());
+          dispatch(deleteTrack(props.dataKey));
+        }}
       >
         <img src={deleteButton} alt="X" />
       </button>

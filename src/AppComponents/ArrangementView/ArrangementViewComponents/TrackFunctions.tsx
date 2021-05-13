@@ -10,7 +10,7 @@ export type Instrument =
   //  | Tone.NoiseSynth // NoiseSynth-nél nem működik a triggerAttackRelease a szokásos módon, mert ugye ő nem fog kapni "note"-ot
   | Tone.PluckSynth
   | Tone.PolySynth
-  | Tone.Sampler
+  // | Tone.Sampler
   | Tone.Synth;
 
 function getInstrument(instrumentName: string) {
@@ -31,8 +31,6 @@ function getInstrument(instrumentName: string) {
       return new Tone.PluckSynth().toDestination();
     case "PolySynth":
       return new Tone.PolySynth().toDestination();
-    case "Sampler":
-      return new Tone.Sampler().toDestination();
     case "Synth":
       return new Tone.Synth().toDestination();
 

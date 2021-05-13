@@ -108,6 +108,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
   const curPositionLayer = useRef<Konva.Layer>(null);
+  // const [positionEventID, setPositionEventID]= useState<number | null>(null);
 
   // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
   //const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
@@ -199,6 +200,14 @@ const ArrangementCanvas = React.memo((props: Props) => {
   }, [numOfPhrases]);
 
   useEffect(() => {
+
+    // console.log("!!!!!IN CURTRANSPORT USEFF", positionEventID);
+
+    // if (positionEventID !== null) {
+    //   Tone.Transport.clear(positionEventID);
+    // }
+
+    // const eventID = 
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
         if (Tone.Transport.state === "stopped") {
@@ -210,9 +219,12 @@ const ArrangementCanvas = React.memo((props: Props) => {
           y: 0,
         });
         curPositionLayer.current!.draw();
-        //console.log(Tone.Transport.progress, Math.trunc(canvasWidth * Tone.Transport.progress) - 5);
+        // console.log(Tone.Transport.progress, Math.trunc(canvasWidth * Tone.Transport.progress) - 20);
       }, time);
     }, "10i");
+
+    // setPositionEventID(eventID);
+    // console.log("NEWID",positionEventID)
   }, [canvasWidth]);
 
   const curPositionRect = (

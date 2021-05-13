@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import * as Tone from "tone";
 import "./NavigationBar.css";
 import playButton from "../Icons/playButton.png";
@@ -38,6 +38,13 @@ function togglePause() {
 }
 
 function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
+
+  if (!/^\d+$/.test(BPMInputRef.current!.value)) {
+    alert("A BPM csak számokat tartalmazhat!");
+    BPMInputRef.current!.value = "120";
+    return;
+  }
+
   const newBPMValue = +BPMInputRef.current!.value;
 
   if (newBPMValue === Tone.Transport.bpm.value) {
@@ -69,7 +76,7 @@ function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
 function NavigationBar() {
   const dispatch = useDispatch();
 
-  console.log("IN NAV")
+  console.log("IN NAV");
 
   const curTransportPosition = useSelector(
     (state: Rootstate) => state.curTransportPosition
@@ -78,15 +85,15 @@ function NavigationBar() {
   const playStopButtonRef = useRef<HTMLImageElement>(null);
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    document.onkeydown = (e) => {
-      if (e.key === " ") {
-        e.preventDefault();
-        e.stopPropagation();
-        togglePlay(playStopButtonRef, curTransportPosition);
-      }
-    };
-  }, [curTransportPosition]);
+  // useEffect(() => {
+  //   document.onkeydown = (e) => {
+  //     if (e.key === " ") {
+  //       e.preventDefault();
+  //       e.stopPropagation();
+  //       togglePlay(playStopButtonRef, curTransportPosition);
+  //     }
+  //   };
+  // }, [curTransportPosition]);
 
   return (
     <nav>
@@ -111,7 +118,12 @@ function NavigationBar() {
       <span>Félperiódusok száma:</span>
       <select
         defaultValue="4"
-        onChange={(e) => dispatch(changeArrViewNumOfPhrases(+e.target.value))}
+        onChange={(e) => {
+          if (Tone.Transport.state === "started") {
+            togglePlay(playStopButtonRef, curTransportPosition);
+          }
+          dispatch(changeArrViewNumOfPhrases(+e.target.value));
+        }}
       >
         <option value="1">1</option>
         <option value="2">2</option>
@@ -123,7 +135,12 @@ function NavigationBar() {
       <span>Rácsok sűrűsége:</span>
       <select
         defaultValue="16"
-        onChange={(e) => dispatch(changeArrViewGridPadding(+e.target.value))}
+        onChange={(e) => {
+          if (Tone.Transport.state === "started") {
+            togglePlay(playStopButtonRef, curTransportPosition);
+          }
+          dispatch(changeArrViewGridPadding(+e.target.value));
+        }}
       >
         <option value="4">4</option>
         <option value="8">8</option>

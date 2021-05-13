@@ -56,7 +56,6 @@ function NewTrackModal(props: Props) {
             <option value="MonoSynth">MonoSynth</option>
             <option value="PluckSynth">PluckSynth</option>
             <option value="PolySynth">PolySynth</option>
-            <option value="Sampler">Sampler</option>
             <option value="Synth">Synth</option>
           </select><br />
           {/* <input
