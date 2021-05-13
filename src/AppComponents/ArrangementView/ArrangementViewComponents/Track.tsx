@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import * as Tone from "tone";
 import {
+  clearImportFlag,
   clearModifyMidiclip,
   clearModifyNote,
   deleteTrack,
   deselectMidiClip,
 } from "../../Actions";
-import { ModifyMidiClip, ModifyNote } from "../../Interfaces";
+import { MidiClip, ModifyMidiClip, ModifyNote } from "../../Interfaces";
 import { getInstrument, Instrument } from "./TrackFunctions";
 import "./Track.css";
 import deleteButton from "../../Icons/deleteButton.png";
@@ -43,10 +44,12 @@ interface Props {
   dataKey: number;
   trackName: string;
   isMuted: boolean;
+  isDisposed: boolean;
   // trackColor: string;
   instrumentName: string;
   curNoteToModify: ModifyNote | null;
   curMidiClipToModify: ModifyMidiClip | null;
+  midiClips: MidiClip[] | null; // only used when a project has been imported
 }
 
 const Track = React.memo((props: Props) => {
@@ -115,6 +118,61 @@ const Track = React.memo((props: Props) => {
   // }, [props.isMuted])
 
   //console.log("RENDERING IN TRACK, KEY:", props.dataKey);
+
+  useEffect(() => {
+    if (!props.isDisposed) {
+      return;
+    }
+
+    curParts.forEach((midiClipMap) => midiClipMap.value.part.dispose());
+
+    console.log("!!IN DISPOSED");
+  }, [props.isDisposed, curParts]);
+
+  useEffect(() => {
+    if (curInstrument === undefined) {
+      return;
+    }
+
+    if (props.midiClips === null) {
+      return;
+    }
+
+    // Add everything to curParts
+    const newCurParts: MidiClipMap[] = props.midiClips.map((midiClip) => {
+      const newPart = new Tone.Part((time, value) => {
+        value.instrument.triggerAttackRelease(value.note, value.length, time);
+      }).start(`${midiClip.startTime}i`);
+
+      return {
+        key: midiClip.dataKey,
+        length: midiClip.length,
+        value: {
+          part: newPart,
+          partNotes: midiClip.notes.map((note) => {
+            const notePart: NotePartObject = {
+              note: note.note,
+              instrument: curInstrument,
+              length: `${note.length}i`,
+              time: `${note.startTime}i`,
+            };
+
+            newPart.add(notePart);
+
+            return {
+              key: note.dataKey,
+              value: notePart,
+            };
+          }),
+        },
+      };
+    });
+
+    console.log("!!IN IMPORT EFFECT");
+
+    setCurParts(newCurParts);
+    dispatch(clearImportFlag());
+  }, [props.midiClips, dispatch, curInstrument]);
 
   useEffect(() => {
     if (props.curNoteToModify === null) {

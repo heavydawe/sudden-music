@@ -2,9 +2,9 @@ import Track from "./ArrangementViewComponents/Track";
 import "./ArrangementView.css";
 import ArrangementCanvas from "./ArrangementViewComponents/ArrangementCanvas";
 import { Rootstate } from "../Interfaces";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import addButton from "../Icons/addButton.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewTrackModal from "./ArrangementViewComponents/NewTrackModal";
 import AudioSampler from "./ArrangementViewComponents/AudioSampler";
 import {
@@ -13,11 +13,14 @@ import {
   sampleRepeatTime,
   sampleStartTime,
 } from "./ArrangementViewComponents/AudioSampleImport";
+import { tracksCleared } from "../Actions";
 // import { useState } from "react";
 
 function ArrangementView() {
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
+  const disposeTracks = useSelector((state: Rootstate) => state.disposeTracks);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   // function getNotesForMidiClip(trackKey: number, dataKey: number) {
 
@@ -33,6 +36,12 @@ function ArrangementView() {
   console.log("RENDERING ARR VIEW", curTrackInfos);
   //console.log(curNoteToModify);
 
+  useEffect(() => {
+    if (disposeTracks) {
+      dispatch(tracksCleared());
+    }
+  }, [disposeTracks, dispatch]);
+
   return (
     //List the tracks here
     <>
@@ -47,6 +56,7 @@ function ArrangementView() {
                 // trackColor={item.color}
                 instrumentName={item.instrument}
                 isMuted={item.isMuted}
+                isDisposed={disposeTracks}
                 curNoteToModify={
                   curTrackInfos.modifiedNote !== null
                     ? curTrackInfos.modifiedNote.trackDataKey === item.dataKey
@@ -68,7 +78,7 @@ function ArrangementView() {
                       : null
                     : null
                 }
-                //midiClips={item.midiClips}
+                midiClips={curTrackInfos.isImported ? curTrackInfos.tracks[item.dataKey].midiClips : null}
               />
             );
           })}
@@ -98,6 +108,7 @@ function ArrangementView() {
           //     return track.midiClips;
           //   })
           //   .flat()}
+          isImported={curTrackInfos.isImported}
           midiClipsPos={curTrackInfos.tracks.flatMap((track) => {
             return track.midiClips.map((midiClip) => {
               return {

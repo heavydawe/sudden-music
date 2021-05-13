@@ -141,57 +141,34 @@ const CurTracksReducer = (
     tracks: TrackInterface[];
     modifiedNote: ModifyNote | null;
     modifiedMidiClip: ModifyMidiClip | null;
+    isImported: boolean;
   } = {
     tracks: [
       {
         dataKey: 0,
-        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
-        name: "test_a",
+        name: "Sáv_A",
         isMuted: false,
       },
       {
         dataKey: 1,
-        // color: "blue",
         instrument: "PolySynth",
         midiClips: [],
-        name: "test_b",
-        isMuted: false,
-      },
-      {
-        dataKey: 2,
-        // color: "blue",
-        instrument: "PolySynth",
-        midiClips: [],
-        name: "test_0",
-        isMuted: false,
-      },
-      {
-        dataKey: 3,
-        // color: "blue",
-        instrument: "MembraneSynth",
-        midiClips: [],
-        name: "test_1",
-        isMuted: false,
-      },
-      {
-        dataKey: 4,
-        // color: "red",
-        instrument: "MonoSynth",
-        midiClips: [],
-        name: "test_2",
+        name: "Sáv_B",
         isMuted: false,
       },
     ],
     modifiedNote: null,
     modifiedMidiClip: null,
+    isImported: false,
   },
   action: {
     type: string;
     trackIndex: number;
-    payload?: string;
-    newTrackProps: TrackProps;
+    // payload?: string | JSON;
+    importedJSON?: TrackInterface[];
+    newTrackProps?: TrackProps;
     modifyTrack?: TrackInterface;
     modifyNote?: ModifyNote;
     modifyMidiClip?: ModifyMidiClip;
@@ -203,7 +180,9 @@ const CurTracksReducer = (
       const file = new Blob(
         [
           "!!!WARNING!!!\nDO NOT MODIFY THIS FILE OR THE PROJECT MIGHT NOT LOAD CORRECTLY!\n" +
-            JSON.stringify(state.tracks),
+            JSON.stringify(state.tracks) +
+            "\n" +
+            (document.getElementById("BPMInput")! as HTMLInputElement).value,
         ],
         { type: "text/plain" }
       );
@@ -214,32 +193,22 @@ const CurTracksReducer = (
       return state;
 
     case "IMPORT_PROJECT":
-      if (action.payload === undefined) {
-        throw Error("Payload is missing when importing");
+      if (action.importedJSON === undefined) {
+        throw Error("importedJSON is missing when importing");
       }
 
-      const fileParts = action.payload.split("\n");
+      return {
+        tracks: action.importedJSON,
+        modifiedNote: null,
+        modifiedMidiClip: null,
+        isImported: true,
+      };
 
-      if (fileParts.length !== 3) {
-        throw Error("File has been modified and cannot import it...");
-      }
-
-      const projectToImport = fileParts[2];
-
-      // TODO: fix piano roll then check importing again, midiclips were not showing correctly
-
-      try {
-        console.log(JSON.parse(projectToImport));
-        return {
-          tracks: JSON.parse(projectToImport),
-          modifiedNote: null,
-          modifiedMidiClip: null,
-        };
-      } catch (e) {
-        throw Error(
-          "Cannot parse JSON file, probably due to unwanted modifications to the file..."
-        );
-      }
+    case "CLEAR_IMPORT_FLAG":
+      return {
+        ...state,
+        isImported: false,
+      };
 
     case "ADD_NEW_TRACK":
       if (action.modifyTrack === undefined) {
@@ -259,6 +228,7 @@ const CurTracksReducer = (
           ],
           modifiedNote: null,
           modifiedMidiClip: null,
+          isImported: false,
         };
       }
 
@@ -277,6 +247,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     case "DELETE_TRACK":
@@ -302,6 +273,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     case "CHANGE_TRACK_PROPS":
@@ -332,6 +304,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: null,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     case "CLEAR_MODIFY_NOTE":
@@ -343,20 +316,6 @@ const CurTracksReducer = (
     case "CLEAR_MODIFY_MIDICLIP":
       return {
         ...state,
-        modifiedMidiClip: null,
-      };
-
-    case "CHANGE_INSTRUMENT":
-      return {
-        tracks: [
-          ...state.tracks.slice(0, action.trackIndex),
-          {
-            ...state.tracks[action.trackIndex],
-            instrument: action.payload,
-          },
-          ...state.tracks.slice(action.trackIndex + 1),
-        ],
-        modifiedNote: null,
         modifiedMidiClip: null,
       };
 
@@ -396,6 +355,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: null,
         modifiedMidiClip: action.modifyMidiClip,
+        isImported: false,
       };
 
     case "DELETE_MIDI_CLIP":
@@ -428,6 +388,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: null,
         modifiedMidiClip: action.modifyMidiClip,
+        isImported: false,
       };
 
     case "UPDATE_MIDI_CLIP":
@@ -490,6 +451,7 @@ const CurTracksReducer = (
           ],
           modifiedNote: null,
           modifiedMidiClip: action.modifyMidiClip, //notes will be empty here, no need them to be passed
+          isImported: false,
         };
       } else {
         // TrackKey has changed in this case
@@ -566,6 +528,7 @@ const CurTracksReducer = (
 
         return {
           tracks: newTracks,
+          isImported: false,
           modifiedNote: null,
           modifiedMidiClip: {
             ...action.modifyMidiClip!,
@@ -648,6 +611,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: action.modifyNote,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     case "DELETE_NOTE":
@@ -699,6 +663,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: action.modifyNote,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     case "UPDATE_NOTE":
@@ -781,6 +746,7 @@ const CurTracksReducer = (
         ],
         modifiedNote: action.modifyNote,
         modifiedMidiClip: null,
+        isImported: false,
       };
 
     default:

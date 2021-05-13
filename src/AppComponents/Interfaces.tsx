@@ -49,11 +49,16 @@ export interface Rootstate {
     tracks: TrackInterface[];
     modifiedNote: ModifyNote | null;
     modifiedMidiClip: ModifyMidiClip | null;
+    isImported: boolean;
   };
+  importedProps: {
+    BPM: number;
+  }
   selectedMidiClip: { trackKey: number; midiClipDataKey: number };
   arrCanvasProps: ArrCanvasProps;
   pianoRollCanvasProps: PianoRollCanvasProps;
   curTransportPosition: number;
+  disposeTracks: boolean;
 }
 
 export interface ArrCanvasProps {

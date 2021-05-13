@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as Tone from "tone";
 import "./NavigationBar.css";
 import playButton from "../Icons/playButton.png";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   changeArrViewGridPadding,
   changeArrViewNumOfPhrases,
+  clearImportedBPM,
 } from "../Actions";
 import { Rootstate } from "../Interfaces";
 
@@ -82,6 +83,10 @@ function NavigationBar() {
     (state: Rootstate) => state.curTransportPosition
   );
 
+  const importedBPM = useSelector(
+    (state: Rootstate) => state.importedProps.BPM
+  );
+
   const playStopButtonRef = useRef<HTMLImageElement>(null);
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,6 +99,22 @@ function NavigationBar() {
   //     }
   //   };
   // }, [curTransportPosition]);
+
+  useEffect(() => {
+
+    if (importedBPM === -1) {
+      return;
+    }
+
+    if (BPMInputRef === null) {
+      return;
+    }
+
+    BPMInputRef.current!.value = importedBPM.toString();
+    Tone.Transport.bpm.value = importedBPM;
+
+    dispatch(clearImportedBPM());
+  }, [importedBPM, dispatch])
 
   return (
     <nav>
@@ -108,6 +129,7 @@ function NavigationBar() {
       <span>BPM:</span>
       <input
         type="number"
+        id="BPMInput"
         ref={BPMInputRef}
         min={40}
         max={250}

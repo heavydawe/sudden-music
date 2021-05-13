@@ -83,6 +83,22 @@ interface MidiClipPos {
 interface Props {
   midiClipsPos: MidiClipPos[];
   numOfTracks: number;
+  isImported: boolean;
+}
+
+function initMidiKeyGenerator(midiClipPos: MidiClipPos[]) {
+  if (midiClipPos.length === 0) {
+    return 0;
+  }
+
+  return (
+    Math.max.apply(
+      Math,
+      midiClipPos.map((midiClip) => {
+        return midiClip.dataKey;
+      })
+    ) + 1
+  );
 }
 
 const ArrangementCanvas = React.memo((props: Props) => {
@@ -132,6 +148,14 @@ const ArrangementCanvas = React.memo((props: Props) => {
 
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
   const [selectedMidiClipId, selectMidiClipId] = useState<number>(-1);
+
+  useEffect(() => {
+    if (!props.isImported) {
+      return;
+    }
+
+    setMidiKeyGenerator(initMidiKeyGenerator(props.midiClipsPos));
+  }, [props.isImported, props.midiClipsPos]);
 
   const curMidiClipsRect: MidiClipRectProps[] = initMidiClipRects(
     props.midiClipsPos,
@@ -200,14 +224,13 @@ const ArrangementCanvas = React.memo((props: Props) => {
   }, [numOfPhrases]);
 
   useEffect(() => {
-
     // console.log("!!!!!IN CURTRANSPORT USEFF", positionEventID);
 
     // if (positionEventID !== null) {
     //   Tone.Transport.clear(positionEventID);
     // }
 
-    // const eventID = 
+    // const eventID =
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
         if (Tone.Transport.state === "stopped") {
@@ -418,7 +441,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
                   }
                 }}
                 changeSize={(newSize) => {
-
                   if (newSize === curMidiClipsRect[i].width) {
                     return;
                   }

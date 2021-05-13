@@ -4,10 +4,13 @@ import { useDispatch } from "react-redux";
 import {
   changeMidiClipColor,
   changeMidiNoteColor,
+  clearEveryTrack,
   exportProject,
   importProject,
+  setImportedBPM,
 } from "../Actions";
 import { appStore, appAuth } from "../firebase";
+import { TrackInterface } from "../Interfaces";
 import "./Footer.css";
 
 function checkSignUpCredentials(
@@ -476,7 +479,51 @@ function Footer() {
                     return;
                   }
 
-                  dispatch(importProject(content.toString()));
+                  // Check if content is fine
+                  const fileParts = content.toString().split("\n");
+
+                  if (fileParts.length !== 4) {
+                    // throw Error(
+                    //   "File has been modified and cannot import it..."
+                    // );
+                    alert("Nem importálható a fájl!");
+                    return;
+                  }
+
+                  const importedBPM = +fileParts[3];
+                  console.log(importedBPM);
+
+                  if (
+                    isNaN(importedBPM) ||
+                    Math.trunc(importedBPM) !== importedBPM ||
+                    importedBPM < 40 ||
+                    importedBPM > 250 
+                  ) {
+                    alert("Nem importálható a fájl!");
+                    return;
+                  }
+
+                  const projectToImport = fileParts[2];
+
+                  try {
+                    const parsedJSON: any = JSON.parse(projectToImport);
+
+                    if (!isValidProject(parsedJSON)) {
+                      alert("Nem importálható a fájl!");
+                      return;
+                    }
+
+                    //console.log(parsedJSON);
+                    dispatch(clearEveryTrack());
+                    dispatch(importProject(parsedJSON));
+                    dispatch(setImportedBPM(importedBPM));
+                  } catch (e) {
+                    // throw Error(
+                    //   "Cannot parse JSON file, probably due to unwanted modifications to the file..."
+                    // );
+                    alert("Hiba történt az importáláskor!");
+                    return;
+                  }
                 };
 
                 fileReader.readAsText(file);
@@ -493,3 +540,15 @@ function Footer() {
 }
 
 export default Footer;
+
+function isValidProject(parsedJSON: any) {
+  return (parsedJSON as TrackInterface[]).every((track) => {
+    return (
+      "dataKey" in track &&
+      "name" in track &&
+      "instrument" in track &&
+      "midiClips" in track &&
+      "isMuted" in track
+    );
+  });
+}

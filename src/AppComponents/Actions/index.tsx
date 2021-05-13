@@ -19,22 +19,6 @@ export const deleteTrack = (trackToDeleteDataKey: number) => {
   };
 };
 
-// export const renameTrack = (trackKey: number, newName: string) => {
-//   return {
-//     type: "CHANGE_TRACK_NAME",
-//     trackIndex: trackKey,
-//     payload: newName,
-//   };
-// };
-
-// export const changeInstrument = (trackKey: number, newInstrumentName: string) => {
-//   return {
-//     type: "CHANGE_INSTRUMENT",
-//     trackIndex: trackKey,
-//     payload: newInstrumentName,
-//   };
-// };
-
 export const changeTrackProps = (
   trackKey: number,
   newTrackProps: TrackProps
@@ -128,10 +112,41 @@ export const exportProject = () => {
   };
 };
 
-export const importProject = (inputFile: string) => {
+export const importProject = (importedJSON: JSON) => {
   return {
     type: "IMPORT_PROJECT",
-    payload: inputFile,
+    importedJSON: importedJSON,
+  };
+};
+
+export const setImportedBPM = (newBPM: number) => {
+  return {
+    type: "SET_IMPORTED_BPM",
+    payload: newBPM,
+  };
+};
+
+export const clearImportedBPM = () => {
+  return {
+    type: "CLEAR_IMPORTED_BPM",
+  };
+};
+
+export const clearEveryTrack = () => {
+  return {
+    type: "CLEAR_EVERY_TRACK",
+  };
+};
+
+export const tracksCleared = () => {
+  return {
+    type: "TRACKS_CLEARED",
+  };
+};
+
+export const clearImportFlag = () => {
+  return {
+    type: "CLEAR_IMPORT_FLAG",
   };
 };
 
