@@ -7,6 +7,12 @@ import Crash from "../../Samples/Crash.wav";
 const samplePaths = [Kick, Clap, OpenHihat, Ride, Crash];
 const sampleStartTime = [0, 192, 96, 0, 1440];
 const sampleRepeatTime = [192, 384, 192, 96, 1536];
-const sampleName = ["Lábdob", "Taps", "Lábcin", "Kísérő cintányér", "Beütő cintányér"];
+const sampleName = [
+  "Lábdob",
+  "Taps",
+  "Lábcin",
+  "Kísérő cintányér",
+  "Beütő cintányér",
+];
 
 export { samplePaths, sampleStartTime, sampleRepeatTime, sampleName };

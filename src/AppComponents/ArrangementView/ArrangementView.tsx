@@ -33,7 +33,7 @@ function ArrangementView() {
   // const curNoteToModify = useSelector((state: Rootstate) => state.modifyNote);
   // const [keyGenerator, setKeyGenerator] = useState<number>(curTrackInfos.length);
 
-  console.log("RENDERING ARR VIEW", curTrackInfos);
+  // console.log("RENDERING ARR VIEW", curTrackInfos);
   //console.log(curNoteToModify);
 
   useEffect(() => {
@@ -78,7 +78,11 @@ function ArrangementView() {
                       : null
                     : null
                 }
-                midiClips={curTrackInfos.isImported ? curTrackInfos.tracks[item.dataKey].midiClips : null}
+                midiClips={
+                  curTrackInfos.isImported
+                    ? curTrackInfos.tracks[item.dataKey].midiClips
+                    : null
+                }
               />
             );
           })}

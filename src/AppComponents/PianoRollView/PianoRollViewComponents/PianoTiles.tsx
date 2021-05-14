@@ -15,9 +15,9 @@ function initPianoTile(
       title={note + octave.toString()}
       key={"piano" + id.toString()}
       ref={null}
-      onClick={() => {
-        console.log("ID: " + id + "; NOTE: " + note + octave.toString());
-      }}
+      // onClick={() => {
+      //   console.log("ID: " + id + "; NOTE: " + note + octave.toString());
+      // }}
     >
       {note + octave.toString()}
     </div>

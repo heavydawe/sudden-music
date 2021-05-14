@@ -24,7 +24,7 @@ function MidiClip(props: Props) {
   const midiClipRef = useRef<Konva.Rect>(null);
   const trRefMidi = useRef<Konva.Transformer>(null);
 
-  console.log("!!IN MIDI ", props.dataKey, " shapeProps: ", props.shapeProps);
+  // console.log("!!IN MIDI ", props.dataKey, " shapeProps: ", props.shapeProps);
 
   useEffect(() => {
     if (props.isSelected) {
@@ -86,7 +86,7 @@ function MidiClip(props: Props) {
             x: props.shapeProps.posX,
             y: props.shapeProps.posY,
           });
-          
+
           props.changePos(posX, posY);
         }}
         onTransformEnd={(e) => {
@@ -123,7 +123,7 @@ function MidiClip(props: Props) {
             if (newBox.width > blockSnapSize * gridPadding) {
               return oldBox;
             }
-            
+
             return newBox;
           }}
         />

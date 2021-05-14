@@ -6,6 +6,7 @@ export type Instrument =
   | Tone.DuoSynth
   | Tone.FMSynth
   | Tone.MembraneSynth
+  | Tone.MetalSynth
   | Tone.MonoSynth
   //  | Tone.NoiseSynth // NoiseSynth-nél nem működik a triggerAttackRelease a szokásos módon, mert ugye ő nem fog kapni "note"-ot
   | Tone.PluckSynth
@@ -14,7 +15,7 @@ export type Instrument =
   | Tone.Synth;
 
 function getInstrument(instrumentName: string) {
-  console.log("NEW INSTR");
+  // console.log("NEW INSTR");
 
   switch (instrumentName) {
     case "AMSynth":
@@ -25,6 +26,8 @@ function getInstrument(instrumentName: string) {
       return new Tone.FMSynth().toDestination();
     case "MembraneSynth":
       return new Tone.MembraneSynth().toDestination();
+    case "MetalSynth":
+      return new Tone.MetalSynth().toDestination();
     case "MonoSynth":
       return new Tone.MonoSynth().toDestination();
     case "PluckSynth":

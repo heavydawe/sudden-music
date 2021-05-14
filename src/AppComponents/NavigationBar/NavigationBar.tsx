@@ -20,26 +20,25 @@ function togglePlay(
     buttonRef.current!.src = stopButton;
     Tone.start();
     Tone.Transport.start("+0.1", `${curTransportPosition}i`);
-    console.log("Started Transport");
+    // console.log("Started Transport");
   } else {
     buttonRef.current!.src = playButton;
     Tone.Transport.stop();
-    console.log("Stopped Transport");
+    // console.log("Stopped Transport");
   }
 }
 
 function togglePause() {
   if (Tone.Transport.state === "started") {
-    console.log("Paused Transport");
+    // console.log("Paused Transport");
     Tone.Transport.pause();
   } else if (Tone.Transport.state === "paused") {
-    console.log("Unpaused Transport");
+    // console.log("Unpaused Transport");
     Tone.Transport.start();
   }
 }
 
 function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
-
   if (!/^\d+$/.test(BPMInputRef.current!.value)) {
     alert("A BPM csak számokat tartalmazhat!");
     BPMInputRef.current!.value = "120";
@@ -77,7 +76,7 @@ function changeBPM(BPMInputRef: React.RefObject<HTMLInputElement>) {
 function NavigationBar() {
   const dispatch = useDispatch();
 
-  console.log("IN NAV");
+  // console.log("IN NAV");
 
   const curTransportPosition = useSelector(
     (state: Rootstate) => state.curTransportPosition
@@ -101,7 +100,6 @@ function NavigationBar() {
   // }, [curTransportPosition]);
 
   useEffect(() => {
-
     if (importedBPM === -1) {
       return;
     }
@@ -114,7 +112,7 @@ function NavigationBar() {
     Tone.Transport.bpm.value = importedBPM;
 
     dispatch(clearImportedBPM());
-  }, [importedBPM, dispatch])
+  }, [importedBPM, dispatch]);
 
   return (
     <nav>

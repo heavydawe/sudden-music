@@ -41,23 +41,28 @@ function NewTrackModal(props: Props) {
             minLength={5}
             required={true}
             ref={newTrackNameRef}
-          /><br />
+          />
+          <br />
           <select
             id="newTrackInstrumentSelect"
             key="newTrackInstrumentSelect"
             defaultValue={props.instrument ? props.instrument : "PolySynth"}
             ref={newTrackInstrumentRef}
-            disabled={props.instrument ? props.instrument === "PolySynth" : false}
+            disabled={
+              props.instrument ? props.instrument === "PolySynth" : false
+            }
           >
             <option value="AMSynth">AMSynth</option>
             <option value="DuoSynth">DuoSynth</option>
             <option value="FMSynth">FMSynth</option>
             <option value="MembraneSynth">MembraneSynth</option>
+            <option value="MetalSynth">MetalSynth</option>
             <option value="MonoSynth">MonoSynth</option>
             <option value="PluckSynth">PluckSynth</option>
             <option value="PolySynth">PolySynth</option>
             <option value="Synth">Synth</option>
-          </select><br />
+          </select>
+          <br />
           {/* <input
             key="newTrackColor"
             id="newTrackColor"
@@ -93,7 +98,7 @@ function NewTrackModal(props: Props) {
               addNewTrack({
                 dataKey: -1,
                 midiClips: [],
-                // color: "red", // newTrackColorRef.current!.value 
+                // color: "red", // newTrackColorRef.current!.value
                 instrument: newTrackInstrumentRef.current!.value,
                 name: newTrackNameRef.current!.value,
                 isMuted: false,

@@ -12,10 +12,10 @@ const CurTransportPositionReducer = (
     case "CLEAR_SPACE_EVENT":
       document.onkeydown = null;
       return state;
-  
+
     default:
       return state;
   }
-}
+};
 
 export default CurTransportPositionReducer;

@@ -11,7 +11,6 @@ const ArrCanvasPropsReducer = (
     payload: number | string;
   }
 ) => {
-
   switch (action.type) {
     case "CHANGE_ARR_VIEW_NUM_OF_PHRASES":
       return {

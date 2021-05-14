@@ -69,7 +69,7 @@ function initMidiClipRects(
     };
   });
 
-  console.log("initMidi", initedMidiClips);
+  // console.log("initMidi", initedMidiClips);
   return initedMidiClips;
 }
 
@@ -104,7 +104,7 @@ function initMidiKeyGenerator(midiClipPos: MidiClipPos[]) {
 const ArrangementCanvas = React.memo((props: Props) => {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
 
-  console.log("IN ARR CANVAS", props.midiClipsPos);
+  // console.log("IN ARR CANVAS", props.midiClipsPos);
 
   const trackHeight = 100 + 2; // + 2 -> margins and gaps
   const numOfTracks = props.numOfTracks;
@@ -168,7 +168,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
   //   midiClipLayerRef.current!.draw();
   // }, [props.midiClipsPos])
 
-  console.log("AFTER INITED MIDIS", curMidiClipsRect);
+  // console.log("AFTER INITED MIDIS", curMidiClipsRect);
 
   let gridLines: JSX.Element[] = [];
 
@@ -311,7 +311,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
               false
             );
 
-            console.log(posX);
+            // console.log(posX);
             dispatch(
               changeTransportPosition(
                 (posX / blockSnapSize) * blockSnapSizeToTick

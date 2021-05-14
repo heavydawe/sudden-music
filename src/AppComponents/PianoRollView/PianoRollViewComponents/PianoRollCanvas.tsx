@@ -154,7 +154,7 @@ function initNotes(
     });
   });
 
-  console.log("INITED NOTES", initedNotes);
+  // console.log("INITED NOTES", initedNotes);
 
   return initedNotes;
 }
@@ -184,7 +184,7 @@ const canvasHeight = tileHeight * 120; //piano tile * number of grid rows
 
 function PianoRollCanvas(props: Props) {
   // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
-  console.log("new MIDI IN CANV", props.midiClip);
+  // console.log("new MIDI IN CANV", props.midiClip);
 
   const numOfBeats = props.midiClip.length; // How many measures long the piano roll should be
   const gridPadding = props.gridPadding / 4; // density of the grids in a beat

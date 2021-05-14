@@ -61,7 +61,7 @@ const Track = React.memo((props: Props) => {
 
   // TODO: INIT correctly when importing
   const [curParts, setCurParts] = useState<MidiClipMap[]>([]);
-  console.log(`IN TRACK ${props.dataKey}`, curParts);
+  // console.log(`IN TRACK ${props.dataKey}`, curParts);
 
   // Only change instrument when inited or on user change
   useEffect(() => {
@@ -72,7 +72,7 @@ const Track = React.memo((props: Props) => {
   useEffect(() => {
     let newPartNotes: MidiClipMap[] = [];
 
-    console.log("!!!!NEWINSTR");
+    // console.log("!!!!NEWINSTR");
 
     curParts.forEach((midiClipMap) => {
       let newNoteMap: NoteMap[] = [];
@@ -126,7 +126,7 @@ const Track = React.memo((props: Props) => {
 
     curParts.forEach((midiClipMap) => midiClipMap.value.part.dispose());
 
-    console.log("!!IN DISPOSED");
+    // console.log("!!IN DISPOSED");
   }, [props.isDisposed, curParts]);
 
   useEffect(() => {
@@ -168,7 +168,7 @@ const Track = React.memo((props: Props) => {
       };
     });
 
-    console.log("!!IN IMPORT EFFECT");
+    // console.log("!!IN IMPORT EFFECT");
 
     setCurParts(newCurParts);
     dispatch(clearImportFlag());
@@ -179,7 +179,7 @@ const Track = React.memo((props: Props) => {
       return;
     }
 
-    console.log("IN CURNOTEMODIFY", props.curNoteToModify);
+    // console.log("IN CURNOTEMODIFY", props.curNoteToModify);
 
     const stateIndex = curParts.findIndex(
       (part) => part.key === props.curNoteToModify!.midiClipDataKey
@@ -211,7 +211,7 @@ const Track = React.memo((props: Props) => {
         //   }
         // }
 
-        console.log("ADDING NEW NOTE");
+        // console.log("ADDING NEW NOTE");
         const newNote: NotePartObject = {
           time: `${props.curNoteToModify.newNoteProps!.startTime}i`,
           note: props.curNoteToModify.newNoteProps!.note,
@@ -242,7 +242,7 @@ const Track = React.memo((props: Props) => {
         break;
 
       case "DELETE":
-        console.log("DELETING NOTE");
+        // console.log("DELETING NOTE");
 
         const noteToDeleteIndex = curParts[
           stateIndex
@@ -278,7 +278,7 @@ const Track = React.memo((props: Props) => {
         break;
 
       case "UPDATE":
-        console.log("UPDATING NOTE");
+        // console.log("UPDATING NOTE");
 
         const noteToUpdateIndex = curParts[
           stateIndex
@@ -339,11 +339,11 @@ const Track = React.memo((props: Props) => {
       return;
     }
 
-    console.log("IN CURMIDICLIPTOMODIFY", props.curMidiClipToModify);
+    // console.log("IN CURMIDICLIPTOMODIFY", props.curMidiClipToModify);
 
     switch (props.curMidiClipToModify.type) {
       case "ADD":
-        console.log("ADDING NEW MIDICLIP");
+        // console.log("ADDING NEW MIDICLIP");
         const newPart = new Tone.Part((time, value) => {
           value.instrument.triggerAttackRelease(value.note, value.length, time);
         }).start(`${props.curMidiClipToModify.newMidiClipProps!.startTime}i`);
@@ -362,7 +362,7 @@ const Track = React.memo((props: Props) => {
         break;
 
       case "DELETE":
-        console.log("DELETING MIDICLIP");
+        // console.log("DELETING MIDICLIP");
 
         // Find the index in state
         const midiClipToDeleteIndex = curParts.findIndex(
@@ -381,7 +381,7 @@ const Track = React.memo((props: Props) => {
         break;
 
       case "UPDATE":
-        console.log("UPDATING MIDICLIP");
+        // console.log("UPDATING MIDICLIP");
 
         // Find the index in state
         const midiClipToUpdateIndex = curParts.findIndex(
@@ -396,7 +396,7 @@ const Track = React.memo((props: Props) => {
           // MIDI clip did NOT switch track
 
           // If size have changed, then we only need to update the length
-          console.log(curParts[midiClipToUpdateIndex]);
+          // console.log(curParts[midiClipToUpdateIndex]);
           if (
             props.curMidiClipToModify!.newMidiClipProps!.length !==
             curParts[midiClipToUpdateIndex].length
@@ -412,7 +412,7 @@ const Track = React.memo((props: Props) => {
             break;
           }
 
-          console.log("NEW START");
+          // console.log("NEW START");
 
           // We have to create a new Part, as the start point cannot be changed
           curParts[midiClipToUpdateIndex].value.part.dispose();
@@ -544,9 +544,11 @@ const Track = React.memo((props: Props) => {
       <button
         className="trackHeaderDeleteButton"
         onClick={() => {
-          curParts.forEach((part) => part.value.part.dispose());
-          dispatch(deselectMidiClip());
-          dispatch(deleteTrack(props.dataKey));
+          if (window.confirm("Biztosan törölni szeretnéd a sávot?")) {
+            curParts.forEach((part) => part.value.part.dispose());
+            dispatch(deselectMidiClip());
+            dispatch(deleteTrack(props.dataKey));
+          }
         }}
       >
         <img src={deleteButton} alt="X" />

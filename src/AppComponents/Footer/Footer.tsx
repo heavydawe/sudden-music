@@ -15,7 +15,7 @@ import "./Footer.css";
 
 function checkSignUpCredentials(
   emailRef: React.RefObject<HTMLInputElement>,
-  nameRef: React.RefObject<HTMLInputElement>,
+  // nameRef: React.RefObject<HTMLInputElement>,
   passwordRef: React.RefObject<HTMLInputElement>,
   passwordConfirmRef: React.RefObject<HTMLInputElement>
 ) {
@@ -33,17 +33,17 @@ function checkSignUpCredentials(
     return false;
   }
 
-  if (nameRef.current!.validity.valueMissing) {
-    alert("Kérlek adj meg egy felhasználónevet!");
-    return false;
-  }
+  // if (nameRef.current!.validity.valueMissing) {
+  //   alert("Kérlek adj meg egy felhasználónevet!");
+  //   return false;
+  // }
 
-  if (nameRef.current!.validity.tooShort) {
-    alert(
-      "A megadott felhasznólónév túl rövid, 5 - 20 karakterből kell állnia!"
-    );
-    return false;
-  }
+  // if (nameRef.current!.validity.tooShort) {
+  //   alert(
+  //     "A megadott felhasznólónév túl rövid, 5 - 20 karakterből kell állnia!"
+  //   );
+  //   return false;
+  // }
 
   if (passwordRef.current!.validity.valueMissing) {
     alert("Kérlek adj meg egy jelszót!");
@@ -78,7 +78,7 @@ function Footer() {
   const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
 
   const emailRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
+  // const nameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordConfirmRef = useRef<HTMLInputElement>(null);
 
@@ -359,7 +359,7 @@ function Footer() {
             <div className="signUpContainer">
               <div>
                 <p>Email</p>
-                <p>Név</p>
+                {/* <p>Név</p> */}
                 <p>Jelszó</p>
                 <p>Jelszó megerősítése</p>
               </div>
@@ -371,7 +371,7 @@ function Footer() {
                   required={true}
                   ref={emailRef}
                 />
-                <input
+                {/* <input
                   id="name"
                   type="text"
                   autoComplete="off"
@@ -379,7 +379,7 @@ function Footer() {
                   ref={nameRef}
                   maxLength={20}
                   minLength={5}
-                />
+                /> */}
                 <input
                   id="password"
                   type="password"
@@ -412,7 +412,7 @@ function Footer() {
                 if (
                   checkSignUpCredentials(
                     emailRef,
-                    nameRef,
+                    // nameRef,
                     passwordRef,
                     passwordConfirmRef
                   )
@@ -491,13 +491,13 @@ function Footer() {
                   }
 
                   const importedBPM = +fileParts[3];
-                  console.log(importedBPM);
+                  // console.log(importedBPM);
 
                   if (
                     isNaN(importedBPM) ||
                     Math.trunc(importedBPM) !== importedBPM ||
                     importedBPM < 40 ||
-                    importedBPM > 250 
+                    importedBPM > 250
                   ) {
                     alert("Nem importálható a fájl!");
                     return;

@@ -53,7 +53,7 @@ export interface Rootstate {
   };
   importedProps: {
     BPM: number;
-  }
+  };
   selectedMidiClip: { trackKey: number; midiClipDataKey: number };
   arrCanvasProps: ArrCanvasProps;
   pianoRollCanvasProps: PianoRollCanvasProps;

@@ -41,7 +41,4 @@ function getPositionY(
   }
 }
 
-export {
-  getPositionX,
-  getPositionY
-}
+export { getPositionX, getPositionY };

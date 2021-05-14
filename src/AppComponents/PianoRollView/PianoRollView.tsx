@@ -9,10 +9,8 @@ import { deselectMidiClip } from "../Actions";
 function PianoRollView() {
   const dispatch = useDispatch();
 
-  const [
-    curPianoRollGridPadding,
-    setCurPianoRollGridPadding,
-  ] = useState<number>(16);
+  const [curPianoRollGridPadding, setCurPianoRollGridPadding] =
+    useState<number>(16);
 
   const selectedMidiClipInfo = useSelector(
     (state: Rootstate) => state.selectedMidiClip
@@ -20,7 +18,7 @@ function PianoRollView() {
 
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
 
-  console.log("new MIDI CLIP", selectedMidiClipInfo, curTrackInfos);
+  // console.log("new MIDI CLIP", selectedMidiClipInfo, curTrackInfos);
 
   let selectedMidiClip;
   if (selectedMidiClipInfo !== null) {
