@@ -155,14 +155,12 @@ const CurTracksReducer = (
         instrument: "PolySynth",
         midiClips: [],
         name: "Sáv_A",
-        isMuted: false,
       },
       {
         dataKey: 1,
         instrument: "PolySynth",
         midiClips: [],
         name: "Sáv_B",
-        isMuted: false,
       },
     ],
     modifiedNote: null,
@@ -172,7 +170,6 @@ const CurTracksReducer = (
   action: {
     type: string;
     trackIndex: number;
-    // payload?: string | JSON;
     importedJSON?: TrackInterface[];
     newTrackProps?: TrackProps;
     modifyTrack?: TrackInterface;
@@ -227,7 +224,6 @@ const CurTracksReducer = (
             {
               dataKey: 0,
               name: action.modifyTrack.name,
-              // color: action.modifyTrack.color,
               instrument: action.modifyTrack!.instrument,
               midiClips: [],
             },
@@ -246,7 +242,6 @@ const CurTracksReducer = (
           {
             dataKey: maxDataKey + 1,
             name: action.modifyTrack.name,
-            // color: action.modifyTrack.color,
             instrument: action.modifyTrack!.instrument,
             midiClips: [],
           },
@@ -301,7 +296,6 @@ const CurTracksReducer = (
           {
             ...state.tracks[trackToChangeIndex],
             name: action.newTrackProps.name,
-            // color: action.newTrackProps.color,
             instrument: hasInstrumentChanged
               ? action.newTrackProps.instrument
               : state.tracks[trackToChangeIndex].instrument,

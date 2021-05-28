@@ -89,16 +89,6 @@ function NavigationBar() {
   const playStopButtonRef = useRef<HTMLImageElement>(null);
   const BPMInputRef = useRef<HTMLInputElement>(null);
 
-  // useEffect(() => {
-  //   document.onkeydown = (e) => {
-  //     if (e.key === " ") {
-  //       e.preventDefault();
-  //       e.stopPropagation();
-  //       togglePlay(playStopButtonRef, curTransportPosition);
-  //     }
-  //   };
-  // }, [curTransportPosition]);
-
   useEffect(() => {
     if (importedBPM === -1) {
       return;

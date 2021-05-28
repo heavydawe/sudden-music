@@ -27,7 +27,6 @@
 }
 
 .trackHeader {
-  /* background: linear-gradient(90deg, rgb(23, 3, 56) 0%, rgb(46, 12, 167) 100%); */
   background-color: black;
   opacity: 0.8;
   color: white;
@@ -36,7 +35,6 @@
   border-bottom-right-radius: 15px;
   height: 100px;
   font-weight: bold;
-  /* word-wrap: break-word; */
   overflow: auto;
   position: relative;
 }

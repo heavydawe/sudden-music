@@ -34,17 +34,6 @@ function ArrangementView() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  // function getNotesForMidiClip(trackKey: number, dataKey: number) {
-
-  //   const midiClipIndex = curTrackInfos.tracks[trackKey].midiClips
-  //     .findIndex((midiclip) => midiclip.dataKey === dataKey);
-
-  //   return curTrackInfos.tracks[trackKey].midiClips[midiClipIndex].notes;
-  // }
-
-  // const curNoteToModify = useSelector((state: Rootstate) => state.modifyNote);
-  // const [keyGenerator, setKeyGenerator] = useState<number>(curTrackInfos.length);
-
   // console.log("RENDERING ARR VIEW", curTrackInfos);
   //console.log(curNoteToModify);
 
@@ -64,7 +53,7 @@ function ArrangementView() {
   }, [arrCanvasNumOfPhrases]);
 
   return (
-    //List the tracks here
+    // List the tracks here
     <>
       <div key="arrangementViewContainer" className="arrangementViewContainer">
         <div key="trackHeaders" className="trackHeaderColumn">
@@ -74,9 +63,7 @@ function ArrangementView() {
                 key={item.dataKey}
                 dataKey={item.dataKey}
                 trackName={item.name}
-                // trackColor={item.color}
                 instrumentName={item.instrument}
-                isMuted={item.isMuted}
                 isDisposed={disposeTracks}
                 curNoteToModify={
                   curTrackInfos.modifiedNote !== null
@@ -126,13 +113,6 @@ function ArrangementView() {
           </button>
         </div>
         <ArrangementCanvas
-          // TODO: elég ha a midiclip azon paramétereit adjuk át, ami elég az elhelyezéséhez.
-          // A piano roll tudni fogja, hogy miylen noteok lesznek benne, ezért az arr canvasnak nem kell ezt tudnia
-          // midiClips={curTrackInfos.tracks
-          //   .map((track) => {
-          //     return track.midiClips;
-          //   })
-          //   .flat()}
           isImported={curTrackInfos.isImported}
           midiClipsPos={curTrackInfos.tracks.flatMap((track) => {
             return track.midiClips.map((midiClip) => {

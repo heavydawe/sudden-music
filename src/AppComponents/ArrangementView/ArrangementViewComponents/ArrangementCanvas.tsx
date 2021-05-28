@@ -103,22 +103,16 @@ function initMidiKeyGenerator(midiClipPos: MidiClipPos[]) {
 }
 
 const ArrangementCanvas = React.memo((props: Props) => {
-  // TODO: these values have to be responsive, if window resize event fires up, also less hardcoded
-
   // console.log("IN ARR CANVAS", props.midiClipsPos);
 
   const trackHeight = 100 + 2; // + 2 -> margins and gaps
   const numOfTracks = props.numOfTracks;
-
-  // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
-  // const numOfPhrases = useSelector(
-  //   (state: Rootstate) => state.arrCanvasProps.numOfPhrases
-  // ); // Phrase = 4 measures
   const numOfPhrases = props.numOfPhrases;
+
   const gridPadding = useSelector(
     (state: Rootstate) => state.arrCanvasProps.gridPadding
-  );
-  // 1 / gridPadding -> how many grids in a phrase
+  ); // 1 / gridPadding -> how many grids in a phrase
+
   const midiClipColor = useSelector(
     (state: Rootstate) => state.arrCanvasProps.midiClipColor
   );
@@ -127,10 +121,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
   const dispatch = useDispatch();
   const curPositionRef = useRef<Konva.Rect>(null);
   const curPositionLayer = useRef<Konva.Layer>(null);
-  // const [positionEventID, setPositionEventID]= useState<number | null>(null);
 
-  // should be a hardcoded "4", so the first 4 measure will fit on the screen no problem
-  //const canvasWidth = window.innerWidth - 61 - ((window.innerWidth - 61) % 4);
   const canvasWidth =
     numOfPhrases < 4
       ? window.innerWidth -
@@ -142,11 +133,8 @@ const ArrangementCanvas = React.memo((props: Props) => {
           (numOfPhrases * gridPadding -
             ((window.innerWidth - 61) % (numOfPhrases * gridPadding)))) *
         (numOfPhrases / 4);
-  // TODO: if numOfPhrases > 4 then we should use a vertical scrollbar to navigate
 
-  const canvasHeight = trackHeight * numOfTracks; //only show the neccessary ammount of rows
-
-  // TODO: blockSnapSize should be changeable, and the canvas should draw invisible lines to snap to
+  const canvasHeight = trackHeight * numOfTracks;
   const blockSnapSize = Math.round(canvasWidth / (numOfPhrases * gridPadding));
 
   const [midiKeyGenerator, setMidiKeyGenerator] = useState<number>(0);
@@ -167,10 +155,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
     trackHeight
   );
 
-  // useEffect(() => {
-  //   midiClipLayerRef.current!.draw();
-  // }, [props.midiClipsPos])
-
   // console.log("AFTER INITED MIDIS", curMidiClipsRect);
 
   let gridLines: JSX.Element[] = [];
@@ -186,7 +170,7 @@ const ArrangementCanvas = React.memo((props: Props) => {
           i * blockSnapSize + 0.5,
           canvasHeight,
         ]}
-        stroke={i % (gridPadding / 4) ? "gray" : "black"} // TODO: If time signature can be changed, then 4 should NOT be hardcoded here
+        stroke={i % (gridPadding / 4) ? "gray" : "black"}
         strokeWidth={i % (gridPadding / 4) ? 1 : 1.5}
       />
     );
@@ -229,11 +213,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
   useEffect(() => {
     // console.log("!!!!!IN CURTRANSPORT USEFF", positionEventID);
 
-    // if (positionEventID !== null) {
-    //   Tone.Transport.clear(positionEventID);
-    // }
-
-    // const eventID =
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
         if (Tone.Transport.state === "stopped") {
@@ -249,7 +228,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
       }, time);
     }, "10i");
 
-    // setPositionEventID(eventID);
     // console.log("NEWID",positionEventID)
   }, [canvasWidth]);
 
@@ -280,12 +258,12 @@ const ArrangementCanvas = React.memo((props: Props) => {
         key="arrangementStage"
         className="stageClass"
         width={canvasWidth + 2}
-        // + 2 is needed if a note's transform anchor is at the edge, so the user can reach it
         height={canvasHeight}
         onMouseDown={(e) => {
           e.evt.preventDefault();
 
           if (e.evt.button === 0) {
+
             // left mouse button
             if (selectedMidiClipId !== -1) {
               if (
@@ -314,7 +292,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
               false
             );
 
-            // console.log(posX);
             dispatch(
               changeTransportPosition(
                 (posX / blockSnapSize) * blockSnapSizeToTick
@@ -461,9 +438,6 @@ const ArrangementCanvas = React.memo((props: Props) => {
                     blockSnapSizeToTick
                   );
 
-                  // TODO:
-                  // WHEN WE MOVE MIDICLIP, WE NEED AN OTHER PROP: prevTrackKey, or stmh like that
-                  // ALSO a ModifyMidiClip interface would be nice, to again, optimize the Track component
                   dispatch(
                     updateMidiClip({
                       midiClipDataKey: newMidiClip.dataKey,

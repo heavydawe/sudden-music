@@ -1,7 +1,6 @@
 .gridContainer {
   display: grid;
   grid-template-columns: 50px auto;
-  /* background: linear-gradient(90deg, rgb(12, 38, 167) 10%, rgb(180, 33, 62) 100%); */
   padding: 0px;
   height: 65vh;
   width: 99vw;
@@ -44,7 +43,6 @@
 }
 
 ::-webkit-scrollbar-track {
-  /* background: #f1f1f1; */
   background: transparent;
   border-radius: 10px;
 }

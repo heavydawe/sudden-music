@@ -33,16 +33,6 @@ function MidiClip(props: Props) {
     }
   }, [props.isSelected]);
 
-  // useEffect(() => {
-  //   midiClipRef.current!.position({
-  //     x: props.shapeProps.posX,
-  //     y: props.shapeProps.posY,
-  //   });
-  //   midiClipRef.current!.draw();
-  //   midiClipRef.current!.getParent().draw();
-  //   console.log("REDRAW MIDI", midiClipRef.current!.getPosition());
-  // }, [props.shapeProps]);
-
   return (
     <>
       <Rect

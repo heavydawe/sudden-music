@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
@@ -10,10 +9,6 @@ import * as Tone from "tone";
 
 const store = createStore(allReducer);
 Tone.Transport.PPQ = 192;
-
-//Tone.setContext(new Tone.Context({ latencyHint : "balanced" }))
-
-// document.onkeydown = (e) => {e.stopPropagation()}
 
 ReactDOM.render(
   <Provider store={store}>

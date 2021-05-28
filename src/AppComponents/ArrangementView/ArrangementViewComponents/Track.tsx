@@ -43,9 +43,7 @@ interface MidiClipMap {
 interface Props {
   dataKey: number;
   trackName: string;
-  isMuted: boolean;
   isDisposed: boolean;
-  // trackColor: string;
   instrumentName: string;
   curNoteToModify: ModifyNote | null;
   curMidiClipToModify: ModifyMidiClip | null;
@@ -59,7 +57,6 @@ const Track = React.memo((props: Props) => {
   const [curInstrument, setCurInstrument] = useState<Instrument>();
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
 
-  // TODO: INIT correctly when importing
   const [curParts, setCurParts] = useState<MidiClipMap[]>([]);
   // console.log(`IN TRACK ${props.dataKey}`, curParts);
 
@@ -108,16 +105,6 @@ const Track = React.memo((props: Props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curInstrument]);
-
-  // Mute all parts if track is muted
-  // TODO if midiclip switches track reducers needs to set mute correctly
-  // useEffect(() => {
-  //   curParts.forEach((midiClipMap) => {
-  //     midiClipMap.value.part.mute = props.isMuted;
-  //   })
-  // }, [props.isMuted])
-
-  //console.log("RENDERING IN TRACK, KEY:", props.dataKey);
 
   useEffect(() => {
     if (!props.isDisposed) {
@@ -187,29 +174,6 @@ const Track = React.memo((props: Props) => {
 
     switch (props.curNoteToModify.type) {
       case "ADD":
-        // If instrument is not PolySynth, we need to check, if there is
-        // a note already in Part with the same startTime
-        // if (curInstrument!.name !== "PolySynth") {
-        //   const isAllowed = !curParts[stateIndex].value.partNotes.some(
-        //     (noteMap) =>
-        //       noteMap.value.time ===
-        //       `${props.curNoteToModify!.newNoteProps!.startTime}i`
-        //   );
-
-        //   if (!isAllowed) {
-        //     alert("Csak a PolySynth tud egyszerre több hangot is lejátszani!");
-        //     dispatch(
-        //       deleteNote({
-        //         midiClipDataKey: props.curNoteToModify!.midiClipDataKey,
-        //         noteDataKey: props.curNoteToModify!.newNoteProps!.dataKey,
-        //         trackDataKey: props.dataKey,
-        //         type: "DELETE",
-        //       })
-        //     );
-        //     dispatch(clearModifyNote());
-        //     return;
-        //   }
-        // }
 
         // console.log("ADDING NEW NOTE");
         const newNote: NotePartObject = {
@@ -219,7 +183,6 @@ const Track = React.memo((props: Props) => {
           instrument: curInstrument!,
         };
 
-        // THIS COULD BE PROBLEMATIC... or not..
         curParts[stateIndex].value.part.add(newNote);
 
         setCurParts((prevState) => [
@@ -250,7 +213,6 @@ const Track = React.memo((props: Props) => {
           (note) => note.key === props.curNoteToModify!.noteDataKey
         );
 
-        // THIS COULD BE PROBLEMATIC.... or not...
         curParts[stateIndex].value.part.remove(
           curParts[stateIndex].value.partNotes[noteToDeleteIndex].value
         );
@@ -285,8 +247,6 @@ const Track = React.memo((props: Props) => {
         ].value.partNotes.findIndex(
           (note) => note.key === props.curNoteToModify!.noteDataKey
         );
-
-        // THIS COULD BE PROBLEMATIC....WORKS FINE!
 
         curParts[stateIndex].value.part.remove(
           curParts[stateIndex].value.partNotes[noteToUpdateIndex].value

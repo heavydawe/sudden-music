@@ -1,7 +1,6 @@
 footer {
     background:
         linear-gradient(180deg, rgb(0, 0, 0, 0), black);
-    /* linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 8%, rgb(180, 33, 62) 100%); */
     position: absolute;
     bottom: 0px;
     width: 100%;
@@ -42,20 +41,6 @@ footer button:hover {
     animation: showPopUp 0.5s ease-in-out 1 forwards;
     min-height: 200px;
 }
-
-/* @keyframes showPopUp {
-    0% {
-        transform: scale(0);
-    }
-
-    75% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-} */
 
 .prefModalContainer {
     display: grid;

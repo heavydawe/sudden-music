@@ -54,7 +54,6 @@ function Note(props: Props) {
             props.handleSelect();
           }
         }}
-        // onTap={() => props.handleSelect()}
         onMouseOver={(e) => {
           e.target.setAttrs({ fill: "yellow" });
           e.currentTarget.draw();
@@ -96,12 +95,6 @@ function Note(props: Props) {
           } else {
             props.changeSize(newSize);
           }
-
-          // if (newSize < 1) {
-          //   props.changeSize(1);
-          // } else {
-          //   props.changeSize(newSize);
-          // }
         }}
       />
       {props.isSelected && (

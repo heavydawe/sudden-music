@@ -29,7 +29,6 @@ function NewTrackModal(props: Props) {
         <div>
           <p>Név</p>
           <p>Hangszer</p>
-          {/* <p>Szín</p> */}
         </div>
         <div>
           <input
@@ -62,14 +61,6 @@ function NewTrackModal(props: Props) {
             <option value="PolySynth">PolySynth</option>
             <option value="Synth">Synth</option>
           </select>
-          <br />
-          {/* <input
-            key="newTrackColor"
-            id="newTrackColor"
-            type="color"
-            required={true}
-            ref={newTrackColorRef}
-          /> */}
         </div>
       </div>
       <button
@@ -101,7 +92,6 @@ function NewTrackModal(props: Props) {
                 // color: "red", // newTrackColorRef.current!.value
                 instrument: newTrackInstrumentRef.current!.value,
                 name: newTrackNameRef.current!.value,
-                isMuted: false,
               })
             );
           } else {

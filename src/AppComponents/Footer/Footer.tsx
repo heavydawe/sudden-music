@@ -15,7 +15,6 @@ import "./Footer.css";
 
 function checkSignUpCredentials(
   emailRef: React.RefObject<HTMLInputElement>,
-  // nameRef: React.RefObject<HTMLInputElement>,
   passwordRef: React.RefObject<HTMLInputElement>,
   passwordConfirmRef: React.RefObject<HTMLInputElement>
 ) {
@@ -32,18 +31,6 @@ function checkSignUpCredentials(
     alert("A megadott email cím nem valid!");
     return false;
   }
-
-  // if (nameRef.current!.validity.valueMissing) {
-  //   alert("Kérlek adj meg egy felhasználónevet!");
-  //   return false;
-  // }
-
-  // if (nameRef.current!.validity.tooShort) {
-  //   alert(
-  //     "A megadott felhasznólónév túl rövid, 5 - 20 karakterből kell állnia!"
-  //   );
-  //   return false;
-  // }
 
   if (passwordRef.current!.validity.valueMissing) {
     alert("Kérlek adj meg egy jelszót!");
@@ -68,6 +55,17 @@ function checkSignUpCredentials(
   return true;
 }
 
+function isValidProject(parsedJSON: any) {
+  return (parsedJSON as TrackInterface[]).every((track) => {
+    return (
+      "dataKey" in track &&
+      "name" in track &&
+      "instrument" in track &&
+      "midiClips" in track
+    );
+  });
+}
+
 function Footer() {
   const dispatch = useDispatch();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
@@ -78,7 +76,6 @@ function Footer() {
   const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
 
   const emailRef = useRef<HTMLInputElement>(null);
-  // const nameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordConfirmRef = useRef<HTMLInputElement>(null);
 
@@ -361,7 +358,6 @@ function Footer() {
             <div className="signUpContainer">
               <div>
                 <p>Email</p>
-                {/* <p>Név</p> */}
                 <p>Jelszó</p>
                 <p>Jelszó megerősítése</p>
               </div>
@@ -373,15 +369,6 @@ function Footer() {
                   required={true}
                   ref={emailRef}
                 />
-                {/* <input
-                  id="name"
-                  type="text"
-                  autoComplete="off"
-                  required={true}
-                  ref={nameRef}
-                  maxLength={20}
-                  minLength={5}
-                /> */}
                 <input
                   id="password"
                   type="password"
@@ -414,7 +401,6 @@ function Footer() {
                 if (
                   checkSignUpCredentials(
                     emailRef,
-                    // nameRef,
                     passwordRef,
                     passwordConfirmRef
                   )
@@ -423,7 +409,7 @@ function Footer() {
                     .createUserWithEmailAndPassword(
                       emailRef.current!.value,
                       passwordRef.current!.value
-                    ) //...
+                    )
                     .then((cred) => {
                       appStore.collection("users").doc(cred.user!.uid).set({
                         theme: "darkMode",
@@ -447,8 +433,6 @@ function Footer() {
           </ReactModal>
         </>
       )}
-
-      {/* <button>Sign up</button> */}
       <div className="footerRightButtons">
         <button onClick={() => dispatch(exportProject())}>Exportálás...</button>
         <button
@@ -485,9 +469,6 @@ function Footer() {
                   const fileParts = content.toString().split("\n");
 
                   if (fileParts.length !== 4) {
-                    // throw Error(
-                    //   "File has been modified and cannot import it..."
-                    // );
                     alert("Nem importálható a fájl!");
                     return;
                   }
@@ -520,9 +501,6 @@ function Footer() {
                     dispatch(importProject(parsedJSON));
                     dispatch(setImportedBPM(importedBPM));
                   } catch (e) {
-                    // throw Error(
-                    //   "Cannot parse JSON file, probably due to unwanted modifications to the file..."
-                    // );
                     alert("Hiba történt az importáláskor!");
                     return;
                   }
@@ -542,15 +520,3 @@ function Footer() {
 }
 
 export default Footer;
-
-function isValidProject(parsedJSON: any) {
-  return (parsedJSON as TrackInterface[]).every((track) => {
-    return (
-      "dataKey" in track &&
-      "name" in track &&
-      "instrument" in track &&
-      "midiClips" in track &&
-      "isMuted" in track
-    );
-  });
-}

@@ -1,8 +1,6 @@
 nav {
   background:
     linear-gradient(180deg, black, rgb(169, 169, 169, 0));
-  /* linear-gradient(90deg, rgb(11, 3, 56) 0%, rgb(12, 38, 167) 8%, rgb(180, 33, 62) 100%); */
-
   padding-left: 150px;
   padding-bottom: 10px;
   position: absolute;
