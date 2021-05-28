@@ -164,6 +164,13 @@ export const changeArrViewGridPadding = (newNumOfGridPadding: number) => {
   };
 };
 
+export const revertNumOfPhrases = () => {
+  return {
+    type: "REVERT_ARR_VIEW_NUM_OF_PHRASES",
+    payload: -1,
+  };
+};
+
 export const changeMidiClipColor = (newColor: string) => {
   return {
     type: "CHANGE_MIDI_CLIP_COLOR",

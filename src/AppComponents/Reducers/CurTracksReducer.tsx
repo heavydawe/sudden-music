@@ -128,11 +128,17 @@ function isMidiNoteColliding(
   });
 }
 
-function isAllowed(newMidiNote: MidiNote, otherMidiNotes: MidiNote[]) {
+function isNotAllowed(newMidiNote: MidiNote, otherMidiNotes: MidiNote[]) {
   return otherMidiNotes.some(
     (otherMidiNote) =>
       newMidiNote.dataKey !== otherMidiNote.dataKey &&
       newMidiNote.startTime === otherMidiNote.startTime
+  );
+}
+
+function isValidMidiClipSize(newMidiClip: MidiClip, notes: MidiNote[]) {
+  return notes.every(
+    (note) => note.startTime + note.length <= newMidiClip.length * 192
   );
 }
 
@@ -406,6 +412,23 @@ const CurTracksReducer = (
         (item) => item.dataKey === action.modifyMidiClip!.midiClipDataKey
       );
 
+      // Check if length got smaller, and if so, then check if any MIDI note is sticking out
+      if (
+        action.modifyMidiClip!.newMidiClipProps!.length <
+        state.tracks[action.trackIndex].midiClips[midiClipToUpdateIndex].length
+      ) {
+        if (
+          !isValidMidiClipSize(
+            action.modifyMidiClip!.newMidiClipProps!,
+            state.tracks[action.trackIndex].midiClips[midiClipToUpdateIndex]
+              .notes
+          )
+        ) {
+          // alert("INVALID NEWSIZE");
+          return state;
+        }
+      }
+
       // Check if trackKey has changed
       if (
         action.modifyMidiClip!.trackDataKey ===
@@ -424,7 +447,7 @@ const CurTracksReducer = (
           return state;
         }
 
-        const updatedMidiClip = [
+        const updatedMidiClips = [
           ...state.tracks[action.trackIndex].midiClips.slice(
             0,
             midiClipToUpdateIndex
@@ -445,7 +468,7 @@ const CurTracksReducer = (
             ...state.tracks.slice(0, action.trackIndex),
             {
               ...state.tracks[action.trackIndex],
-              midiClips: updatedMidiClip,
+              midiClips: updatedMidiClips,
             },
             ...state.tracks.slice(action.trackIndex + 1),
           ],
@@ -561,7 +584,7 @@ const CurTracksReducer = (
 
       if (
         state.tracks[action.trackIndex].instrument !== "PolySynth" &&
-        isAllowed(
+        isNotAllowed(
           action.modifyNote!.newNoteProps!,
           state.tracks[action.trackIndex].midiClips[midiClipIndexAdd].notes
         )
@@ -683,7 +706,7 @@ const CurTracksReducer = (
 
       if (
         state.tracks[action.trackIndex].instrument !== "PolySynth" &&
-        isAllowed(
+        isNotAllowed(
           action.modifyNote!.newNoteProps!,
           state.tracks[action.trackIndex].midiClips[midiClipIndexUpdate].notes
         )

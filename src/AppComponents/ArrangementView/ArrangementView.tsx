@@ -1,7 +1,7 @@
 import Track from "./ArrangementViewComponents/Track";
 import "./ArrangementView.css";
 import ArrangementCanvas from "./ArrangementViewComponents/ArrangementCanvas";
-import { Rootstate } from "../Interfaces";
+import { Rootstate, TrackInterface } from "../Interfaces";
 import { useDispatch, useSelector } from "react-redux";
 import addButton from "../Icons/addButton.png";
 import { useEffect, useState } from "react";
@@ -13,12 +13,24 @@ import {
   sampleRepeatTime,
   sampleStartTime,
 } from "./ArrangementViewComponents/AudioSampleImport";
-import { tracksCleared } from "../Actions";
+import { revertNumOfPhrases, tracksCleared } from "../Actions";
 // import { useState } from "react";
+
+function isValidPhraseNum(tracks: TrackInterface[], numOfPhrases: number) {
+  return tracks.every((track) =>
+    track.midiClips.every(
+      (midiClip) =>
+        midiClip.startTime + midiClip.length * 192 <= numOfPhrases * 16 * 192
+    )
+  );
+}
 
 function ArrangementView() {
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
   const disposeTracks = useSelector((state: Rootstate) => state.disposeTracks);
+  const arrCanvasNumOfPhrases = useSelector(
+    (state: Rootstate) => state.arrCanvasProps.numOfPhrases
+  );
   const [showModal, setShowModal] = useState<boolean>(false);
   const dispatch = useDispatch();
 
@@ -41,6 +53,15 @@ function ArrangementView() {
       dispatch(tracksCleared());
     }
   }, [disposeTracks, dispatch]);
+
+  useEffect(() => {
+    // Check if new numOfPhrases causes any MidiClip to stick out
+    if (!isValidPhraseNum(curTrackInfos.tracks, arrCanvasNumOfPhrases)) {
+      dispatch(revertNumOfPhrases());
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrCanvasNumOfPhrases]);
 
   return (
     //List the tracks here
@@ -124,6 +145,7 @@ function ArrangementView() {
             });
           })}
           numOfTracks={curTrackInfos.tracks.length}
+          numOfPhrases={arrCanvasNumOfPhrases}
         />
       </div>
       <div className="audioSamplerContainer">

@@ -44,7 +44,7 @@ function PianoRollView() {
           <div className="pianoRollView">
             <span>Rácsok sűrűsége:</span>
             <select
-              defaultValue="16"
+              defaultValue={curPianoRollGridPadding.toString()}
               onChange={(e) => setCurPianoRollGridPadding(+e.target.value)}
             >
               <option value="4">4</option>

@@ -84,6 +84,7 @@ interface Props {
   midiClipsPos: MidiClipPos[];
   numOfTracks: number;
   isImported: boolean;
+  numOfPhrases: number;
 }
 
 function initMidiKeyGenerator(midiClipPos: MidiClipPos[]) {
@@ -110,12 +111,14 @@ const ArrangementCanvas = React.memo((props: Props) => {
   const numOfTracks = props.numOfTracks;
 
   // TODO: lecheckolni, hogy ha lerövidítjük a track hosszát, akkor mi lesz azokkal a midiclippekkel amik "kilógnának"
-  const numOfPhrases = useSelector(
-    (state: Rootstate) => state.arrCanvasProps.numOfPhrases
-  ); // Phrase = 4 measures
+  // const numOfPhrases = useSelector(
+  //   (state: Rootstate) => state.arrCanvasProps.numOfPhrases
+  // ); // Phrase = 4 measures
+  const numOfPhrases = props.numOfPhrases;
   const gridPadding = useSelector(
     (state: Rootstate) => state.arrCanvasProps.gridPadding
-  ); // 1 / gridPadding -> how many grids in a phrase
+  );
+  // 1 / gridPadding -> how many grids in a phrase
   const midiClipColor = useSelector(
     (state: Rootstate) => state.arrCanvasProps.midiClipColor
   );

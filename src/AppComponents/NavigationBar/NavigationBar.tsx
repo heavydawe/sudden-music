@@ -138,6 +138,7 @@ function NavigationBar() {
       <span>Félperiódusok száma:</span>
       <select
         defaultValue="4"
+        id="numOfPhrases"
         onChange={(e) => {
           if (Tone.Transport.state === "started") {
             togglePlay(playStopButtonRef, curTransportPosition);

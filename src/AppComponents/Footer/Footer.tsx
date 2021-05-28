@@ -252,7 +252,7 @@ function Footer() {
             <button
               className="signUpModalSignUpButton"
               onClick={() => {
-                appAuth //("dfgsdfg@sdfasdf.asdf", "123456")
+                appAuth
                   .signInWithEmailAndPassword(
                     signInEmailRef.current!.value,
                     signInPasswordRef.current!.value
@@ -340,6 +340,8 @@ function Footer() {
                       alert("A megadott email címhez nem tartozik fiók!");
                     } else if (error.code === "auth/wrong-password") {
                       alert("A megadott jelszó nem helyes!");
+                    } else if (error.code === "auth/invalid-email") {
+                      alert("A mezők nem lettek helyesen kitöltve!");
                     } else {
                       alert(error.code);
                       console.log(error);
@@ -421,7 +423,7 @@ function Footer() {
                     .createUserWithEmailAndPassword(
                       emailRef.current!.value,
                       passwordRef.current!.value
-                    )
+                    ) //...
                     .then((cred) => {
                       appStore.collection("users").doc(cred.user!.uid).set({
                         theme: "darkMode",

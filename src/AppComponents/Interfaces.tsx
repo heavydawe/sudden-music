@@ -65,6 +65,7 @@ export interface ArrCanvasProps {
   numOfPhrases: number;
   gridPadding: number;
   midiClipColor: string;
+  prevNumOfPhrases: number;
 }
 
 export interface PianoRollCanvasProps {
