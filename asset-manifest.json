@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/sudden-music/static/css/main.f0d85746.chunk.css",
-    "main.js": "/sudden-music/static/js/main.7b9bc2a8.chunk.js",
-    "main.js.map": "/sudden-music/static/js/main.7b9bc2a8.chunk.js.map",
+    "main.js": "/sudden-music/static/js/main.38d6c75d.chunk.js",
+    "main.js.map": "/sudden-music/static/js/main.38d6c75d.chunk.js.map",
     "runtime-main.js": "/sudden-music/static/js/runtime-main.4af8d15a.js",
     "runtime-main.js.map": "/sudden-music/static/js/runtime-main.4af8d15a.js.map",
     "static/js/2.c20b475d.chunk.js": "/sudden-music/static/js/2.c20b475d.chunk.js",
@@ -24,6 +24,6 @@
     "static/js/runtime-main.4af8d15a.js",
     "static/js/2.c20b475d.chunk.js",
     "static/css/main.f0d85746.chunk.css",
-    "static/js/main.7b9bc2a8.chunk.js"
+    "static/js/main.38d6c75d.chunk.js"
   ]
 }
