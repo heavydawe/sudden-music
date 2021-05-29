@@ -501,7 +501,7 @@ function Footer() {
                     setTimeout(() => {
                       dispatch(importProject(parsedJSON));
                       dispatch(setImportedBPM(importedBPM));
-                    }, 1000);
+                    }, 500);
                   } catch (e) {
                     alert("Hiba történt az importáláskor!");
                     return;

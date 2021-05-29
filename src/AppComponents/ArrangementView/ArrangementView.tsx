@@ -26,8 +26,9 @@ function isValidPhraseNum(tracks: TrackInterface[], numOfPhrases: number) {
 }
 
 function ArrangementView() {
-  //TODO: init correctly!
-  const [trackReactKeyGenerator, setTrackReactKeyGenerator] = useState<number>(2);
+
+  const [trackReactKeyGenerator, setTrackReactKeyGenerator] =
+    useState<number>(2);
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
   const disposeTracks = useSelector((state: Rootstate) => state.disposeTracks);
   const arrCanvasNumOfPhrases = useSelector(
@@ -36,8 +37,20 @@ function ArrangementView() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  console.log("RENDERING ARR VIEW", curTrackInfos);
+  // console.log("RENDERING ARR VIEW", curTrackInfos);
   //console.log(curNoteToModify);
+
+  useEffect(() => {
+    if (curTrackInfos.isImported === false) {
+      return;
+    }
+
+    setTrackReactKeyGenerator(
+      curTrackInfos.tracks[curTrackInfos.tracks.length - 1].reactKey + 1
+    );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curTrackInfos.isImported]);
 
   useEffect(() => {
     if (disposeTracks) {
@@ -63,6 +76,7 @@ function ArrangementView() {
             return (
               <Track
                 key={item.reactKey}
+                test={item.reactKey}
                 dataKey={item.dataKey}
                 trackName={item.name}
                 instrumentName={item.instrument}
@@ -88,11 +102,7 @@ function ArrangementView() {
                       : null
                     : null
                 }
-                midiClips={
-                  curTrackInfos.isImported
-                    ? item.midiClips
-                    : null
-                }
+                midiClips={curTrackInfos.isImported ? item.midiClips : null}
               />
             );
           })}

@@ -202,8 +202,21 @@ const CurTracksReducer = (
         throw Error("importedJSON is missing when importing");
       }
 
+      const maxReactKey =
+        !state.tracks.length
+          ? 0
+          : state.tracks[state.tracks.length - 1].reactKey + 1;
+
+      // create new reactKey for each track to prevent undefined behaviour
+      const newTracks = action.importedJSON.map((track, i) => {
+        return {
+          ...track,
+          reactKey: maxReactKey + i,
+        };
+      });
+
       return {
-        tracks: action.importedJSON,
+        tracks: newTracks,
         modifiedNote: null,
         modifiedMidiClip: null,
         isImported: true,
