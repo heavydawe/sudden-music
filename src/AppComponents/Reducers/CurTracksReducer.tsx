@@ -151,12 +151,14 @@ const CurTracksReducer = (
   } = {
     tracks: [
       {
+        reactKey: 0,
         dataKey: 0,
         instrument: "PolySynth",
         midiClips: [],
         name: "Sáv_A",
       },
       {
+        reactKey: 1,
         dataKey: 1,
         instrument: "PolySynth",
         midiClips: [],
@@ -222,6 +224,7 @@ const CurTracksReducer = (
         return {
           tracks: [
             {
+              reactKey: action.modifyTrack.reactKey,
               dataKey: 0,
               name: action.modifyTrack.name,
               instrument: action.modifyTrack!.instrument,
@@ -240,6 +243,7 @@ const CurTracksReducer = (
         tracks: [
           ...state.tracks,
           {
+            reactKey: action.modifyTrack.reactKey,
             dataKey: maxDataKey + 1,
             name: action.modifyTrack.name,
             instrument: action.modifyTrack!.instrument,

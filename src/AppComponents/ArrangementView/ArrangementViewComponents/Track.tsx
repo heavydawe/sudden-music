@@ -58,7 +58,8 @@ const Track = React.memo((props: Props) => {
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
 
   const [curParts, setCurParts] = useState<MidiClipMap[]>([]);
-  // console.log(`IN TRACK ${props.dataKey}`, curParts);
+
+  console.log(`IN TRACK ${props.dataKey}`, curParts, props.midiClips);
 
   // Only change instrument when inited or on user change
   useEffect(() => {
@@ -69,7 +70,10 @@ const Track = React.memo((props: Props) => {
   useEffect(() => {
     let newPartNotes: MidiClipMap[] = [];
 
-    // console.log("!!!!NEWINSTR");
+    console.log("!!!!NEWINSTR");
+
+    // TODO: azok a trackek amik már léteznek nem frissülnek, 
+    // illetve nem disposeolódnak, nagyon rosszul működi kjelenleg az import
 
     curParts.forEach((midiClipMap) => {
       let newNoteMap: NoteMap[] = [];
@@ -112,8 +116,9 @@ const Track = React.memo((props: Props) => {
     }
 
     curParts.forEach((midiClipMap) => midiClipMap.value.part.dispose());
+    setCurInstrument(undefined);
 
-    // console.log("!!IN DISPOSED");
+    console.log("!!IN DISPOSED");
   }, [props.isDisposed, curParts]);
 
   useEffect(() => {
@@ -158,7 +163,7 @@ const Track = React.memo((props: Props) => {
     // console.log("!!IN IMPORT EFFECT");
 
     setCurParts(newCurParts);
-    dispatch(clearImportFlag());
+    //dispatch(clearImportFlag());
   }, [props.midiClips, dispatch, curInstrument]);
 
   useEffect(() => {
@@ -505,10 +510,19 @@ const Track = React.memo((props: Props) => {
         className="trackHeaderDeleteButton"
         onClick={() => {
           if (window.confirm("Biztosan törölni szeretnéd a sávot?")) {
-            curParts.forEach((part) => part.value.part.dispose());
+            console.log(curParts);
+            curParts.forEach((part) => {
+              console.log("Before delete: ", part.value.part.length, part.value.partNotes);
+              part.value.part.clear();
+              part.value.part.dispose();
+              console.log("After delete: ", part.value.part.length);
+            });
+            
             dispatch(deselectMidiClip());
             dispatch(deleteTrack(props.dataKey));
           }
+
+          // console.log(curParts);
         }}
       >
         <img src={deleteButton} alt="X" />

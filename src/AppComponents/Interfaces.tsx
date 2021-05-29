@@ -35,6 +35,7 @@ export interface ShapeProps {
 }
 
 export interface TrackInterface {
+  reactKey: number;
   dataKey: number;
   name: string;
   instrument: string;

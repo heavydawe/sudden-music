@@ -498,8 +498,10 @@ function Footer() {
 
                     //console.log(parsedJSON);
                     dispatch(clearEveryTrack());
-                    dispatch(importProject(parsedJSON));
-                    dispatch(setImportedBPM(importedBPM));
+                    setTimeout(() => {
+                      dispatch(importProject(parsedJSON));
+                      dispatch(setImportedBPM(importedBPM));
+                    }, 1000);
                   } catch (e) {
                     alert("Hiba történt az importáláskor!");
                     return;

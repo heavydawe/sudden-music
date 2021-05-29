@@ -10,12 +10,13 @@ interface Props {
   mode: string;
   trackKey?: number;
   instrument?: string;
+  nextTrackReactKey?: number;
+  setNextTrackReactKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 function NewTrackModal(props: Props) {
   const newTrackNameRef = useRef<HTMLInputElement>(null);
   const newTrackInstrumentRef = useRef<HTMLSelectElement>(null);
-  // const newTrackColorRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
 
@@ -85,20 +86,28 @@ function NewTrackModal(props: Props) {
           }
 
           if (props.mode === "add") {
+            
+            if (
+              props.setNextTrackReactKey === undefined ||
+              props.nextTrackReactKey === undefined
+            ) {
+              throw Error("Next trackReactKey is undefined!");
+            }
+
             dispatch(
               addNewTrack({
+                reactKey: props.nextTrackReactKey,
                 dataKey: -1,
                 midiClips: [],
-                // color: "red", // newTrackColorRef.current!.value
                 instrument: newTrackInstrumentRef.current!.value,
                 name: newTrackNameRef.current!.value,
               })
             );
+            props.setNextTrackReactKey(props.nextTrackReactKey + 1);
           } else {
             dispatch(
               changeTrackProps(props.trackKey!, {
                 name: newTrackNameRef.current!.value,
-                // color: newTrackColorRef.current!.value,
                 instrument: newTrackInstrumentRef.current!.value,
               })
             );

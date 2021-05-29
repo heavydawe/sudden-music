@@ -26,6 +26,8 @@ function isValidPhraseNum(tracks: TrackInterface[], numOfPhrases: number) {
 }
 
 function ArrangementView() {
+  //TODO: init correctly!
+  const [trackReactKeyGenerator, setTrackReactKeyGenerator] = useState<number>(2);
   const curTrackInfos = useSelector((state: Rootstate) => state.curTracks);
   const disposeTracks = useSelector((state: Rootstate) => state.disposeTracks);
   const arrCanvasNumOfPhrases = useSelector(
@@ -34,7 +36,7 @@ function ArrangementView() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  // console.log("RENDERING ARR VIEW", curTrackInfos);
+  console.log("RENDERING ARR VIEW", curTrackInfos);
   //console.log(curNoteToModify);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ function ArrangementView() {
           {curTrackInfos.tracks.map((item) => {
             return (
               <Track
-                key={item.dataKey}
+                key={item.reactKey}
                 dataKey={item.dataKey}
                 trackName={item.name}
                 instrumentName={item.instrument}
@@ -88,7 +90,7 @@ function ArrangementView() {
                 }
                 midiClips={
                   curTrackInfos.isImported
-                    ? curTrackInfos.tracks[item.dataKey].midiClips
+                    ? item.midiClips
                     : null
                 }
               />
@@ -98,6 +100,8 @@ function ArrangementView() {
             showModal={showModal}
             setShowModal={setShowModal}
             mode="add"
+            nextTrackReactKey={trackReactKeyGenerator}
+            setNextTrackReactKey={setTrackReactKeyGenerator}
           />
           <button
             className="addNewTrackButton"
